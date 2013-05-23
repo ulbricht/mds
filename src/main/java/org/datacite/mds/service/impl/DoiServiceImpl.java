@@ -62,7 +62,7 @@ public class DoiServiceImpl implements DoiService {
             } else {
                 dataset.merge();
             }
-            log4j.debug("doi registration: " + dataset.getDoi() + " successful");
+            log4j.debug("igsn registration: " + dataset.getDoi() + " successful");
         } else {
             log4j.debug("TEST MODE - registration skipped");
         }
@@ -78,7 +78,7 @@ public class DoiServiceImpl implements DoiService {
         validationHelper.validate(dataset);
         
         if (url == null && dataset.getId() == null)
-            throw new NotFoundException("DOI not found");
+            throw new NotFoundException("IGSN not found");
         
         dataset.setUrl(url);
         

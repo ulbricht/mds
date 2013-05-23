@@ -5,19 +5,19 @@
 <util:crypt-mail-setup/>
 
 <c:set var="link_mds">
-  <a href="https://mds.datacite.org/"> 
+  <a href="https://doidb.wdc-terra.org/igsn/"> 
     <spring:message code="application_name"/>
   </a>
 </c:set>
 
 <c:set var="link_member">
-  <a href="http://www.datacite.org/members">
+  <a href="http://www.igsn.org/membership">
     <spring:message code="welcome_link_member"/>
   </a>
 </c:set>
 
 <c:set var="link_faq">
-  <a href="http://www.datacite.org/faqs">
+  <a href="http://www.igsn.org/membership">
     <spring:message code="welcome_link_faq"/>
   </a>
 </c:set>
@@ -30,11 +30,13 @@
 </c:set>
 
 <c:set var="mail_contact"> 
-  <script>mail("contact","datacite",1,"")</script>
+<!--  <script>mail("info","geosamplesdatacite",1,"")</script>-->
+<a href="mailto:info@geosamples.org">info@igsn.org</a>
 </c:set>
 
 <c:set var="mail_tech">
-  <script>mail("tech","datacite",1,"")</script>
+<!--  <script>mail("tech","datacite",1,"")</script>-->
+<a href="mailto:ulbricht@gfz-potsdam.de">ulbricht@gfz-potsdam.de</a>
 </c:set>
 
 <h1><spring:message code="welcome_paragraph_what_heading"/></h1>
@@ -48,6 +50,6 @@
 <p><spring:message code="welcome_paragraph_how_text2" arguments="${link_api}" htmlEscape="false"/></p>
 
 <h1><spring:message code="welcome_paragraph_contact_heading"/></h1>
-<p><spring:message code="welcome_paragraph_contact_text" arguments="${mail_contact}:${mail_tech}" argumentSeparator=":" htmlEscape="false"/></p>
+<p><spring:message code="welcome_paragraph_contact_text" arguments="${mail_contact}|${mail_tech}" argumentSeparator="|" htmlEscape="false"/></p>
 
 </div>

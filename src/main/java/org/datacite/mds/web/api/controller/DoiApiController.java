@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.WebRequestDataBinder;
 
 @Controller
-@RequestMapping("/doi")
+@RequestMapping("/igsn")
 public class DoiApiController implements ApiController {
 
     private static Logger log4j = Logger.getLogger(DoiApiController.class);
@@ -62,14 +62,14 @@ public class DoiApiController implements ApiController {
         Dataset dataset = doiService.resolve(doi);
         String url = dataset.getUrl();
         if (url == null)
-            return new ResponseEntity<String>("DOI is known to MDS but not (yet?) resolveable.", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<String>("IGSN is known to MDS but not (yet?) resolveable.", HttpStatus.NO_CONTENT);
         else
             return new ResponseEntity<String>(url, HttpStatus.OK);
     }
     
     private String getDoiFromRequest(HttpServletRequest request) {
         String uri = request.getServletPath();
-        String doi = uri.replaceFirst("/doi/", "");
+        String doi = uri.replaceFirst("/igsn/", "");
         doi = Utils.normalizeDoi(doi);
         return doi;
     }
@@ -109,7 +109,7 @@ public class DoiApiController implements ApiController {
         log4j.debug(dataset);
         log4j.debug(doi);
         if (! StringUtils.equals(dataset.getDoi(), doi))
-            throw new ValidationException("doi parameter does not match doi of resource");
+            throw new ValidationException("igsn parameter does not match igsn of resource");
         
         return createOrUpdate(dataset, testMode, httpRequest);
     }
@@ -131,7 +131,7 @@ public class DoiApiController implements ApiController {
         String url = dataset.getUrl();
         
         if (StringUtils.isEmpty(doi))
-            throw new ValidationException("param 'doi' required");
+            throw new ValidationException("param 'igsn' required");
 
         if (StringUtils.isEmpty(url))
             throw new ValidationException("param 'url' required");
@@ -139,7 +139,8 @@ public class DoiApiController implements ApiController {
         if (testMode == null)
             testMode = false;
 
-        log4j.debug("*****" + method + " doi (testMode=" + testMode + ") doi: " + doi + ", url: " + url);
+
+        log4j.debug("*****" + method + " igsn (testMode=" + testMode + ") igsn: " + doi + ", url: " + url);
         
         if (metadataRequired && !hasMetadata(doi)) {
             String message = ApiUtils.makeResponseMessage("You have to register metadata first!", testMode);

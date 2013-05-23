@@ -65,7 +65,7 @@ public class SecurityUtils {
         if (datacentre == null) {
             throw new SecurityException("not logged in as a datacentre");
         }
-        return datacentre;
+	return datacentre;
     }
 
     public static AllocatorOrDatacentre getCurrentAllocatorOrDatacentre() throws SecurityException {
@@ -81,7 +81,7 @@ public class SecurityUtils {
         return Allocator.findAllocatorBySymbol(symbol);
     }
 
-    private static Datacentre getCurrentDatacentreOrNull() {
+    private static Datacentre getCurrentDatacentreOrNull(){
         String symbol = getCurrentSymbolOrNull();
         return Datacentre.findDatacentreBySymbol(symbol);
     }

@@ -3,7 +3,7 @@ import httplib2, sys, base64, codecs
 if (len(sys.argv) < 5):
     raise Exception('Please provide username, password, doi and location of metadata file')
  
-endpoint = 'https://doidb.wdc-terra.org/mds/metadata'
+endpoint = 'https://localhost:8443/mds/metadata'
 
 body_unicode = codecs.open(sys.argv[4], 'r', encoding='utf-8').read()
 

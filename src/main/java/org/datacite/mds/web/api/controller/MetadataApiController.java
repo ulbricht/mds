@@ -73,7 +73,7 @@ public class MetadataApiController implements ApiController {
         
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI is unknown to MDS");
+            throw new NotFoundException("IGSN is unknown to MDS");
 
         SecurityUtils.checkDatasetOwnership(dataset, user);
 
@@ -82,7 +82,7 @@ public class MetadataApiController implements ApiController {
 
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)
-            throw new NotFoundException("no metadata for the DOI");
+            throw new NotFoundException("no metadata for the IGSN");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -136,7 +136,7 @@ public class MetadataApiController implements ApiController {
             throw new ValidationException("request body must not be empty");
         
         if (doi==null || doi.length()==0)
-            throw new ValidationException("failed to retrieve DOI from xml");
+            throw new ValidationException("failed to retrieve IGSN from xml");
         
         Dataset oldDataset = new Dataset();
         oldDataset.setDoi(doi);
@@ -220,7 +220,7 @@ public class MetadataApiController implements ApiController {
 
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI doesn't exist");
+            throw new NotFoundException("IGSN doesn't exist");
         
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)

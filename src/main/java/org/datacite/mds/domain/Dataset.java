@@ -192,6 +192,10 @@ public class Dataset {
         return query.getResultList();
     }
 
+    public void setIgsn(String doi) {
+        setDoi(doi);
+    }
+
     public void setDoi(String doi) {
         this.doi = Utils.normalizeDoi(doi);
     }

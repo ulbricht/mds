@@ -45,9 +45,9 @@ public class DoiServiceImplTest {
     final String ALLOCATOR_SYMBOL = "AL";
     final String DATACENTRE_SYMBOL = "AL.DC";
     final String DATACENTRE_SYMBOL2 = "AL.DC-TWO";
-    final String PREFIX = "10.5072";
-    final String DOI = "10.5072/TEST";
-    final String DOI_WITH_SPACES="10.5072/foo bar";
+    final String PREFIX = "10273";
+    final String DOI = "10273/TEST.TEST";
+    final String DOI_WITH_SPACES="10273/TEST.foo bar";
     final String DOI_WRONG = "10.1000/TEST";
     final String DOMAIN = "example.com";
     final String URL = "http://" + DOMAIN;

@@ -189,14 +189,6 @@ public class MetadataDifApiControllerTest {
         HttpStatus responseStatus = post(dif, false);
     }
 
-/*
-    @Test
-    public void testPostIso() throws Exception {
-        HttpStatus responseStatus = postwithdoi(iso, false);
-        assertEquals(HttpStatus.CREATED, responseStatus);
-    }
-*/
-
     @Test(expected = NotFoundException.class)
     public void testPostNonExistingDataset() throws Exception {
         metadata.remove();

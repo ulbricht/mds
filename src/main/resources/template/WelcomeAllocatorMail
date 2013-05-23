@@ -1,4 +1,4 @@
-DOIDB: New Allocator Account
+MDS: New Allocator Account
 Dear %contactName%,
 
 We welcome you to our Metadata Store on %mdsUrl%.
@@ -22,6 +22,6 @@ list of your DOI prefixes.
 
 Kind regards,
   
-DOIDB Metadata Store
+IGSN Metadata Store
 %mdsUrl%
 

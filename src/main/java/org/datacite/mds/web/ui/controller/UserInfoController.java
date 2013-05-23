@@ -87,11 +87,11 @@ public class UserInfoController implements UiController {
         Set<Prefix> prefixes = datacentre.getPrefixes();
         List<String> labels = new ArrayList<String>();
         long countTest = Dataset.countTestDatasetsByAllocatorOrDatacentre(datacentre);
-        labels.add(testPrefix + " (test prefix; " + countTest + " DOIs)");
+        labels.add(testPrefix + " (test prefix; " + countTest + " IGSNs)");
         for (Prefix prefix : prefixes)
             if (!prefix.getPrefix().equals(testPrefix)) {
                 long count = Dataset.countDatasetsByAllocatorOrDatacentre(datacentre, prefix.getPrefix());
-                labels.add(prefix.getPrefix() + " (" + count + " DOIs)");
+                labels.add(prefix.getPrefix() + " (" + count + " IGSNs)");
             }
         model.addAttribute("prefixes", labels);
     }

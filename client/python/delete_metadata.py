@@ -1,6 +1,6 @@
 import httplib2, sys, base64
 
-endpoint = 'https://localhost:9443/mds/metadata'
+endpoint = 'https://localhost:8443/mds/metadata'
 
 if (len(sys.argv) < 4):
     raise Exception('Please provide username, password and doi')

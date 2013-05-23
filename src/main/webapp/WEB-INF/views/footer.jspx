@@ -14,9 +14,9 @@
     <spring:message code="global_language"/>
     <c:out value=": "/>
     <util:language label="English" locale="en"/>
-<!--    <util:language label="Deutsch" locale="de"/>
+    <util:language label="Deutsch" locale="de"/>
     <util:language label="French" locale="fr"/>
--->
+
   </span>
 
   <c:if test="${pageContext['request'].userPrincipal != null}">

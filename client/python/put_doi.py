@@ -3,7 +3,7 @@ import httplib2, sys, base64, codecs
 if (len(sys.argv) < 4):
     raise Exception('Please provide username, password, doi and location of doi-url file')
  
-endpoint = 'https://doidb.wdc-terra.org/mds/doi'
+endpoint = 'https://localhost:8443/mds/doi'
 
 body_unicode = codecs.open(sys.argv[4], 'r', encoding='utf-8').read().strip()
 

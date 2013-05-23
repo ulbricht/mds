@@ -1,4 +1,4 @@
-DOIDB: New Datacentre Account
+MDS: New Datacentre Account
 Dear %contactName%,
 
 We welcome you to our Metadata Store on %mdsUrl%.
@@ -29,6 +29,6 @@ For testing purposes please only use the test prefix mentioned above.
 
 Kind regards,
   
-DOIDB
+MDS
 %mdsUrl%
 

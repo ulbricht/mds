@@ -35,6 +35,9 @@ public class DoiApiControllerTest {
     DoiService mockDoiService;
 
     String doi = "10.5072/fooBAR";
+//    String doi = "10273/TEST";
+
+
     String url = "http://example.com";
 
     @Before
@@ -50,52 +53,53 @@ public class DoiApiControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
     
-    @Test
+ 
+   @Test
     public void testGet() throws Exception {
         expectDoiServiceResolve(url);
         ResponseEntity<? extends Object> response = get(doi);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(url, response.getBody());
     }
-    
+   
     @Test
     public void testGetNullUrl() throws Exception {
         expectDoiServiceResolve(null);
         ResponseEntity<? extends Object> response = get(doi);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
-
+ 
     @Test
     public void testPost() throws Exception {
         expectDoiServiceCreateOrUpdate();
-        HttpStatus statusCode = post("doi=" + doi + "\nurl=" + url, false);
+        HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
 
     @Test
     public void testPostSpecial() throws Exception {
         expectDoiServiceCreateOrUpdate();
-        String body = String.format("url=foobar\n doi=%s\r\n Url=%s\n#doi=foobar", doi, url);
+        String body = String.format("url=foobar\n igsn=%s\r\n Url=%s\n#doi=foobar", doi, url);
         HttpStatus statusCode = post(body, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
 
     @Test(expected = ValidationException.class)
     public void testPostMissingDoi() throws Exception {
-        post("doi=" + doi, false);
+        post("igsn=" + doi, false);
     }
 
     @Test(expected = ValidationException.class)
     public void testPostMissingUrl() throws Exception {
         post("url=" + url, false);
     }
-    
+     
     @Test
     public void testPostMetadataRequired() throws Exception {
         doiApiController.metadataRequired = true;
         expectDoiServiceCreateOrUpdate();
         persistMetadata();
-        HttpStatus statusCode = post("doi=" + doi + "\nurl=" + url, false);
+        HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
     
@@ -113,34 +117,34 @@ public class DoiApiControllerTest {
         metadata.persist();
         return metadata;
     }
-
+  
     @Test
     public void testPostMetadataRequiredNoMetadata() throws Exception {
         doiApiController.metadataRequired = true;
         expectDoiServiceCreateOrUpdate();
         persistDataset();
-        HttpStatus statusCode = post("doi=" + doi + "\nurl=" + url, false);
+        HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
-    
+       
     @Test
     public void testPostMetadataRequiredNoDataset() throws Exception {
         doiApiController.metadataRequired = true;
-        HttpStatus statusCode = post("doi=" + doi + "\nurl=" + url, false);
+        HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.PRECONDITION_FAILED, statusCode);
     }
-
+ 
     @Test
     public void testPut() throws Exception {
         expectDoiServiceCreateOrUpdate();
-        HttpStatus statusCode = put(doi, "doi=" + doi + "\nurl=" + url, false);
+        HttpStatus statusCode = put(doi, "igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
     
     @Test
     public void testPutDifferentCase() throws Exception {
         expectDoiServiceCreateOrUpdate();
-        HttpStatus statusCode = put(doi.toLowerCase(), "doi=" + doi.toUpperCase() + "\nurl=" + url, false);
+        HttpStatus statusCode = put(doi.toLowerCase(), "igsn=" + doi.toUpperCase() + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
 
@@ -152,12 +156,12 @@ public class DoiApiControllerTest {
     
     @Test(expected = ValidationException.class)
     public void testPutMismatchingDoi() throws Exception {
-        put(doi + "-wrong", "doi=" + doi + "\nurl=" + url, false);
+        put(doi + "-wrong", "igsn=" + doi + "\nurl=" + url, false);
     }
     
     @Test(expected = ValidationException.class)
     public void testPutMissingDoi() throws Exception {
-        put(doi, "doi=" + doi, false);
+        put(doi, "igsn=" + doi, false);
     }
 
     @Test(expected = ValidationException.class)
@@ -177,7 +181,7 @@ public class DoiApiControllerTest {
 
     private MockHttpServletRequest makeServletRequestForDoi(String doi) {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServletPath("/doi/" + doi);
+        request.setServletPath("/igsn/" + doi);
         return request;
     }
     

@@ -7,18 +7,14 @@
 
   <util:toc />
   
-<h1>DOIDB API</h1>
+<h1>IGSN Registry API</h1>
 
 <h2>Architecture</h2>
 
 
-<p>
-The DOIDB is implemented as a proxy to the DataCite Metadata Store. The process of minting a DOI or the deposition of metadata triggers a live registration at DataCite. Additionaly DOIDB keeps track of used DOIs, stores the metadata and offers a local <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH</a> service and a <a href="http://doidb.wdc-terra.org/oaip">search</a> service. 
-</p> 
-
 
 <p>
-This API is intended to be used in programs and you will need a valid login. The account data is the same as for the web interface of <a href="http://doidb.wdc-terra.org/mds">http://doidb.wdc-terra.org/mds</a>. 
+This API is intended to be used in programs and you will need a valid login. The account data is the same as for the web interface of <a href="http://doidb.wdc-terra.org/igsn">http://doidb.wdc-terra.org/igsn</a>. 
 </p>
 
 
@@ -27,38 +23,19 @@ This API is intended to be used in programs and you will need a valid login. The
 
 <p>The API is implemented in REST style. The end point you are going to use is:</p>
 
-<p class="indent"><code>https://doidb.wdc-terra.org/mds</code></p>
+<p class="indent"><code>https://doidb.wdc-terra.org/igsn/</code></p>
 <p>At the moment there are <em>two resources</em>:</p>
-<p class="indent"><code>/doi</code></p>
+<p class="indent"><code>/igsn</code></p>
 <p class="indent"><code>/metadata</code></p>
-<p class="indent"><code>/media</code></p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi</b></code> accepts requests
-with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi/{doi}</b></code>, where <code>{doi}</code> is a actually DOI, accepts requests
-with <code>GET</code> HTTP method.</p>
-<p>The URI
-<code>https://doidb.wdc-terra.org/mds<b>/metadata</b></code> accepts requests
-with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/metadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
-with 2 HTTP methods: <code>GET</code> and <code>DELETE</code></p>
-<p>The URI <code>https://mds.datacite.org<b>/media/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
-with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/igsn</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/igsn/{igsn}</b></code>, where <code>{igsn}</code> is a actually IGSN, accepts requests with <code>GET</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/metadata</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/metadata/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 2 HTTP methods: <code>GET</code> and <code>DELETE</code></p>
 
 <p>In addition <code>HEAD</code> is allowed, whenever <code>GET</code> is.</p> 
 
 <h3>Characters</h3>
-<p>DataCite recommends that only the following characters are used within a DOI name: 
-<ul><li>0-9</li> 
-<li>a-z</li>
-<li>A-Z</li> 
-<li>- (dash)</li>
-<li>. (dot)</li>
-<li>_ (underscore)</li>
-<li>+ (plus)</li>
-<li>: (colon)</li>
-<li>/ (slash)</li>
-</ul>
-</p>
+<p>IGSN e.V. recommends to create IGSNs according to these <a href="http://dokuwiki.gfz-potsdam.de/datawiki/doku.php?id=igsn:syntax">Guidelines</a>. The Metadata Store accepts IGSN-URIs only, i.e. IGSNs have to be prefixed with the string "10273/".</p>
 
 <h3>Security and Accounts</h3>
 
@@ -71,76 +48,90 @@ Basic authentication</a> header.
 Accounts have some constraints associated:
 
 <ul>
-<li>you will be allowed to mint DOIs only with prefix assigned to you</li>
-<li>you will be allowed to mint DOIs only with URLs in host domains assigned to you</li>
-<li>the number of DOIs available for registration can be limited.</li>
+<li>you will be allowed to mint IGSNs only with prefix assigned to you</li>
+<li>you will be allowed to mint IGSNs only with URLs in host domains assigned to you</li>
+<li>the number of IGSNs available for registration can be limited.</li>
 </ul>
 
 
 </p>
 
 <h3>Handle System</h3>
-<p>It is important to understand that the <a href="http://handle.net" target="_">Handle System</a> (the technical
-infrastructure for DOIs) is a distributed network system. The
-consequence of this manifests is its inherent latency. For example, DOIs
+<p>The <a href="http://handle.net" target="_">Handle System</a> - the technical
+infrastructure for IGSNs - is a worldwide network system, that caches answers to requests. The
+consequence of this manifests is its inherent latency. For example, IGSNs
 have TTL (time to live) defaulted to 24 hours, so your changes
 will be visible to the resolution infrastructure only when the TTL expires.
-Also, if you create a DOI and then immediately
+Also, if you create a IGSN and then immediately
 try to update its URL, you might get the error message <code>HANDLE NOT
 EXISTS</code>. This is because it takes some time for the system to register a
-handle for a DOI. 
+handle for a IGSN. 
 </p>
 
 <h3>Metadata</h3>
 
 
 
-DOIDB accepts two different metadata schemata.
-<ul>
-<li>
-<b>DataCite Schema:</b> Metadata about your datasets must conform to the standards published by DataCite at <a href="http://schema.datacite.org" target="_blank">Metadata Schema Repository</a>.
-you will find there the preferred version and exmaple XML document. <em>Please remember that all your documents must specify correct schema location in the root element.</em>. 
-Also make sure DOI specified in your document matches DOI of the dataset.
-</li>
+<p>
+Metadata about your samples must conform to the standards published by IGSN e.V. at <a href="http://trac.gfz-potsdam.de/igsn/browser/IGSN/schema" target="_blank">Metadata Schema Repository</a>.
+You will find an example XML document <a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xml">here</a>. <em>
+All your documents must specify a correct schema location in the root element. Currently <b>http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/0.3/igsn.xsd</b> and <b>http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xsd</b> are valid</em>. Also make sure IGSN specified in your document matches IGSN of the sample.
+</p>
 
-<li>
-<b>NASA-DIF Schema</b> Since the DataCite metadata schema targets a wide range of scientific disciplines, it is very general in its structure. For example it is not possible to put a geographic reference into the metadata. Therefore we decited to accept metadata in a <a href="http://doidb.wdc-terra.org/mds/schemas/gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">modified version</a> of the <a href="http://gcmd.nasa.gov/User/difguide/difman.html">NASA DIF</a> schema. It is version 9.8.2 with some mandatory fields below the Data_Set_Citation tag.
-
-<ul>
-<li>Data_Set_Citation/Dataset_Creator a semicolon separated list of authors <code>Lastname1, Firstname1; Lastname2, Firstname2; Lastname3, Firstname3</code></li>
-<li>Data_Set_Citation/Dataset_Title <code>the dataset title</code></li>
-<li>Data_Set_Citation/Dataset_Release_Date as <code>YYYY-MM-DD</code></li>
-<li>Data_Set_Citation/Dataset_Publisher should be <code>Deutsches GeoForschungsZentrum GFZ</code></li>
-</ul>
-
-A XSL-Stylesheet extracts the information necessary for the DataCite schema and finally this metadata will be used for registration at DataCite. There are already registered datasets. To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH repository</a>
-
-</li>
-</ul>
 
 <h3>Testing</h3>
 
 <p>Each API call can have optional <a href="http://en.wikipedia.org/wiki/Query_string" target="_">query parameter</a> <code>testMode</code>.
-If set to "true" or "1" the request will not change the database nor will the DOI handle will be registered
- or updated, e.g. <code>POST /doi?testMode=true</code>.</p>
+If set to "true" or "1" the request will not change the database nor will the IGSN handle will be registered
+ or updated, e.g. <code>POST igsn/igsn?testMode=true</code>.</p>
 
-<p>Also please note that there is <em>special test prefix 10.5072</em> available to all datacentres. Please use 
-it for all your testing DOIs. Your real prefix should not be used for test DOIs. 
-Note that DOIs with test prefix will behave like any other DOI, e.g. they can be normally resolved. They will <em>not</em> be exposed by upcoming services like search and OAI, though. 
-Periodically we purge all 10.5072 datasets from the system.</p> 
+<p>Also please note that there is <em>special test prefix 10273/TEST</em> available to all datacentres. Please use 
+it for all your testing IGSNs. Your real prefix should not be used for test IGSNs. 
+Note that IGSNs with test prefix will behave like any other IGSN, e.g. they can be normally resolved. They will <em>not</em> be exposed by upcoming services like search and OAI, though. 
+Periodically we purge all 10273/TEST datasets from the system.</p> 
 
-<h3>Code examples</h3>
-<p>We have a number of code examples - please see <a 
-href="https://github.com/datacite/mds/tree/master/client" target="_">Github</a>.</p>
+<h3>Code examples python</h3>
+
+Download the files
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/delete_metadata.py">delete_metadata.py</a>,
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/get_igsn.py">get_igsn.py</a>,  
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/get_metadata.py">get_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/post_igsn.py">post_igsn.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/post_metadata.py">post_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/test.url">test.url</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/test.xml">test.xml</a>
+in one directory and call them from the command line
+<ul>
+
+	<li>python post_igsn.py USER PASSWORD test.url </li>
+
+	<li>python get_igsn.py USER PASSWORD IGSN-HANDLE </li>
+
+	<li>python post_metadata.py USER PASSWORD test.xml </li>
+
+	<li>python get_metadata.py USER PASSWORD IGSN-HANDLE </li>
+
+	<li>python delete_metadata.py USER PASSWORD IGSN-HANDLE </li>
+
+</ul>
+
+
+<h3>Code examples PHP</h3>
+
+Download the file <a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/php/phpcurl.php">phpcurl.php</a>.
+
+
+
+
 
 <h1>API reference</h1> 
 
-<h2>Doi API</h2>
+<h2>IGSN API</h2>
 
 <h3>GET</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsn/igsn/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
  
-<p>This request returns an URL associated with a given DOI.</p>
+<p>This request returns an URL associated with a given IGSN.</p>
 <h4>Request headers</h4>
 none 
 <h4>Request body</h4> 
@@ -151,58 +142,41 @@ none
 <p>If response status is 200: URL representing a dataset, otherwise short explanation for non-200 status</p> 
 <h4>Response statuses</h4> 
 <p><code>200 OK</code> - operation successful</p>
-<p><code>204 No Content</code> - DOI is known to MDS, but is not resolvable (might be due to handle's latency)</p>
+<p><code>204 No Content</code> - IGSN is known to MDS, but is not resolvable (might be due to handle's latency)</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 login problem or dataset belongs to another party</code></p>
-<p><code>404 Not Found</code> - DOI does not exist in our database</p>
+<p><code>404 Not Found</code> - IGSN does not exist in our database</p>
 <p><code>410 Gone</code> - the requested dataset was marked inactive (using DELETE method)</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/doi</i></p> 
-<p>POST will mint new DOI if specified DOI doesn't exist. This method will attempt to update URL if you specify existing DOI. 
-Standard domains and quota restrictions check will be performed. A Datacentre's doiQuotaUsed will be increased by 1. A new record in Datasets will be created.</p>
+<p><i>URI: https://doidb.wdc-terra.org/igsn/igsn</i></p> 
+<p>POST will mint new IGSN if specified IGSN doesn't exist. This method will attempt to update URL if you specify existing IGSN. 
+Standard domains and quota restrictions check will be performed. A Datacentre's QuotaUsed will be increased by 1. A new record in Datasets will be created.</p>
 <h4>Request headers</h4> 
 <p><code>Content-Type:text/plain;charset=UTF-8</code></p>
 <h4>Request body</h4>
-<pre><code>doi={doi}
+<pre><code>igsn={igsn}
 url={url}</code></pre> 
-<p>where <code>{doi}</code> and <code>{url}</code> have to be replaced by your DOI and URL, UFT-8 encoded.</p>
+<p>where <code>{igsn}</code> and <code>{url}</code> have to be replaced by your IGSN and URL, UFT-8 encoded.</p>
 <h4>Response body</h4> 
 <p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - request body must be exactly two lines: DOI and URL; , wrong domain, wrong prefix</p>
+<p><code>400 Bad Request</code> - request body must be exactly two lines: IGSN and URL; , wrong domain, wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>412 Precondition failed</code> - metadata must be uploaded first</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us</p> 
 
-<!--<h3>PUT</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>PUT will mint new DOI or update URL</p>
-<h4>Request headers</h4> 
-<p><code>Content-Type:text/plain;charset=UTF-8</code></p>
-<h4>Request body</h4> 
-<pre><code>doi={doi}
-url={url}</code></pre> 
-<p>where <code>{doi}</code> and <code>{url}</code> have to replace by your DOI and URL, UFT-8 encoded. URL must be <a href="http://en.wikipedia.org/wiki/Percent-encoding" target="_">escaped</a>.</p>
-<h4>Response body</h4> 
-<p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
-<h4>Response statuses</h4> 
-<p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - failed validation</p>
-<p><code>403 Forbidden</code> - login problem, quota excceded</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us</p> 
 
---><h2>Metadata API</h2>
+<h2>Metadata API</h2>
 <h3>GET</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>This request returns the most recent version of metadata associated with a given DOI.</p>
+<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p>This request returns the most recent version of metadata associated with a given IGSN.</p>
 <h4>Request headers</h4> 
 <code>Accept:application/xml</code> 
 <h4>Request body</h4> 
@@ -215,15 +189,15 @@ empty
 <code>200 OK</code> - operation successful
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem or dataset belongs to another party</p>
-<p><code>404 Not Found</code> - DOI does not exist in our database</p>
+<p><code>404 Not Found</code> - IGSN does not exist in our database</p>
 <p><code>410 Gone</code> - the requested dataset was marked inactive (using DELETE method)</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i></p> 
-<p>This request stores new version of metadata. The request body must contain valid XML. If you provide a DataCite Schema you can leave empty the <code>{doi}</code> field of the URI, since this information is also stored in the XML.</p>
+<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{IGSN}</i></p> 
+<p>This request stores new version of metadata. The request body must contain valid XML. </p>
 
 
 <h4>Request headers</h4> 
@@ -242,23 +216,9 @@ try later and if problem persists please contact us
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us</p> 
 
-<!--<h3>PUT</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>This request stores new version of metadata. The request body must contain valid XML.</p>
-<code>Content-Type:application/xml;charset=UTF-8</code> 
-<h4>Request body</h4> 
-<p>UFT-8 encoded metadata</p>
-<h4>Response body</h4> 
-<p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
-<h4>Response statuses</h4> 
-<p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - invalid XML, wrong domain, wrong prefix</p>
-<p><code>403 Forbidden</code> - login problem, quota excceded</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us</p> 
 
---><h3>DELETE</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<h3>DELETE</h3> 
+<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
 <p>This request marks a dataset as 'inactive'. To activate it again, <code>POST</code> new metadata or set the <code>isActive</code>-flag in the user interface.</p>
 
 <h4>Response body</h4> 
@@ -267,17 +227,17 @@ try later and if problem persists please contact us</p>
 <p><code>200 OK</code> - operation successful: dataset deactivated</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem or dataset belongs to another party</p>
-<p><code>404 Not Found</code> - DOI does not exist in our database</p>
+<p><code>404 Not Found</code> - IGSN does not exist in our database</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
 
+<!--
 <h2>Media API</h2>
-
 <h3>GET</h3> 
-<p><i>URI: https://mds.datacite.org/media/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://mds.datacite.org/media/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
  
-<p>This request returns list of pairs of media type and URLs associated with a given DOI.</p>
+<p>This request returns list of pairs of media type and URLs associated with a given IGSN.</p>
 <h4>Request headers</h4>
 none 
 <h4>Request body</h4> 
@@ -290,14 +250,14 @@ none
 <p><code>200 OK</code> - operation successful</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 login problem or dataset belongs to another party</code></p>
-<p><code>404 Not Found</code> - No media attached to the DOI or DOI does not exist in our database</p>
+<p><code>404 Not Found</code> - No media attached to the IGSN or IGSN does not exist in our database</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://mds.datacite.org/media/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>POST will add/update media type/urls pairs to a DOI. Standard domain restrictions check will be performed.</p>
+<p><i>URI: https://mds.datacite.org/media/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p>POST will add/update media type/urls pairs to a IGSN. Standard domain restrictions check will be performed.</p>
 <h4>Request headers</h4> 
 <p><code>Content-Type:text/plain;charset=UTF-8</code></p>
 <h4>Request body</h4>
@@ -314,7 +274,7 @@ Multiple lines in the following format
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us</p> 
 
-
+-->
   </util:panel>
 </div>
 

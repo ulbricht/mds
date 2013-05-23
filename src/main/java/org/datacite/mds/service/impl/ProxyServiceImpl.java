@@ -155,7 +155,7 @@ public class ProxyServiceImpl implements ProxyService {
     @Override
     public void doiUpdate(String doi, String newUrl) throws ProxyException, IllegalArgumentException {
         if (StringUtils.isEmpty(doi) || StringUtils.isEmpty(newUrl))
-            throw new IllegalArgumentException("DOI and URL cannot be empty");
+            throw new IllegalArgumentException("IGSN and URL cannot be empty");
 
         if (dummyMode) {
            log.debug("response code from Proxy request: none - dummyMode on");
@@ -168,10 +168,10 @@ public class ProxyServiceImpl implements ProxyService {
 
 		  String error;
 		  try {
-		    log.debug("create/update Proxy: DOI: " + doi + " URL: " + newUrl);
-			  String body=new String("doi="+doi+"\nurl="+newUrl);
+		    log.debug("create/update Proxy: IGSN: " + doi + " URL: " + newUrl);
+			  String body=new String("igsn="+doi+"\nurl="+newUrl);
 			  StringBuffer retbody=new StringBuffer();
-			  int returncode = httpRequest(dataciteservice+"/doi",body.getBytes(DEFAULT_ENCODING),retbody, "POST");
+			  int returncode = httpRequest(dataciteservice+"/igsn",body.getBytes(DEFAULT_ENCODING),retbody, "POST");
 
 			  log.debug(String.format("response code from Proxy request: %d",returncode)+" - "+retbody.toString());
 
@@ -206,6 +206,7 @@ public class ProxyServiceImpl implements ProxyService {
 				throw new ProxyException(dataciteservice+": "+retbody.toString());
 		}
 		return;                    
+
     }
 
 
