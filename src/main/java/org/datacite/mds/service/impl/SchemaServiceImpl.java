@@ -21,10 +21,14 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+
+import org.datacite.mds.util.XSLTTransformer;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.datacite.mds.service.SchemaService;
+import org.datacite.mds.service.SchemaConvertException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
@@ -51,9 +55,22 @@ public class SchemaServiceImpl implements SchemaService {
     @Value("${xml.schema.location.prefix}")
     String schemaLocationPrefix;
 
+    @Value("${xml.dif.schema.namespace}")
+    String difNamespace;
+
+    @Value("${xml.iso.schema.namespace}")
+    String isoNamespace;
+
+
+    @Value("${xslt.dif.to.datacite}") 
+    String dif2datacite;
+      
     
     XPathExpression doiXPathExpression;
 
+
+  
+    
     public SchemaServiceImpl() {
         schemaCache = new ConcurrentHashMap<String, Schema>();
     }
@@ -66,7 +83,7 @@ public class SchemaServiceImpl implements SchemaService {
             doiXPathExpression = xPath.compile(doiXPath);
         } catch (XPathExpressionException e) {
             throw new RuntimeException(e);
-        }
+        }        
     }
     
     @Override
@@ -170,14 +187,16 @@ public class SchemaServiceImpl implements SchemaService {
     }
     
     protected String convertSchemaLocationToLocal(String schemaLocation) {
+
+        log4j.debug("info trying to convert " + schemaLocation + " -> " + schemaLocationLocal);
+        
         if (StringUtils.isEmpty(schemaLocationLocal))
             return schemaLocation;
-        else {
-            String localSchemaLocation = StringUtils.replaceOnce(schemaLocation, schemaLocationPrefix,
-                    schemaLocationLocal);
-            log4j.debug("converting schemaLocation " + schemaLocation + " -> " + localSchemaLocation);
-            return localSchemaLocation;
-        }
+         
+        String localSchemaLocation = StringUtils.replaceOnce(schemaLocation, "http:/", schemaLocationLocal);
+        log4j.debug("converting schemaLocation " + schemaLocation + " -> " + localSchemaLocation);
+        return localSchemaLocation;                        
+
     }
 
     @Override
@@ -186,14 +205,47 @@ public class SchemaServiceImpl implements SchemaService {
         InputStream stream = new ByteArrayInputStream(xml);
         InputSource source = new InputSource(stream);
         String doi = null;
-        try {
-            doi = doiXPathExpression.evaluate(source);
-            doi = doi.trim();
+
+        try {           
+                doi = doiXPathExpression.evaluate(source);
+            doi = doi.trim();                                            
         } catch (XPathExpressionException e) {
             log4j.debug("catch Exception: " + ExceptionUtils.getThrowableList(e));
         }
         return doi;
     }
+    
+    @Override
+    public boolean isDifSchema(byte[] xml){
+        
+        String namespace=getNamespace(xml);
+        if (namespace != null && (namespace.equals(difNamespace)))
+            return true;
+         
+        return false;
+
+    }
+
+    @Override
+    public boolean isIsoSchema(byte[] xml){
+        
+        String namespace=getNamespace(xml);
+        if (namespace != null && (namespace.equals(isoNamespace)))
+            return true;
+         
+        return false;
+
+    }
+
+    @Override
+    public byte[] convertDifToDatacite(byte[] dif, String doi) throws SchemaConvertException{
+            try{
+                return XSLTTransformer.convert(dif2datacite, dif, doi);
+            }catch (Exception e){
+                throw new SchemaConvertException(e.getMessage());  
+            }   
+    }
+
     
     private class SchemaInfo {
         String namespace = null;

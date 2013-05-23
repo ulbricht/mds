@@ -1,9 +1,17 @@
 package org.datacite.mds.web.api.controller;
 
-import java.io.UnsupportedEncodingException;
+
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
+
+import java.io.UnsupportedEncodingException;
+
+import org.datacite.mds.service.ProxyService;
+import org.datacite.mds.service.ProxyException;
+
+import org.datacite.mds.service.SchemaConvertException;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.log4j.Logger;
@@ -47,12 +55,16 @@ public class MetadataApiController implements ApiController {
     
     @Autowired
     SchemaService schemaService;
+
+    @Autowired
+    ProxyService proxyService; 
+          
     
     @RequestMapping(value = "", method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity getRoot() {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-    
+
     @RequestMapping(value = "**", method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity<? extends Object> get(HttpServletRequest request) throws SecurityException, NotFoundException, DeletedException {
         String doi = getDoiFromRequest(request);
@@ -82,12 +94,19 @@ public class MetadataApiController implements ApiController {
         String doi = uri.replaceFirst("/metadata/", "");
         return doi;
     }
-    
-    @RequestMapping(value = "", method = RequestMethod.POST)
+
+    @RequestMapping(value = "**", method = RequestMethod.POST)
     public ResponseEntity<String> post(@RequestBody byte[] xml,
                                              @RequestParam(required = false) Boolean testMode,
                                              HttpServletRequest httpRequest) throws ValidationException, HandleException, SecurityException, UnsupportedEncodingException {
-        String doi = schemaService.getDoi(xml);
+        String doi;
+
+			if (schemaService.isDifSchema(xml) || schemaService.isIsoSchema(xml)){
+				doi = getDoiFromRequest(httpRequest);
+			}else{
+				doi = schemaService.getDoi(xml);
+			}
+
         return storeMetadata(doi, xml, testMode, httpRequest);
     }
     
@@ -104,6 +123,7 @@ public class MetadataApiController implements ApiController {
         return storeMetadata(doi, xml, testMode, httpRequest);
     }
 
+
     private ResponseEntity<String> storeMetadata(String doi, byte[] xml, Boolean testMode, HttpServletRequest httpRequest) throws ValidationException, HandleException, SecurityException, UnsupportedEncodingException {
         String method = httpRequest.getMethod();
         if (testMode == null)
@@ -115,17 +135,59 @@ public class MetadataApiController implements ApiController {
         if (xml.length == 0)
             throw new ValidationException("request body must not be empty");
         
-        Dataset dummyDataset = new Dataset();
-        dummyDataset.setDoi(doi);
+        if (doi==null || doi.length()==0)
+            throw new ValidationException("failed to retrieve DOI from xml");
+        
+        Dataset oldDataset = new Dataset();
+        oldDataset.setDoi(doi);
 
         Metadata metadata = new Metadata();
-        metadata.setXml(xml);
-        metadata.setDataset(dummyDataset);
         
+        if (schemaService.isDifSchema(xml)){
+            try{
+		  			 byte[] datacite=schemaService.convertDifToDatacite(xml, doi);
+                metadata.setDif(xml);
+                metadata.setXml(datacite);
+  				    metadata.setIsConvertedByMds(true);
+            }catch (SchemaConvertException e){
+                throw new ValidationException("Can not convert DIF to DataCite "+e.getMessage());
+            }
+        }else if (schemaService.isIsoSchema(xml)){
+            try{
+		  			 byte[] datacite=schemaService.convertDifToDatacite(xml, doi);
+                metadata.setIso(xml);
+                metadata.setXml(datacite);
+					 metadata.setIsConvertedByMds(true);
+            }catch (SchemaConvertException e){
+                throw new ValidationException("Can not convert ISO to DataCite "+e.getMessage());
+            }
+        }else{
+            metadata.setXml(xml);
+        }
+        metadata.setDataset(oldDataset);
+/*	
+		  String testxml="";
+			if (metadata.getXml()!=null) testxml=new String(metadata.getXml());
+		  log4j.debug("DataCite:"+testxml);        
+		  String testiso="";
+			if (metadata.getIso()!=null) testiso=new String(metadata.getIso());
+		  log4j.debug("ISO:"+testiso);        
+		  String testdif="";
+			if (metadata.getDif()!=null) testdif=new String(metadata.getDif());
+		  log4j.debug("DIF:"+testdif);        
+*/
         validationHelper.validate(metadata);
         
+		  try{
+				proxyService.metaUpdate(metadata.getXml());
+		  }catch (ProxyException e){
+	          log4j.error(e.toString());                    
+	          throw new HandleException(e.toString());
+		  }
+       
+        //increases the DOI-quota and validates the dataset
         Dataset dataset = doiService.createOrUpdate(doi, null, testMode);
-
+        
         log4j.debug(logPrefix + "dataset id = " + dataset.getId());
         metadata.setDataset(dataset);
         if (!testMode) {
@@ -136,7 +198,7 @@ public class MetadataApiController implements ApiController {
                 dataset.merge();
             }
         }
-
+ 
         HttpHeaders headers = new HttpHeaders();
         if (method.equals("POST")) {
             StringBuffer location = httpRequest.getRequestURL().append("/" + doi);
@@ -148,12 +210,12 @@ public class MetadataApiController implements ApiController {
 
     @RequestMapping(value = "**", method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(HttpServletRequest request,
-            @RequestParam(required = false) Boolean testMode) throws SecurityException, NotFoundException {
+            @RequestParam(required = false) Boolean testMode) throws SecurityException, NotFoundException, HandleException {
         String doi = getDoiFromRequest(request);
         if (testMode == null)
             testMode = false;
         log4j.debug("*****DELETE metadata (testMode=" + testMode + ") " + doi);
-
+        
         Datacentre datacentre = SecurityUtils.getCurrentDatacentre();
 
         Dataset dataset = Dataset.findDatasetByDoi(doi);
@@ -166,6 +228,13 @@ public class MetadataApiController implements ApiController {
 
         SecurityUtils.checkDatasetOwnership(dataset, datacentre);
         
+	try{        
+		proxyService.metaDelete(doi);
+	}catch(ProxyException e){
+                log4j.error(e.getMessage());
+                throw new HandleException(e.getMessage());
+        }
+              
         if (!testMode) {
             dataset.setIsActive(false);
             dataset.merge();

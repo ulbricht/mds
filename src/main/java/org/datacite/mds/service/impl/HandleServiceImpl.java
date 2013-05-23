@@ -13,8 +13,14 @@ import net.handle.hdllib.HandleValue;
 import net.handle.hdllib.ModifyValueRequest;
 import net.handle.hdllib.SecretKeyAuthenticationInfo;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.datacite.mds.service.ProxyService;
+import org.datacite.mds.service.ProxyException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.service.HandleException;
 import org.datacite.mds.service.HandleService;
 import org.datacite.mds.web.api.NotFoundException;
@@ -23,7 +29,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class HandleServiceImpl implements HandleService {
-
+    
+    
+    @Autowired
+    ProxyService proxyService; 
+    
     @Value("${handle.index}") private int adminIndex;
 
     @Value("${handle.id}") private String adminId;
@@ -43,9 +53,53 @@ public class HandleServiceImpl implements HandleService {
     static final Logger log4j = Logger.getLogger(HandleServiceImpl.class);
 
     HandleResolver resolver = new HandleResolver();
-
+       
     @Override
     public String resolve(String doi) throws HandleException, NotFoundException {
+
+
+	if (proxyService.isProxyMode()){
+	    return proxyService.doiResolve(doi);       
+	}else{
+	    return handleResolve(doi);      
+	}
+
+    }
+
+    @Override
+    public void create(String doi, String url) throws HandleException {
+	try{
+
+		if (proxyService.isProxyMode()){
+		    proxyService.doiUpdate( doi, url);      
+		}else{
+		    handleCreate( doi, url);         
+		}
+        }catch (ProxyException e){
+		throw new HandleException(e.getMessage());
+	}
+    }
+
+    @Override
+    public void update(String doi, String newUrl) throws HandleException {
+	try{
+
+		if (proxyService.isProxyMode()){
+		    proxyService.doiUpdate( doi, newUrl);       
+		}else{
+		    handleUpdate( doi, newUrl);
+		}
+        }catch (ProxyException e){
+		throw new HandleException(e.getMessage());
+	}
+    }
+    
+    
+
+    
+//-------------------HANDLE-------------------    
+
+    private String handleResolve(String doi) throws HandleException, NotFoundException {
         if (dummyMode)
             return "dummyMode";
         
@@ -66,8 +120,7 @@ public class HandleServiceImpl implements HandleService {
         }
     }
 
-    @Override
-    public void create(String doi, String url) throws HandleException {
+    private void handleCreate(String doi, String url) throws HandleException {
         if (StringUtils.isEmpty(doi) || StringUtils.isEmpty(url))
             throw new IllegalArgumentException("DOI and URL cannot be empty");
 
@@ -111,8 +164,7 @@ public class HandleServiceImpl implements HandleService {
         }
     }
 
-    @Override
-    public void update(String doi, String newUrl) throws HandleException {
+    private void handleUpdate(String doi, String newUrl) throws HandleException {
         if (StringUtils.isEmpty(doi) || StringUtils.isEmpty(newUrl))
             throw new IllegalArgumentException("DOI and URL cannot be empty");
 
@@ -150,4 +202,5 @@ public class HandleServiceImpl implements HandleService {
             throw new HandleException(message, e);
         }
     }
+    
 }

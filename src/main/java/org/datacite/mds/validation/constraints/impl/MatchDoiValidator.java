@@ -26,10 +26,15 @@ public class MatchDoiValidator implements ConstraintValidator<MatchDoi, Metadata
     @Override
     public boolean isValid(Metadata metadata, ConstraintValidatorContext context) {
         ValidationUtils.addConstraintViolation(context, defaultMessage, "xml");
-        String doiFromDataset = metadata.getDataset().getDoi();
-        String doiFromXml = schemaService.getDoi(metadata.getXml());
-        doiFromXml = Utils.normalizeDoi(doiFromXml);
-        boolean isValid = StringUtils.equals(doiFromDataset, doiFromXml);
-        return isValid;
+
+	if (schemaService.isDifSchema(metadata.getXml()))
+		return true;
+
+	String doiFromDataset = metadata.getDataset().getDoi();
+	String doiFromXml = schemaService.getDoi(metadata.getXml());
+	doiFromXml = Utils.normalizeDoi(doiFromXml);
+	boolean isValid = StringUtils.equals(doiFromDataset, doiFromXml);
+	return isValid;
+
     }
 }

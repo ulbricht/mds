@@ -11,6 +11,7 @@ import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.domain.Metadata;
 import org.datacite.mds.service.DoiService;
 import org.datacite.mds.service.SchemaService;
+import org.datacite.mds.service.ProxyService;
 import org.datacite.mds.service.SecurityException;
 import org.datacite.mds.test.TestUtils;
 import org.datacite.mds.util.Utils;
@@ -29,6 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 
+import javax.validation.ConstraintViolationException;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("/META-INF/spring/applicationContext.xml")
 @Transactional
@@ -40,6 +43,9 @@ public class MetadataApiControllerTest {
     ValidationHelper validationHelper;
     @Autowired
     SchemaService schemaService;
+    @Autowired
+    ProxyService proxyService;
+
 
     MetadataApiController metadataApiController = new MetadataApiController();
 
@@ -48,6 +54,8 @@ public class MetadataApiControllerTest {
     String doi = "10.1594/WDCC/CCSRNIES_SRES_B2";
     String url = "http://example.com";
     byte[] xml;
+	 byte[] iso;
+    byte[] dif;
     HttpServletRequest doiRequest;
     HttpServletRequest wrongDoiRequest;
 
@@ -62,6 +70,7 @@ public class MetadataApiControllerTest {
         metadataApiController.doiService = doiService;
         metadataApiController.validationHelper = validationHelper;
         metadataApiController.schemaService = schemaService;
+		  metadataApiController.proxyService = proxyService;
 
         doiRequest = makeServletRequestForDoi(doi);
         wrongDoiRequest = makeServletRequestForDoi(doi + 1);
@@ -86,9 +95,13 @@ public class MetadataApiControllerTest {
         metadata = new Metadata();
         metadata.setDataset(dataset);
         metadata.setXml(TestUtils.getTestMetadata());
+        metadata.setIso(TestUtils.getTestMetadataIso());
+        metadata.setDif(TestUtils.getTestMetadataDif());
         metadata.persist();
 
         xml = metadata.getXml();
+		  iso = metadata.getIso();
+		  dif = metadata.getDif();
 
         TestUtils.login(datacentre);
         datacentre.flush();
@@ -105,6 +118,13 @@ public class MetadataApiControllerTest {
         ResponseEntity<? extends Object> response = metadataApiController.post(xml, testMode, httpRequest);
         return response.getStatusCode();
     }
+
+    private HttpStatus postwithdoi(byte[] xml, Boolean testMode) throws Exception {
+        MockHttpServletRequest httpRequest = makeServletRequestForDoi(dataset.getDoi());
+        ResponseEntity<? extends Object> response = metadataApiController.post(xml, testMode, httpRequest);
+        return response.getStatusCode();
+    }
+
 
     private HttpStatus put(String doi, byte[] xml, Boolean testMode) throws Exception {
         MockHttpServletRequest httpRequest = makeServletRequestForDoi(doi);
@@ -206,6 +226,28 @@ public class MetadataApiControllerTest {
     public void testPost() throws Exception {
         HttpStatus responseStatus = post(xml, false);
         assertEquals(HttpStatus.CREATED, responseStatus);
+    }
+
+    @Test
+    public void testPostdif() throws Exception {
+        HttpStatus responseStatus = postwithdoi(dif, false);
+        assertEquals(HttpStatus.CREATED, responseStatus);
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void testPostDifWithoutDoi() throws Exception {
+        HttpStatus responseStatus = post(dif, false);
+    }
+
+    @Test
+    public void testPostIso() throws Exception {
+        HttpStatus responseStatus = postwithdoi(iso, false);
+        assertEquals(HttpStatus.CREATED, responseStatus);
+    }
+
+    @Test(expected = ConstraintViolationException.class)
+    public void testPostIsoWithoutDoi() throws Exception {
+        HttpStatus responseStatus = post(iso, false);
     }
 
     @Test

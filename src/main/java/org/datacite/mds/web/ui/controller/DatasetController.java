@@ -1,5 +1,12 @@
 package org.datacite.mds.web.ui.controller;
 
+
+
+import org.datacite.mds.service.ProxyService;
+import org.datacite.mds.service.ProxyException;
+import org.datacite.mds.service.SchemaService;
+import org.datacite.mds.service.SchemaConvertException;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -56,7 +63,14 @@ public class DatasetController implements UiController {
     HandleService handleService;
 
     @Autowired
+    ProxyService proxyService; 
+
+    @Autowired
     ValidationHelper validationHelper;
+
+    @Autowired
+    SchemaService schemaService; 
+
 
     @InitBinder
     void initBinder(WebDataBinder binder) {
@@ -76,6 +90,8 @@ public class DatasetController implements UiController {
             model.addAttribute("metadata", metadata);
             byte[] xml = metadata.getXml();
             model.addAttribute("prettyxml", Utils.formatXML(xml));
+	    byte[] dif= metadata.getDif();
+            model.addAttribute("prettydif",Utils.formatXML(dif));
         } catch (Exception e) {
         }
         model.addAttribute("resolvedUrl", resolveDoi(dataset));
@@ -137,6 +153,13 @@ public class DatasetController implements UiController {
 
         checkQuota(dataset, result);
 
+			try{
+				if (!ArrayUtils.isEmpty(metadata.getXml()))
+					proxyService.metaUpdate(metadata.getXml());
+		   }catch (ProxyException e){
+		             result.addError(new FieldError("", "doi", e.toString()));
+			}
+
         if (!result.hasErrors()) {
             try {
                 handleService.create(dataset.getDoi(), dataset.getUrl());
@@ -186,17 +209,42 @@ public class DatasetController implements UiController {
         handleUploadedXml(createDatasetModel);
         
         try {
-            boolean hasMetadata = !ArrayUtils.isEmpty(createDatasetModel.getXml());
-            if (hasMetadata) {
+
                 byte[] xml = createDatasetModel.getXml();
-                metadata.setXml(xml);
-                validationHelper.validateTo(result, metadata);
+                byte[] dif = createDatasetModel.getDif();
+                byte[] iso = createDatasetModel.getIso();
+
+            boolean hasMetadata = !ArrayUtils.isEmpty(xml) || !ArrayUtils.isEmpty(dif) || !ArrayUtils.isEmpty(iso) ;
+            if (hasMetadata) {				
+
+					metadata.setDif(dif);
+					metadata.setIso(iso);
+
+					if (ArrayUtils.isEmpty(xml)){
+						if (!ArrayUtils.isEmpty(iso) && schemaService.isIsoSchema(iso)){
+							byte[] datacite=schemaService.convertDifToDatacite(iso, dataset.getDoi());
+									metadata.setXml(datacite);
+									metadata.setIsConvertedByMds(true);
+						}else if (!ArrayUtils.isEmpty(dif) && schemaService.isDifSchema(dif)){
+								  byte[] datacite=schemaService.convertDifToDatacite(dif, dataset.getDoi());
+	 							   metadata.setXml(datacite);
+									metadata.setIsConvertedByMds(true);
+						}
+					}else{
+						metadata.setXml(xml);
+					}
+		
+
+				   validationHelper.validateTo(result, metadata);
             } else if (metadataRequired)
                 result.rejectValue("xml", "org.datacite.mds.ui.model.CreateDatasetModel.xml.required");
         } catch (ValidationException e) {
             result.rejectValue("xml", null, e.getMessage());
         }
-        
+        catch (SchemaConvertException e){
+             String error="Can not convert Schema to DataCite "+e.getMessage();
+             result.addError(new FieldError("", "xml", error));
+        }
         return metadata;
     }
     
@@ -221,6 +269,8 @@ public class DatasetController implements UiController {
         if (!dataset.getUrl().isEmpty() && !result.hasErrors()) {
             try {
                 handleService.update(dataset.getDoi(), dataset.getUrl());
+                if (dataset.getMinted() == null) //update via proxy - create() and update() are the same functions
+							dataset.setMinted(new Date());
                 log.info(dataset.getDatacentre().getSymbol() + " successfuly updated (via UI) " + dataset.getDoi());
             } catch (HandleException e) {
                 log.debug("updating DOI failed; try to mint it");
@@ -235,6 +285,27 @@ public class DatasetController implements UiController {
                 }
             }
         }
+
+        if (!result.hasErrors()) {
+		try{
+
+			//if dataset exists (!=null) and the dataset gets activated - do it.
+
+			Dataset olddataset=Dataset.findDatasetByDoi(dataset.getDoi()); 
+			if (olddataset!=null && !olddataset.getIsActive().equals(Boolean.TRUE) && dataset.getIsActive().equals(Boolean.FALSE)){
+
+				dataset.setIsActive(true);
+				dataset.merge();				//Update of URL succeeded - save the current state
+				dataset.setIsActive(false);
+				proxyService.metaDelete(dataset.getDoi());
+			}
+		}catch (ProxyException e){
+		    result.addError(new FieldError("", "url", e.toString()));
+		}catch (NotFoundException e){
+		    result.addError(new FieldError("", "url", e.toString()));
+		}
+	}
+
 
         if (result.hasErrors()) {
             model.addAttribute("dataset", dataset);

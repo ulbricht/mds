@@ -39,6 +39,15 @@
                     </a>
                 </p>
             </field:simple>
+
+        <field:simple field="prettydif" id="s_org_datacite_mds_domain_Metadata_dif" z="user-managed">
+            <util:highlight lang="xml">
+              ${prettydif}
+           </util:highlight>
+                <spring:url value="/metadatas/${metadata.id}?rawdif" var="raw_url" />
+               <p><a href="${raw_url}"><spring:message code="metadata_get_raw_xml"/></a></p>
+        </field:simple>
+
             <field:display field="namespace" id="s_org_datacite_mds_domain_Metadata_namespace" object="${metadata}" render="true" z="user-managed"/>
             <field:display field="isConvertedByMds" id="s_org_datacite_mds_domain_Metadata_isConvertedByMds" object="${metadata}" render="true" z="user-managed"/>
         </page:show>

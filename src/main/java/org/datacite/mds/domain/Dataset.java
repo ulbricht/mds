@@ -69,7 +69,7 @@ public class Dataset {
     @JoinColumn
     private Datacentre datacentre;
 
-    @Transient
+//    @Transient
     @URL
     private String url;
 
@@ -128,7 +128,7 @@ public class Dataset {
         q.setParameter("user", user);
         
         if (prefix != null)
-            q.setParameter("prefix", prefix + "/%");
+            q.setParameter("prefix", prefix + "%");
         
         return q.getSingleResult();
     }
@@ -188,7 +188,7 @@ public class Dataset {
         EntityManager em = entityManager();
         String hql = "select o from Dataset o where o.doi like :prefix";
         TypedQuery<Dataset> query = em.createQuery(hql, Dataset.class);
-        query.setParameter("prefix", prefix + "/%");
+        query.setParameter("prefix", prefix + "%");
         return query.getResultList();
     }
 

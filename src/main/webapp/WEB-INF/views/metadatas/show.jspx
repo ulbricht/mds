@@ -20,5 +20,26 @@
         <field:display field="isConvertedByMds" id="s_org_datacite_mds_domain_Metadata_isConvertedByMds" object="${metadata}" render="true" z="user-managed"/>
         <field:display field="schemaService" id="s_org_datacite_mds_domain_Metadata_schemaService" object="${metadata}" render="false" z="user-managed"/>
         <field:display field="maxMetaVerQuery" id="s_org_datacite_mds_domain_Metadata_maxMetaVerQuery" object="${metadata}" render="false" z="user-managed"/>
+  <!--      <field:display field="dif" id="s_org_datacite_mds_domain_Metadata_dif" object="${metadata}" z="X9JNRfIWskFc1l2qdMT3cSdjeU0="/>-->
+        <field:simple field="prettydif" id="s_org_datacite_mds_domain_Metadata_dif" z="user-managed">
+            <util:highlight lang="xml">
+              ${prettydif}
+           </util:highlight>
+            <p>
+                <a href="?rawdif">
+                    <spring:message code="metadata_get_raw_xml"/>
+                </a>
+            </p>
+        </field:simple>
+        <field:simple field="prettyiso" id="s_org_datacite_mds_domain_Metadata_iso" z="user-managed">
+            <util:highlight lang="xml">
+              ${prettyiso}
+           </util:highlight>
+            <p>
+                <a href="?rawiso">
+                    <spring:message code="metadata_get_raw_xml"/>
+                </a>
+            </p>
+        </field:simple>
     </page:show>
 </div>

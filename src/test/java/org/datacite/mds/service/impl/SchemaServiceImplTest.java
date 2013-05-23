@@ -53,6 +53,12 @@ public class SchemaServiceImplTest {
         assertEquals("http://datacite.org/schema/kernel-2.1", namespace);
     }
 
+    public void testGetSchemaNamespaceDif() throws Exception {
+        byte[] xml = TestUtils.getTestMetadataDif();
+        String namespace = service.getNamespace(xml);
+        assertEquals("http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/", namespace);
+    }
+
     @Test
     public void testGetSchemaNamespaceNoNamespace() throws Exception {
         byte[] xml = TestUtils.getTestMetadata20();
@@ -81,11 +87,12 @@ public class SchemaServiceImplTest {
     
     @Test
     public void testConvertSchemaLocationToLocal() {
-        String global = service.schemaLocationPrefix;
-        String local = "file://bar/";
+        String global = "http://www.gfz-potsdam.de"; //service.schemaLocationPrefix;
+        String local = "http://doidb.wdc-terra.org"; //"file://bar/";
         service.schemaLocationLocal = local;
-        String converted = service.convertSchemaLocationToLocal(global + "/path");
-        assertEquals(local + "/path", converted);
+        String converted = service.convertSchemaLocationToLocal(global);
+       // assertEquals(local + "/path", converted);
+        assertEquals("http://doidb.wdc-terra.org/www.gfz-potsdam.de", converted);
     }
     
     @Test

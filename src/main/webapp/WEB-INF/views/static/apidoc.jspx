@@ -7,39 +7,39 @@
 
   <util:toc />
   
-<h1>DataCite API v2 for datacentres</h1>
+<h1>DOIDB API</h1>
 
-<h2>Purpose</h2>
-<p>The purpose
-of this document is to explain how to register datasets via our
-RESTful API. Registration is open for research organisations
-(datacentres) associated with DataCite members (allocators). Before
-you will be able to use our API you must apply for an account with our
-service - please contact your <a 
-href="http://datacite.org/members" target="_">local
-allocator</a>.</p> 
+<h2>Architecture</h2>
 
-<h2>Audience</h2>
-<p><em>This document and the API
-is meant for use by a technical audience. You will need a working
-knowledge of programming and the HTTP protocol.</em> </p>
+
+<p>
+The DOIDB is implemented as a proxy to the DataCite Metadata Store. The process of minting a DOI or the deposition of metadata triggers a live registration at DataCite. Additionaly DOIDB keeps track of used DOIs, stores the metadata and offers a local <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH</a> service and a <a href="http://doidb.wdc-terra.org/oaip">search</a> service. 
+</p> 
+
+
+<p>
+This API is intended to be used in programs and you will need a valid login. The account data is the same as for the web interface of <a href="http://doidb.wdc-terra.org/mds">http://doidb.wdc-terra.org/mds</a>. 
+</p>
+
+
 
 <h2>Overview</h2>
-<p>The API is implemented in RESTful style. The <em>end point for v2</em> you
-are going to use is:</p>
-<p class="indent"><code>https://mds.datacite.org</code></p>
-<p>At the moment there are <em>three resources</em>:</p>
+
+<p>The API is implemented in REST style. The end point you are going to use is:</p>
+
+<p class="indent"><code>https://doidb.wdc-terra.org/mds</code></p>
+<p>At the moment there are <em>two resources</em>:</p>
 <p class="indent"><code>/doi</code></p>
 <p class="indent"><code>/metadata</code></p>
 <p class="indent"><code>/media</code></p>
-<p>The URI <code>https://mds.datacite.org<b>/doi</b></code> accepts requests
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi</b></code> accepts requests
 with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://mds.datacite.org<b>/doi/{doi}</b></code>, where <code>{doi}</code> is a actually DOI, accepts requests
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi/{doi}</b></code>, where <code>{doi}</code> is a actually DOI, accepts requests
 with <code>GET</code> HTTP method.</p>
 <p>The URI
-<code>https://mds.datacite.org<b>/metadata</b></code> accepts requests
+<code>https://doidb.wdc-terra.org/mds<b>/metadata</b></code> accepts requests
 with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://mds.datacite.org<b>/metadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/metadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
 with 2 HTTP methods: <code>GET</code> and <code>DELETE</code></p>
 <p>The URI <code>https://mds.datacite.org<b>/media/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
 with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
@@ -60,22 +60,24 @@ with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
 </ul>
 </p>
 
-<h3>Security</h3>
-All the traffic goes via HTTPS - please remember we
-do not support bare HTTP. All the requests to this system require <a href="http://en.wikipedia.org/wiki/Basic_access_authentication" target="_">HTTP
-Basic authentication</a> header. You will get your username and password
-from your local DataCite <a 
-href="http://datacite.org/members" target="_">allocator</a>. Each account have some constraints associated
-with it:
+<h3>Security and Accounts</h3>
+
+<p>
+All the traffic goes via HTTPS. All requests to this system are password protected and require <a href="http://en.wikipedia.org/wiki/Basic_access_authentication" target="_">HTTP
+Basic authentication</a> header.
+</p>
+
+<p>
+Accounts have some constraints associated:
+
 <ul>
-<li>you will be allowed to mint DOIs only with prefix assigned to
-you</li>
-<li>you will be allowed to mint DOIs only with URLs in host domains
-assigned to you</li>
-<li>you <em>might not</em> be able to mint unlimited number of DOIs,
-there is a quota assigned to you by your allocator (the quota can be
-extended or lifted though)</li>
+<li>you will be allowed to mint DOIs only with prefix assigned to you</li>
+<li>you will be allowed to mint DOIs only with URLs in host domains assigned to you</li>
+<li>the number of DOIs available for registration can be limited.</li>
 </ul>
+
+
+</p>
 
 <h3>Handle System</h3>
 <p>It is important to understand that the <a href="http://handle.net" target="_">Handle System</a> (the technical
@@ -88,17 +90,40 @@ try to update its URL, you might get the error message <code>HANDLE NOT
 EXISTS</code>. This is because it takes some time for the system to register a
 handle for a DOI. 
 </p>
+
 <h3>Metadata</h3>
 
-<p>Metadata about your datasets must conform to the standards published by DataCite at <a href="http://schema.datacite.org" target="_blank">Metadata Schema Repository</a>.
+
+
+DOIDB accepts two different metadata schemata.
+<ul>
+<li>
+<b>DataCite Schema:</b> Metadata about your datasets must conform to the standards published by DataCite at <a href="http://schema.datacite.org" target="_blank">Metadata Schema Repository</a>.
 you will find there the preferred version and exmaple XML document. <em>Please remember that all your documents must specify correct schema location in the root element.</em>. 
-Also make sure DOI specified in your document matches DOI of the dataset.</p>
+Also make sure DOI specified in your document matches DOI of the dataset.
+</li>
+
+<li>
+<b>NASA-DIF Schema</b> Since the DataCite metadata schema targets a wide range of scientific disciplines, it is very general in its structure. For example it is not possible to put a geographic reference into the metadata. Therefore we decited to accept metadata in a <a href="http://doidb.wdc-terra.org/mds/schemas/gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">modified version</a> of the <a href="http://gcmd.nasa.gov/User/difguide/difman.html">NASA DIF</a> schema. It is version 9.8.2 with some mandatory fields below the Data_Set_Citation tag.
+
+<ul>
+<li>Data_Set_Citation/Dataset_Creator a semicolon separated list of authors <code>Lastname1, Firstname1; Lastname2, Firstname2; Lastname3, Firstname3</code></li>
+<li>Data_Set_Citation/Dataset_Title <code>the dataset title</code></li>
+<li>Data_Set_Citation/Dataset_Release_Date as <code>YYYY-MM-DD</code></li>
+<li>Data_Set_Citation/Dataset_Publisher should be <code>Deutsches GeoForschungsZentrum GFZ</code></li>
+</ul>
+
+A XSL-Stylesheet extracts the information necessary for the DataCite schema and finally this metadata will be used for registration at DataCite. There are already registered datasets. To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH repository</a>
+
+</li>
+</ul>
 
 <h3>Testing</h3>
 
 <p>Each API call can have optional <a href="http://en.wikipedia.org/wiki/Query_string" target="_">query parameter</a> <code>testMode</code>.
 If set to "true" or "1" the request will not change the database nor will the DOI handle will be registered
  or updated, e.g. <code>POST /doi?testMode=true</code>.</p>
+
 <p>Also please note that there is <em>special test prefix 10.5072</em> available to all datacentres. Please use 
 it for all your testing DOIs. Your real prefix should not be used for test DOIs. 
 Note that DOIs with test prefix will behave like any other DOI, e.g. they can be normally resolved. They will <em>not</em> be exposed by upcoming services like search and OAI, though. 
@@ -113,7 +138,7 @@ href="https://github.com/datacite/mds/tree/master/client" target="_">Github</a>.
 <h2>Doi API</h2>
 
 <h3>GET</h3> 
-<p><i>URI: https://mds.datacite.org/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
  
 <p>This request returns an URL associated with a given DOI.</p>
 <h4>Request headers</h4>
@@ -136,7 +161,7 @@ try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://mds.datacite.org/doi</i></p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/doi</i></p> 
 <p>POST will mint new DOI if specified DOI doesn't exist. This method will attempt to update URL if you specify existing DOI. 
 Standard domains and quota restrictions check will be performed. A Datacentre's doiQuotaUsed will be increased by 1. A new record in Datasets will be created.</p>
 <h4>Request headers</h4> 
@@ -157,7 +182,7 @@ url={url}</code></pre>
 try later and if problem persists please contact us</p> 
 
 <!--<h3>PUT</h3>
-<p><i>URI: https://mds.datacite.org/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>PUT will mint new DOI or update URL</p>
 <h4>Request headers</h4> 
 <p><code>Content-Type:text/plain;charset=UTF-8</code></p>
@@ -176,7 +201,7 @@ try later and if problem persists please contact us</p>
 
 --><h2>Metadata API</h2>
 <h3>GET</h3> 
-<p><i>URI: https://mds.datacite.org/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>This request returns the most recent version of metadata associated with a given DOI.</p>
 <h4>Request headers</h4> 
 <code>Accept:application/xml</code> 
@@ -197,8 +222,10 @@ try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://mds.datacite.org/metadata</i></p> 
-<p>This request stores new version of metadata. The request body must contain valid XML.</p>
+<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i></p> 
+<p>This request stores new version of metadata. The request body must contain valid XML. If you provide a DataCite Schema you can leave empty the <code>{doi}</code> field of the URI, since this information is also stored in the XML.</p>
+
+
 <h4>Request headers</h4> 
 <code>Content-Type:application/xml;charset=UTF-8</code> 
 <h4>Request body</h4> 
@@ -216,7 +243,7 @@ try later and if problem persists please contact us
 try later and if problem persists please contact us</p> 
 
 <!--<h3>PUT</h3>
-<p><i>URI: https://mds.datacite.org/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>This request stores new version of metadata. The request body must contain valid XML.</p>
 <code>Content-Type:application/xml;charset=UTF-8</code> 
 <h4>Request body</h4> 
@@ -231,7 +258,7 @@ try later and if problem persists please contact us</p>
 try later and if problem persists please contact us</p> 
 
 --><h3>DELETE</h3> 
-<p><i>URI: https://mds.datacite.org/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>This request marks a dataset as 'inactive'. To activate it again, <code>POST</code> new metadata or set the <code>isActive</code>-flag in the user interface.</p>
 
 <h4>Response body</h4> 

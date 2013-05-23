@@ -28,7 +28,7 @@ public class DoiValidator implements ConstraintValidator<Doi, String> {
             return false;
         }
         
-        boolean isPrefixOK = prefix.matches("10\\.(\\d)+");
+        boolean isPrefixOK = prefix.matches("10\\.?(\\d)+");
         boolean hasValidChars = suffix.matches("[^\u0000-\u001F\u0080-\u009F]+");
         boolean hasValidSuffixStart = !suffix.matches("./.*");
         boolean hasSpaces = StringUtils.contains(doi, " ");

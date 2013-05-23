@@ -26,8 +26,8 @@ public class HandleServiceImplTest {
     @Autowired
     private HandleServiceImpl service;
     
-    private static final String doi = "10.5072/test";
-    private static final String url = "http://example.com";
+    private static final String doi = "10.5072/FFFFF";
+    private static final String url = "http://pmd.gfz-potsdam.de";
     
 
     @Before
@@ -41,13 +41,13 @@ public class HandleServiceImplTest {
         service.dummyMode = true;
         verify(service.resolver);
     }
-    
+
     @Test
     public void testResolve() throws Exception {
         mockResolveExistingHandle();
         replay(service.resolver);
         assertEquals(url, service.resolve(doi));
-    }
+   }
 
     @Test(expected = NotFoundException.class)
     public void testResolveNonExistingUrl() throws Exception {

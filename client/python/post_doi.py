@@ -3,13 +3,15 @@ import httplib2, sys, base64, codecs
 if (len(sys.argv) < 4):
     raise Exception('Please provide username, password, location of doi-url file')
  
-endpoint = 'https://mds.datacite.org/doi'
+endpoint = 'https://doidb.wdc-terra.org/mds/doi'
 
 body_unicode = codecs.open(sys.argv[3], 'r', encoding='utf-8').read().strip()
 
 print(body_unicode);
 
 h = httplib2.Http()
+h.disable_ssl_certificate_validation=True
+
 auth_string = base64.encodestring(sys.argv[1] + ':' + sys.argv[2])
 
 response, content = h.request(endpoint,

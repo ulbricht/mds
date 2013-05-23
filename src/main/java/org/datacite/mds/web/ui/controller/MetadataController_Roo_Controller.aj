@@ -8,39 +8,16 @@ import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.domain.Metadata;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 privileged aspect MetadataController_Roo_Controller {
-    
-    @RequestMapping(method = RequestMethod.POST)
-    public String MetadataController.create(@Valid Metadata metadata, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("metadata", metadata);
-            return "metadatas/create";
-        }
-        uiModel.asMap().clear();
-        metadata.persist();
-        return "redirect:/metadatas/" + encodeUrlPathSegment(metadata.getId().toString(), httpServletRequest);
-    }
-    
-    @RequestMapping(params = "form", method = RequestMethod.GET)
-    public String MetadataController.createForm(Model uiModel) {
-        uiModel.addAttribute("metadata", new Metadata());
-        List dependencies = new ArrayList();
-        if (Dataset.countDatasets() == 0) {
-            dependencies.add(new String[]{"dataset", "datasets"});
-        }
-        uiModel.addAttribute("dependencies", dependencies);
-        return "metadatas/create";
-    }
+
     
     String MetadataController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();

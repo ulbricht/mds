@@ -28,14 +28,17 @@ public class MatchDoiPrefixValidator implements ConstraintValidator<MatchDoiPref
         if (isValidationUnneeded)
             return true;
 
-        String prefixOfDataset = Utils.getDoiPrefix(dataset.getDoi());
-        if (prefixOfDataset.equals(testPrefix))
+	String doi=dataset.getDoi();
+//        String prefixOfDataset = Utils.getDoiPrefix(doi);
+//        if (prefixOfDataset.equals(testPrefix))
+          if (StringUtils.startsWith(doi,testPrefix+"/"))
             return true;
         
         Set<Prefix> allowedPrefixes = dataset.getDatacentre().getPrefixes();
         for (Prefix prefix : allowedPrefixes) {
-            if (prefix.getPrefix().equals(prefixOfDataset)) {
-                return true;
+//            if (prefix.getPrefix().equals(prefixOfDataset)) {  
+            if (StringUtils.startsWith(doi,prefix.getPrefix())) {
+              return true;
             }
         }
 

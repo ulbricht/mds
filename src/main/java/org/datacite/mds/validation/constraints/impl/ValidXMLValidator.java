@@ -60,9 +60,10 @@ public class ValidXMLValidator implements ConstraintValidator<ValidXML, byte[]> 
 
     private void checkValidity(byte[] xml) throws Exception {
         String schemaLocation = schemaService.getSchemaLocation(xml);
+        String namespace=schemaService.getNamespace(xml);
         log.debug("schemaLocation=" + schemaLocation);
         if (!StringUtils.startsWithIgnoreCase(schemaLocation, schemaLocationPrefix))
-            throw new Exception("schemaLocation does not start with '" + schemaLocationPrefix + "'");
+            throw new Exception("schemaLocation does not start with '"+schemaLocationPrefix+"'");
         Validator validator = schemaService.getSchemaValidator(schemaLocation);
         InputStream xmlStream = new ByteArrayInputStream(xml);
         Source xmlSource = new StreamSource(xmlStream);
@@ -84,5 +85,5 @@ public class ValidXMLValidator implements ConstraintValidator<ValidXML, byte[]> 
     public void setSchemaLocationPrefix(String schemaLocationPrefix) {
         this.schemaLocationPrefix = schemaLocationPrefix;
     }
-
+    
 }

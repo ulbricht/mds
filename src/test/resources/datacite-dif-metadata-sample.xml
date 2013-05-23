@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://datacite.org/schema/kernel-2.2"
+          xsi:schemaLocation="http://datacite.org/schema/kernel-2.2 http://schema.datacite.org/meta/kernel-2.2/metadata.xsd">
+   <identifier identifierType="DOI">10.5072/FOOBAR19</identifier>
+   <creators>
+      <creator>
+         <creatorName>KTB, WG Geochemistry</creatorName>
+      </creator>
+   </creators>
+   <titles>
+      <title>XRD of Cuttings of the KTB Pilot Hole HB1</title>
+   </titles>
+   <publisher>Deutsches GeoForschungsZentrum GFZ</publisher>
+   <publicationYear>2010</publicationYear>
+ 
+</resource>

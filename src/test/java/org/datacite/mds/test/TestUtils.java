@@ -190,6 +190,14 @@ public abstract class TestUtils {
         return getTestMetadata("datacite-metadata-sample-v2.1.xml");
     }
 
+    public static byte[] getTestMetadataDif() {
+        return getTestMetadata("dif-metadata-sample.xml");
+    }
+
+    public static byte[] getTestMetadataIso() {
+        return getTestMetadata("iso-metadata-sample.xml");
+    }
+
     public static byte[] getTestMetadata(String filename) {
         Resource resource = new ClassPathResource(filename);
         try {

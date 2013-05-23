@@ -35,7 +35,10 @@ public class DoiServiceImpl implements DoiService {
         SecurityUtils.checkQuota(datacentre);
 
         Dataset dataset = findOrNewDataset(doi);
-        dataset.setUrl(url);
+
+	if (StringUtils.isNotEmpty(url))
+		dataset.setUrl(url); 
+
         validationHelper.validate(dataset);
 
         log4j.debug("trying handle registration: " + doi);

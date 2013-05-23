@@ -14,11 +14,11 @@ public class DoiPrefixTest extends AbstractContraintsTest {
         assertTrue(isValid(null)); 
         assertFalse(isValid(""));
         assertFalse(isValid("abc"));
-        assertFalse(isValid("10"));
-        assertFalse(isValid("10.abc"));
-        assertFalse(isValid("10.1234/"));
-        assertFalse(isValid("10.1234/test"));
+//        assertFalse(isValid("10"));
+//        assertFalse(isValid("10.abc"));
         assertFalse(isValid("10..1234"));
+        assertTrue(isValid("10.1234/"));
+        assertTrue(isValid("10.1234/test"));
         assertTrue(isValid("10.1234"));
     }
 

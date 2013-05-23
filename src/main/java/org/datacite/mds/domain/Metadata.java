@@ -20,6 +20,8 @@ import org.apache.log4j.Logger;
 import org.datacite.mds.service.SchemaService;
 import org.datacite.mds.validation.constraints.MatchDoi;
 import org.datacite.mds.validation.constraints.ValidXML;
+import org.datacite.mds.validation.constraints.ValidDIForNULL;
+import org.datacite.mds.validation.constraints.ValidISOorNULL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -44,7 +46,15 @@ public class Metadata {
     @ValidXML
     @Column(length=10000)
     private byte[] xml;
-    
+
+    @ValidDIForNULL
+    @Column(length=10000)
+    private byte[] dif;
+
+	 @ValidISOorNULL
+    @Column(length=10000)
+    private byte[] iso;
+
     private String namespace;
 
     @Min(0L)

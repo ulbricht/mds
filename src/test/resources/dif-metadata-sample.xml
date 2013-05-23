@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DIF xmlns="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/ http://gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">  
+  <Entry_ID>10.1594/GFZ.SDDB.1266</Entry_ID>  
+  <Entry_Title>XRD of Cuttings of the KTB Pilot Hole HB1</Entry_Title>  
+  <Data_Set_Citation> 
+    <Dataset_Creator>KTB, WG Geochemistry</Dataset_Creator>  
+    <Dataset_Title>XRD of Cuttings of the KTB Pilot Hole HB1</Dataset_Title>  
+    <Dataset_Release_Date>2010-09-29</Dataset_Release_Date>  
+    <Dataset_Release_Place>Potsdam, Germany</Dataset_Release_Place>  
+    <Dataset_Publisher>Deutsches GeoForschungsZentrum GFZ</Dataset_Publisher>  
+    <Data_Presentation_Form>Dataset</Data_Presentation_Form>  
+    <Online_Resource>http://dx.doi.org/10.1594/GFZ.SDDB.1266</Online_Resource> 
+  </Data_Set_Citation>  
+  <Discipline> 
+    <Discipline_Name>Earth Science</Discipline_Name> 
+  </Discipline>  
+  <Parameters> 
+    <Category>EARTH SCIENCE</Category>  
+    <Topic>Solid Earth</Topic>  
+    <Term>Rocks/Minerals</Term>  
+    <Variable_Level_1>Minerals/Crystals</Variable_Level_1> 
+  </Parameters>  
+  <Keyword>Accessories</Keyword>  
+  <Keyword>Al2SiO5</Keyword>  
+  <Keyword>Amphiboles</Keyword>  
+  <Keyword>Biotites</Keyword>  
+  <Keyword>Carbonates</Keyword>  
+  <Keyword>Chlorite</Keyword>  
+  <Keyword>Clinopyroxene</Keyword>  
+  <Keyword>Date of Sampling</Keyword>  
+  <Keyword>Epidote</Keyword>  
+  <Keyword>Garnet</Keyword>  
+  <Keyword>Olivine</Keyword>  
+  <Keyword>Orthopyroxene</Keyword>  
+  <Keyword>Oxyde Ores</Keyword>  
+  <Keyword>Plagioclases</Keyword>  
+  <Keyword>Potassium Feldspars</Keyword>  
+  <Keyword>Quartz</Keyword>  
+  <Keyword>Serpentine</Keyword>  
+  <Keyword>Spinels</Keyword>  
+  <Keyword>Sulfidic Ores</Keyword>  
+  <Keyword>White Mica</Keyword>  
+  <Keyword>Zeolite</Keyword>  
+  <Sensor_Name> 
+    <Short_Name>X-ray diffraction</Short_Name> 
+  </Sensor_Name>  
+  <Source_Name> 
+    <Short_Name>Land based</Short_Name> 
+  </Source_Name>  
+  <Data_Set_Progress>Complete</Data_Set_Progress>  
+  <Spatial_Coverage> 
+    <Southernmost_Latitude>49.588</Southernmost_Latitude>  
+    <Northernmost_Latitude>49.588</Northernmost_Latitude>  
+    <Westernmost_Longitude>12.192</Westernmost_Longitude>  
+    <Easternmost_Longitude>12.192</Easternmost_Longitude> 
+  </Spatial_Coverage>  
+  <Project> 
+    <Short_Name>KTB</Short_Name>  
+    <Long_Name>German Continental Deep Drilling Program</Long_Name> 
+  </Project>  
+  <Project> 
+    <Short_Name>BMBF</Short_Name>  
+    <Long_Name>Bundesministerium für Bildung und Forschung</Long_Name> 
+  </Project>  
+  <Use_Constraints>cc-by</Use_Constraints>  
+  <Data_Set_Language>English</Data_Set_Language>  
+  <Data_Center> 
+    <Data_Center_Name> 
+      <Short_Name>SDDB</Short_Name>  
+      <Long_Name>Scientific Drilling Database</Long_Name> 
+    </Data_Center_Name>  
+    <Data_Center_URL>http://www.scientificdrilling.org</Data_Center_URL>  
+    <Personnel> 
+      <Role>DATA CENTER CONTACT</Role>  
+      <Last_Name>###DC_PERSONNEL_LAST###</Last_Name> 
+    </Personnel> 
+  </Data_Center>  
+  <Distribution> 
+    <Distribution_Media>Online Internet (HTTP)</Distribution_Media>  
+    <Distribution_Size>60459 DataPoints</Distribution_Size>  
+    <Distribution_Format>text/tab-separated-values</Distribution_Format> 
+  </Distribution>  
+  <Summary><Abstract>The qualitative and quantitative phase analyses were performed in the KTB field laboratory by x-ray powder diffraction using SIEMENS D 500 diffractometer. During early stages of the KTB project a new method for quantitative phase analysis was developed (see references below). The method is based on the comparison of the diffraction spectrum of the unknown sample with those of pure minerals. The powder diffraction data of the minerals are stored in a database built up of 250 natural minerals separated from various types of igneous and metamorphic rocks. The complete analyses (radiation: Cu K alpha, lambda: 1,5405Å, stepwidth: 0,01°, counting time 2 sec/step, angle 2-80°) was carried out automatically including computations. The results of this quantitative phase analysis were used e.g. to check thin section petrography (and vice versa) and to construct a \"mineralogical rock composition log\".</Abstract></Summary>  
+  <Metadata_Name>CEOS IDN DIF</Metadata_Name>  
+  <Metadata_Version>9.7</Metadata_Version> 
+</DIF>

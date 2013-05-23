@@ -6,6 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.datacite.mds.service.SchemaService;
+import org.datacite.mds.service.ProxyService;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.datacite.mds.domain.Datacentre;
 import org.datacite.mds.domain.Dataset;
@@ -41,6 +44,11 @@ public class DatasetControllerTest {
 
     @Autowired
     ValidationHelper validationHelper;
+
+    @Autowired
+    SchemaService schemaService;
+    @Autowired
+    ProxyService proxyService;
     
     private HandleService mockHandleService;
     
@@ -52,12 +60,16 @@ public class DatasetControllerTest {
     String url = "http://example.com";
     byte[] xml;
     byte[] xml2;
+    byte[] dif;
+    byte[] iso;
     
     @Before
     public void init() {
         controller = new DatasetController();
         controller.validationHelper = validationHelper;
         controller.metadataRequired = false;
+		  controller.schemaService = schemaService;
+		  controller.proxyService = proxyService;
         
         mockHandleService = EasyMock.createMock(HandleService.class);
         controller.handleService = mockHandleService;
@@ -68,6 +80,8 @@ public class DatasetControllerTest {
 
         xml = TestUtils.setDoiOfMetadata(TestUtils.getTestMetadata20(), doi);
         xml2 = TestUtils.setDoiOfMetadata(TestUtils.getTestMetadata21(), doi);
+		  dif=TestUtils.getTestMetadataDif();
+		  iso=TestUtils.getTestMetadataIso();
         assertTrue(!ArrayUtils.isEquals(xml, xml2));
 
         createDatasetModel = new CreateDatasetModel();
@@ -167,6 +181,77 @@ public class DatasetControllerTest {
         String view = controller.create(createDatasetModel, result, model);
         assertTrue(view.startsWith("redirect"));
         assertEquals(1, Dataset.countDatasets());
+    }
+
+    @Test
+    public void assertCreateDifSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setDif(dif);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+		  assertArrayEquals(dif, metadata.getDif());
+    }
+    @Test
+    public void assertCreateIsoSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setIso(iso);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+		  assertArrayEquals(iso, metadata.getIso());
+    }
+    @Test
+    public void assertCreateDataciteAndDifSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setXmlUpload(xml);
+		  createDatasetModel.setDif(dif);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+        assertArrayEquals(xml, metadata.getXml());
+		  assertArrayEquals(dif, metadata.getDif());
+    }
+    @Test
+    public void assertCreateDataciteAndIsoSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setXmlUpload(xml);
+		  createDatasetModel.setIso(iso);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+        assertArrayEquals(xml, metadata.getXml());
+		  assertArrayEquals(iso, metadata.getIso());
+    }
+    @Test
+    public void assertCreateDifAndIsoSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setDif(dif);
+		  createDatasetModel.setIso(iso);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+        assertArrayEquals(dif, metadata.getDif());
+		  assertArrayEquals(iso, metadata.getIso());
+    }
+    @Test
+    public void assertCreateDataciteAndDifAndIsoSuccess() throws HandleException {
+        expectHandleServiceCreate(doi, url);
+		  createDatasetModel.setXmlUpload(xml);
+		  createDatasetModel.setDif(dif);
+		  createDatasetModel.setIso(iso);
+        String view = controller.create(createDatasetModel, result, model);
+        assertTrue(view.startsWith("redirect"));
+        assertEquals(1, Dataset.countDatasets());
+        Metadata metadata = Metadata.findAllMetadatas().get(0);
+        assertArrayEquals(xml, metadata.getXml());
+        assertArrayEquals(dif, metadata.getDif());
+		  assertArrayEquals(iso, metadata.getIso());
     }
 
     public void assertCreateFailure() {

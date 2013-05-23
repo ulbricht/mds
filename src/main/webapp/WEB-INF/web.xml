@@ -18,6 +18,21 @@
     	</user-data-constraint>
 	</security-constraint>
     
+
+    <!-- allow schemas to be read without https -->
+    <security-constraint>
+    	<web-resource-collection>
+	    	<web-resource-name>Unprotected Context</web-resource-name>
+        	<url-pattern>/schemas/*</url-pattern>
+    	</web-resource-collection>
+    	<!-- auth-constraint goes here if you require authentication -->
+    	<user-data-constraint>
+    		<transport-guarantee>NONE</transport-guarantee>
+    	</user-data-constraint>
+	</security-constraint>
+
+
+
     <!-- Enable escaping of form submission contents -->
     <context-param>
         <param-name>defaultHtmlEscape</param-name>

@@ -5,19 +5,12 @@ package org.datacite.mds.web.ui.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.String;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.datacite.mds.domain.Datacentre;
-import org.datacite.mds.domain.Dataset;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 privileged aspect DatasetController_Roo_Controller {
-        
+    
     String DatasetController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

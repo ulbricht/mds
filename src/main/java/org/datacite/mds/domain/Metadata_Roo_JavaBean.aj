@@ -23,6 +23,22 @@ privileged aspect Metadata_Roo_JavaBean {
         return this.xml;
     }
     
+    public byte[] Metadata.getDif() {
+        return this.dif;
+    }
+    
+    public void Metadata.setDif(byte[] dif) {
+        this.dif = dif;
+    }
+    
+    public byte[] Metadata.getIso() {
+        return this.iso;
+    }
+    
+    public void Metadata.setIso(byte[] iso) {
+        this.iso = iso;
+    }
+    
     public Integer Metadata.getMetadataVersion() {
         return this.metadataVersion;
     }

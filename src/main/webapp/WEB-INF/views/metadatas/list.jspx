@@ -6,9 +6,9 @@
             <table:column id="c_org_datacite_mds_domain_Metadata_xml" property="xml" render="false" z="user-managed"/>
             <table:column id="c_org_datacite_mds_domain_Metadata_namespace" property="namespace" render="false" z="user-managed"/>
             <table:column id="c_org_datacite_mds_domain_Metadata_metadataVersion" property="metadataVersion" z="H/GGYlZBJrZWWq2e7VIZaUn+1ck="/>
-            <table:column date="true" dateTimePattern="${metadata_created_date_format}" id="c_org_datacite_mds_domain_Metadata_created" property="created" z="c7okn+9q9kGYutanvew0ReZdAzU="/>
             <table:column id="c_org_datacite_mds_domain_Metadata_isConvertedByMds" property="isConvertedByMds" z="ay9T0xVJNGtsuJqXMh+FkTwNx7k="/>
             <table:column id="c_org_datacite_mds_domain_Metadata_schemaService" property="schemaService" z="IZqkBOQAFsLq+jj3m4XuL5eDz0E="/>
+            <table:column id="c_org_datacite_mds_domain_Metadata_dif" property="dif" z="CAQiZXb1Jj4EZwzTcmpq/GwMoGI="/>
         </table:table>
     </page:list>
 </div>
