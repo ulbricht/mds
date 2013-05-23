@@ -15,10 +15,10 @@
 
         <util:comment-xml-upload/>
         <field:textarea field="xml" id="c_org_datacite_mds_domain_Metadata_xml" readonly="true" z="user-managed"/>
-<!--
+
         <field:upload field="iso" id="c_org_datacite_mds_domain_Metadata_xmlisoupload" z="user-managed"/>
         <field:upload field="dif" id="c_org_datacite_mds_domain_Metadata_xmldifupload" z="user-managed"/>
--->
+
         </form:create>
     <form:dependency dependencies="${dependencies}" id="d_org_datacite_mds_domain_Dataset" render="${not empty dependencies}" z="LWdyQ83dcuGqnymb9lRlQ6rNsFA="/>
 </div>

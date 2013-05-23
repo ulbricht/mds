@@ -29,6 +29,12 @@ import org.datacite.mds.web.api.NotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import java.security.GeneralSecurityException;
+
 @Service
 public class ProxyServiceImpl implements ProxyService {
     
@@ -63,13 +69,44 @@ public class ProxyServiceImpl implements ProxyService {
 		HttpsURLConnection con;
 		boolean geterrorstream=false;
 
+
+//--START FIXME  Certificate--
+
+        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        } };
+//--END FIXME Certificate--
+
+
 		try{
+//--START FIXME  Certificate--
+		   final SSLContext sc = SSLContext.getInstance( "SSL" );
+		   sc.init( null, trustAllCerts, new java.security.SecureRandom() );
+  		   final SSLSocketFactory sslSocketFactory = sc.getSocketFactory();
+//--END FIXME Certificate--
+
 			url=new URL (serviceurl);
 			con =(HttpsURLConnection) url.openConnection();	
+
+//--START FIXME  Certificate--
+			((HttpsURLConnection)con).setSSLSocketFactory(sslSocketFactory);
+//--END FIXME Certificate--
+
 			con.setRequestMethod(method);
 		}catch (MalformedURLException e){throw new ProxyException(e.getMessage());}
 	 	 catch (ProtocolException e){throw new ProxyException(e.getMessage());}
 		 catch (IOException e){throw new ProxyException(e.getMessage());}
+		 catch (GeneralSecurityException e){throw new ProxyException(e.getMessage());}
 
 		prepareTransmission(con, body); 
 
