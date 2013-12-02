@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF8" ?>
 <xsl:stylesheet version="1.0" 
-	xmlns="http://datacite.org/schema/kernel-2.2" 
+	xmlns="http://datacite.org/schema/kernel-3" 
  	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	exclude-result-prefixes="xsl"
+	xmlns:exsl="http://exslt.org/common"
+	exclude-result-prefixes="xsl exsl"
 >
 	<xsl:output method="xml" media-type="text/xml" version="1.0" encoding="UTF8" indent="yes"/>
 	<xsl:param name="doi" select="'UNRETRIEVEABLE_DOI'"/>
@@ -39,7 +40,13 @@
 		<xsl:variable name="title" select="*[local-name()='identificationInfo']/*[local-name()='MD_DataIdentification']/*[local-name()='citation']/*[local-name()='CI_Citation']/*[local-name()='title']"/>
 		<xsl:variable name="summary" select="*[local-name()='identificationInfo']/*[local-name()='MD_DataIdentification']/*[local-name()='abstract']/*[local-name()='CharacterString']"/>
 
-<!-- checks -->
+
+      <xsl:variable name="north" select="//*[local-name()='northBoundLatitude']/*[local-name()='Decimal']"/>
+      <xsl:variable name="south" select="//*[local-name()='southBoundLatitude']/*[local-name()='Decimal']"/>
+      <xsl:variable name="west" select="//*[local-name()='westBoundLongitude']/*[local-name()='Decimal']"/>
+      <xsl:variable name="east" select="//*[local-name()='eastBoundLongitude']/*[local-name()='Decimal']"/>
+
+<!-- diverse checks -->
 		<xsl:if test="$doi='UNRETRIEVEABLE_DOI'">
 				<xsl:message terminate="yes">DOI is missing</xsl:message>
 		</xsl:if>
@@ -53,19 +60,19 @@
 		</xsl:if>
 
 		<xsl:if test="normalize-space($publicationYear) = ''">
-				<xsl:message terminate="yes">"MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date" - publication date is missing</xsl:message>
+				<xsl:message terminate="yes">"MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/Date" - publication date is missing</xsl:message>
 		</xsl:if>
 
 		<xsl:if test="translate(substring($publicationYear,1,4),'0123456789','') != ''">
-				<xsl:message terminate="yes">"MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date" - publication date not in YYYY-MM-DD format</xsl:message>
+				<xsl:message terminate="yes">"MD_Metadata/identificationInfo/MD_DataIdentification/citation/CI_Citation/date/Date" - publication date not in YYYY-MM-DD format</xsl:message>
 		</xsl:if>
 
 		<xsl:if test="normalize-space($publisher) = ''">
 				<xsl:message terminate="yes">"MD_Metadata/identificationInfo/MD_DataIdentification/pointOfContact/CI_ResponsibleParty" - no entity with role "publisher"</xsl:message>
 		</xsl:if>
 
-<!-- conversion -->
-		<resource  xsi:schemaLocation="http://datacite.org/schema/kernel-2.2 http://schema.datacite.org/meta/kernel-2.2/metadata.xsd">
+<!-- Konvertierung -->
+		<resource  xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
 			<identifier identifierType="DOI" ><xsl:value-of select="$doi"/></identifier>
 			<creators>	
 			 	<xsl:for-each select="$authors">
@@ -92,9 +99,23 @@
 					<description descriptionType="Abstract" ><xsl:value-of select="normalize-space($summary)"/></description>
 				</descriptions>
 			</xsl:if>
-		</resource>
 
-   </xsl:template> 
+      <xsl:if test="$north != '' and $south != '' and $east != '' and $west != ''">
+         <geoLocations>
+            <geoLocation>
+               <xsl:choose>
+                  <xsl:when test="$north = $south and $east = $west">
+                     <geoLocationPoint><xsl:value-of select="$south"/><xsl:text> </xsl:text><xsl:value-of select="$west"/></geoLocationPoint>
+                  </xsl:when>
+                  <xsl:otherwise>
+                     <geoLocationBox><xsl:value-of select="$south"/><xsl:text> </xsl:text><xsl:value-of select="$west"/><xsl:text> </xsl:text><xsl:value-of select="$north"/><xsl:text> </xsl:text><xsl:value-of select="$east"/></geoLocationBox>
+                  </xsl:otherwise>
+               </xsl:choose>
+            </geoLocation>
+         </geoLocations>
+			</xsl:if>
+		</resource>
+      </xsl:template> 
 
 
 	<xsl:template match="/*[local-name()='DIF' and namespace-uri()='http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/']">
@@ -116,9 +137,11 @@
 		<xsl:variable name="techcontacts" select="*[local-name()='Personnel']/*[local-name()='Role' and (contains(normalize-space(),'echnical Contact') or 
 							contains(normalize-space(),'chnical contact') or contains(normalize-space(),'TECHNICAL CONTACT')) ]/.."/>
 		<xsl:variable name="references" select="*[local-name()='Reference']/*[local-name()='DOI' or local-name()='Online_Resource' or local-name()='ISBN']/.."/>
+      
+      <xsl:variable name="spatial" select="//*[local-name()='Spatial_Coverage']"/>
 
 
-<!-- checks -->
+<!-- diverse checks -->
 		<xsl:if test="$doi='UNRETRIEVEABLE_DOI'">
 				<xsl:message terminate="yes">DOI is missing</xsl:message>
 		</xsl:if>
@@ -139,8 +162,10 @@
 				<xsl:message terminate="yes">"DIF/Data_Set_Citation/Dataset_Publisher" must not be empty"</xsl:message>
 		</xsl:if>
 
-<!-- conversion -->
-		<resource  xsi:schemaLocation="http://datacite.org/schema/kernel-2.2 http://schema.datacite.org/meta/kernel-2.2/metadata.xsd">
+
+
+<!-- Konvertierung -->
+		<resource  xsi:schemaLocation="http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd">
 			<identifier identifierType="DOI" ><xsl:value-of select="$doi"/></identifier>
 			<creators>	 	
 				<xsl:call-template name="listauthors">					
@@ -218,6 +243,26 @@
 			<descriptions>
 				<description descriptionType="Abstract" ><xsl:value-of select="$summary"/></description>
 			</descriptions>
+
+         <xsl:if test="normalize-space($spatial)!=''">
+            <geoLocations>
+
+
+            <xsl:for-each select="$spatial">
+               <geoLocation>
+                  <xsl:choose>
+                     <xsl:when test="./*[local-name()='Northernmost_Latitude'] = ./*[local-name()='Southernmost_Latitude'] and ./*[local-name()='Easternmost_Longitude'] = ./*[local-name()='Westernmost_Longitude']">
+                        <geoLocationPoint><xsl:value-of select="./*[local-name()='Southernmost_Latitude']"/><xsl:text> </xsl:text><xsl:value-of select="./*[local-name()='Westernmost_Longitude']"/></geoLocationPoint>
+                     </xsl:when>
+                     <xsl:otherwise>
+                        <geoLocationBox><xsl:value-of select="./*[local-name()='Southernmost_Latitude']"/><xsl:text> </xsl:text><xsl:value-of select="./*[local-name()='Westernmost_Longitude']"/><xsl:text> </xsl:text><xsl:value-of select="./*[local-name()='Northernmost_Latitude']"/><xsl:text> </xsl:text><xsl:value-of select="./*[local-name()='Easternmost_Longitude']"/></geoLocationBox>
+                     </xsl:otherwise>
+                  </xsl:choose>
+               </geoLocation>
+      		</xsl:for-each>
+
+            </geoLocations>
+		   </xsl:if> 
 		</resource> 
 	</xsl:template>
 

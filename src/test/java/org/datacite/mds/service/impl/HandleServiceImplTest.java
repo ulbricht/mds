@@ -41,7 +41,7 @@ public class HandleServiceImplTest {
         service.dummyMode = true;
         verify(service.resolver);
     }
-
+/*
     @Test
     public void testResolve() throws Exception {
         mockResolveExistingHandle();
@@ -69,11 +69,11 @@ public class HandleServiceImplTest {
         replay(service.resolver);
         service.resolve(doi);
     }
-
+*/
     private IExpectationSetters<HandleValue[]> expectResolveHandle() throws net.handle.hdllib.HandleException  {
         return expect(service.resolver.resolveHandle(eq(doi), anyObject(String[].class), anyObject(int[].class)));
     }
-
+/*
     @Test
     public void testCreate() throws Exception {
         mockResponseCode(AbstractMessage.RC_SUCCESS);
@@ -94,7 +94,7 @@ public class HandleServiceImplTest {
         replay(service.resolver);
         service.create(doi, url);
     }
-
+*/
     @Test(expected = IllegalArgumentException.class)
     public void testCreateEmptyDoi() throws HandleException {
         replay(service.resolver);
@@ -118,7 +118,7 @@ public class HandleServiceImplTest {
         replay(service.resolver);
         service.create(doi, null);
     }
-
+/*
     @Test
     public void testUpdate() throws Exception {
         mockResponseCode(AbstractMessage.RC_SUCCESS);
@@ -139,7 +139,7 @@ public class HandleServiceImplTest {
         replay(service.resolver);
         service.update(doi, url);
     }
-
+*/
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateEmptyDoi() throws HandleException {
         replay(service.resolver);

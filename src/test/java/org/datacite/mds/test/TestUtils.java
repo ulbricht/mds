@@ -179,7 +179,7 @@ public abstract class TestUtils {
     }
 
     public static byte[] getTestMetadata() {
-        return getTestMetadata20();
+        return getTestMetadata21();
     }
 
     public static byte[] getTestMetadata20() {
@@ -188,6 +188,9 @@ public abstract class TestUtils {
 
     public static byte[] getTestMetadata21() {
         return getTestMetadata("datacite-metadata-sample-v2.1.xml");
+    }
+    public static byte[] getTestMetadata30() {
+        return getTestMetadata("datacite-metadata-sample-v3.0.xml");
     }
 
     public static byte[] getTestMetadataDif() {

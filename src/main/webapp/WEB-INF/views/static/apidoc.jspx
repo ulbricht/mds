@@ -32,17 +32,15 @@ This API is intended to be used in programs and you will need a valid login. The
 <p class="indent"><code>/doi</code></p>
 <p class="indent"><code>/metadata</code></p>
 <p class="indent"><code>/media</code></p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi</b></code> accepts requests
-with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi/{doi}</b></code>, where <code>{doi}</code> is a actually DOI, accepts requests
-with <code>GET</code> HTTP method.</p>
-<p>The URI
-<code>https://doidb.wdc-terra.org/mds<b>/metadata</b></code> accepts requests
-with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/metadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
-with 2 HTTP methods: <code>GET</code> and <code>DELETE</code></p>
-<p>The URI <code>https://mds.datacite.org<b>/media/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests
-with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
+<p class="indent"><code>/difmetadata</code></p>
+<p class="indent"><code>/isometadata</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/doi/{doi}</b></code>, where <code>{doi}</code> is a actually DOI, accepts requests with <code>GET</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/metadata</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/metadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/difmetadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/mds<b>/isometadata/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://mds.datacite.org<b>/media/{doi}</b></code>, where <code>{doi}</code> is an actual DOI, accepts requests with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
 
 <p>In addition <code>HEAD</code> is allowed, whenever <code>GET</code> is.</p> 
 
@@ -93,29 +91,80 @@ handle for a DOI.
 
 <h3>Metadata</h3>
 
+DOIDB accepts three different metadata schemata - DataCite, DIF 9.8.2, and ISO19139. It is possible to generate DataCite metadata through stylesheet transformation by extracting the relevant information from the DIF or ISO schema. 
+Metadata are validated to conform to their specific schema. ISO-metadata is (preferably) INSPIRE conform and validates the <a href="http://inspire-geoportal.ec.europa.eu/">validator of the EU</a>. 
+To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH repository</a>
 
 
-DOIDB accepts two different metadata schemata.
+
 <ul>
+   <li>
+      <b>DataCite</b> must conform to the standards published by DataCite at <a href="http://schema.datacite.org" target="_blank">Metadata Schema Repository</a>. You will find there the preferred version and exmaple XML document. 
+      The schema is primarily used to allow cross-linking of datasets and publications using persistent identifiers. 
+
+   </li>
+
 <li>
-<b>DataCite Schema:</b> Metadata about your datasets must conform to the standards published by DataCite at <a href="http://schema.datacite.org" target="_blank">Metadata Schema Repository</a>.
-you will find there the preferred version and exmaple XML document. <em>Please remember that all your documents must specify correct schema location in the root element.</em>. 
-Also make sure DOI specified in your document matches DOI of the dataset.
+   <b><a href="http://gcmd.nasa.gov/User/difguide/difman.html">NASA DIF</a></b> metadata is supported in version <a href="http://doidb.wdc-terra.org/mds/schemas/gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">DIF 9.8.2</a>  
+   and can be stored independet from the DataCite metadata. However, if you want to use the automatic conversion into the DataCite schema, some fields are required and should look as follows:
+
+   <ul>
+      <li>Data_Set_Citation/Dataset_Creator a semicolon separated list of authors <code>Lastname1, Firstname1; Lastname2, Firstname2; Lastname3, Firstname3</code></li>
+      <li>Data_Set_Citation/Dataset_Title <code>the dataset title</code></li>
+      <li>Data_Set_Citation/Dataset_Release_Date as <code>YYYY-MM-DD</code></li>
+      <li>Data_Set_Citation/Dataset_Publisher should be <code>Deutsches GeoForschungsZentrum GFZ</code></li>
+   </ul>
 </li>
 
 <li>
-<b>NASA-DIF Schema</b> Since the DataCite metadata schema targets a wide range of scientific disciplines, it is very general in its structure. For example it is not possible to put a geographic reference into the metadata. Therefore we decited to accept metadata in a <a href="http://doidb.wdc-terra.org/mds/schemas/gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">modified version</a> of the <a href="http://gcmd.nasa.gov/User/difguide/difman.html">NASA DIF</a> schema. It is version 9.8.2 with some mandatory fields below the Data_Set_Citation tag.
+   <b>ISO19139</b> metadata is supported and can be stored independet from the DataCite metadata. However, if you want to use the automatic conversion into the DataCite schema, some fields are required and should look as follows:
 
-<ul>
-<li>Data_Set_Citation/Dataset_Creator a semicolon separated list of authors <code>Lastname1, Firstname1; Lastname2, Firstname2; Lastname3, Firstname3</code></li>
-<li>Data_Set_Citation/Dataset_Title <code>the dataset title</code></li>
-<li>Data_Set_Citation/Dataset_Release_Date as <code>YYYY-MM-DD</code></li>
-<li>Data_Set_Citation/Dataset_Publisher should be <code>Deutsches GeoForschungsZentrum GFZ</code></li>
-</ul>
+   <ul>
 
-A XSL-Stylesheet extracts the information necessary for the DataCite schema and finally this metadata will be used for registration at DataCite. There are already registered datasets. To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/oaip">OAI-PMH repository</a>
+      <li> authors
+         <ul>
+            <li>are below <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/citedResponsibleParty/CI_ResponsibleParty/individualName/CharacterString</code></li>
+            <li>with role author <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/citedResponsibleParty/CI_ResponsibleParty/role/CI_RoleCode</code></li>
+         </ul>
+     </li>
 
+     <li> publication year 
+         <ul>
+            <li>is derived from <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date/date/Date</code></li>
+            <li>with datetype publication <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/date/CI_Date/dateType/CI_DateTypeCode</code></li>
+         </ul>
+     </li>
+
+
+     <li> publisher  
+       <ul>
+            <li>is derived from <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/citedResponsibleParty/CI_ResponsibleParty/organisationName/CharacterString</code></li>
+            <li>with role publisher <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/citedResponsibleParty/CI_ResponsibleParty/role/CI_RoleCode</code></li>
+       </ul>
+     </li>
+
+
+     <li> keywords  
+       <ul>
+            <li>are derived from  <code>identificationInfo/MD_DataIdentification/descriptiveKeywords/MD_Keywords/keyword/CharacterString</code></li>
+       </ul>
+     </li>
+
+     <li> title  
+       <ul>
+            <li>is derived from  <code>identificationInfo/MD_DataIdentification/citation/CI_Citation/title</code></li>
+       </ul>
+     </li>
+
+     <li> abstract  
+       <ul>
+            <li>is derived from  <code>identificationInfo/MD_DataIdentification/abstract/CharacterString</code></li>
+       </ul>
+     </li>
+
+   </ul>
 </li>
+
 </ul>
 
 <h3>Testing</h3>
@@ -181,25 +230,8 @@ url={url}</code></pre>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us</p> 
 
-<!--<h3>PUT</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>PUT will mint new DOI or update URL</p>
-<h4>Request headers</h4> 
-<p><code>Content-Type:text/plain;charset=UTF-8</code></p>
-<h4>Request body</h4> 
-<pre><code>doi={doi}
-url={url}</code></pre> 
-<p>where <code>{doi}</code> and <code>{url}</code> have to replace by your DOI and URL, UFT-8 encoded. URL must be <a href="http://en.wikipedia.org/wiki/Percent-encoding" target="_">escaped</a>.</p>
-<h4>Response body</h4> 
-<p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
-<h4>Response statuses</h4> 
-<p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - failed validation</p>
-<p><code>403 Forbidden</code> - login problem, quota excceded</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us</p> 
 
---><h2>Metadata API</h2>
+<h2>Metadata API</h2>
 <h3>GET</h3> 
 <p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>This request returns the most recent version of metadata associated with a given DOI.</p>
@@ -223,7 +255,11 @@ try later and if problem persists please contact us
 
 <h3>POST</h3>
 <p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i></p> 
-<p>This request stores new version of metadata. The request body must contain valid XML. If you provide a DataCite Schema you can leave empty the <code>{doi}</code> field of the URI, since this information is also stored in the XML.</p>
+<p>This request stores new version of metadata in DOIDB and registers the metadata at <a href="http://mds.datacite.org">DataCite</a>. The request body must contain valid XML in DataCite, DIF, or ISO schema. 
+
+For the DataCite schema you can alternatively use the URI <i>https://doidb.wdc-terra.org/mds/metadata</i> as endpoint, since the DOI is kept in the metadata. 
+
+For DIF and ISO schema the <code>{doi}</code> in the URI is required and DataCite metadata is automatically generated using stylesheet transformation. </p>
 
 
 <h4>Request headers</h4> 
@@ -242,22 +278,8 @@ try later and if problem persists please contact us
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us</p> 
 
-<!--<h3>PUT</h3>
-<p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
-<p>This request stores new version of metadata. The request body must contain valid XML.</p>
-<code>Content-Type:application/xml;charset=UTF-8</code> 
-<h4>Request body</h4> 
-<p>UFT-8 encoded metadata</p>
-<h4>Response body</h4> 
-<p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
-<h4>Response statuses</h4> 
-<p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - invalid XML, wrong domain, wrong prefix</p>
-<p><code>403 Forbidden</code> - login problem, quota excceded</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us</p> 
 
---><h3>DELETE</h3> 
+<h3>DELETE</h3> 
 <p><i>URI: https://doidb.wdc-terra.org/mds/metadata/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
 <p>This request marks a dataset as 'inactive'. To activate it again, <code>POST</code> new metadata or set the <code>isActive</code>-flag in the user interface.</p>
 
@@ -271,6 +293,24 @@ try later and if problem persists please contact us</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
+
+
+
+
+
+
+
+<h2>DIFMetadata API and ISOMetadata API</h2>
+
+<p>Both APIs use the same commands, parameters, and returncodes as the Metadata API described above. The APIs differ from the Metadata API only in the accepted metadata schema and there is no conversion to/registration of DataCite metadata.
+This is done to allow independent deposition of metadata in situations where automatic conversion might not be appropriate. However, to make independent registration of ISO and DIF metadata work, DataCite metadata must already be associated 
+with the DOI.</p>
+
+<p><i>URI: https://doidb.wdc-terra.org/mds/isometadata/{doi}</i> accepts ISO19139 metadata.</p> 
+
+<p><i>URI: https://doidb.wdc-terra.org/mds/difmetadata/{doi}</i> accepts DIF metadata.</p> 
+
+
 
 <h2>Media API</h2>
 
