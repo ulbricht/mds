@@ -93,13 +93,13 @@ Periodically we purge all 10273/TEST datasets from the system.</p>
 <h3>Code examples python</h3>
 
 Download the files
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/delete_metadata.py">delete_metadata.py</a>,
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/get_igsn.py">get_igsn.py</a>,  
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/get_metadata.py">get_metadata.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/post_igsn.py">post_igsn.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/post_metadata.py">post_metadata.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/test.url">test.url</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/test.xml">test.xml</a>
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/delete_metadata.py">delete_metadata.py</a>,
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/get_igsn.py">get_igsn.py</a>,  
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/get_metadata.py">get_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/post_igsn.py">post_igsn.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/post_metadata.py">post_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/test.url">test.url</a>, 
+<a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/python/test.xml">test.xml</a>
 in one directory and call them from the command line
 <ul>
 
@@ -118,17 +118,8 @@ in one directory and call them from the command line
 
 <h3>Code examples PHP</h3>
 
-Download 
+Download the file <a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/examples/php/phpcurl.php">phpcurl.php</a>.
 
-<ul>
-   <li>
-    <a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/php/phpcurl.php">phpcurl.php to create, deposit and deactivate metadata</a>.
-   </li>
-
-   <li>
-    <a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/php/modify_Or_Add_DOI.php">modify_Or_Add_DOI.php to modify a referenced DOI on the fly</a>.
-   </li>
-</ul>
 
 
 

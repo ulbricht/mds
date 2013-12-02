@@ -78,7 +78,7 @@ public class DatasetControllerTest {
         datacentre = TestUtils.createDefaultDatacentre("10.5072");
         TestUtils.login(datacentre);
 
-        xml = TestUtils.setDoiOfMetadata(TestUtils.getTestMetadata20(), doi);
+        xml = TestUtils.setDoiOfMetadata(TestUtils.getTestMetadata30(), doi);
         xml2 = TestUtils.setDoiOfMetadata(TestUtils.getTestMetadata21(), doi);
 		  dif=TestUtils.getTestMetadataDif();
 		  iso=TestUtils.getTestMetadataIso();
