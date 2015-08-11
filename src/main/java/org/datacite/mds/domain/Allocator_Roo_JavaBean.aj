@@ -32,10 +32,6 @@ privileged aspect Allocator_Roo_JavaBean {
         return this.name;
     }
     
-    public void Allocator.setName(String name) {
-        this.name = name;
-    }
-    
     public String Allocator.getContactName() {
         return this.contactName;
     }
@@ -46,10 +42,6 @@ privileged aspect Allocator_Roo_JavaBean {
     
     public String Allocator.getContactEmail() {
         return this.contactEmail;
-    }
-    
-    public void Allocator.setContactEmail(String contactEmail) {
-        this.contactEmail = contactEmail;
     }
     
     public Integer Allocator.getDoiQuotaAllowed() {
