@@ -20,44 +20,14 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 privileged aspect PrefixController_Roo_Controller {
-    
-    @RequestMapping(method = RequestMethod.POST)
-    public String PrefixController.create(@Valid Prefix prefix, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("prefix", prefix);
-            return "prefixes/create";
-        }
-        uiModel.asMap().clear();
-        prefix.persist();
-        return "redirect:/prefixes/" + encodeUrlPathSegment(prefix.getId().toString(), httpServletRequest);
-    }
-    
-    @RequestMapping(params = "form", method = RequestMethod.GET)
-    public String PrefixController.createForm(Model uiModel) {
-        uiModel.addAttribute("prefix", new Prefix());
-        return "prefixes/create";
-    }
-    
+       
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String PrefixController.show(@PathVariable("id") Long id, Model uiModel) {
         uiModel.addAttribute("prefix", Prefix.findPrefix(id));
         uiModel.addAttribute("itemId", id);
         return "prefixes/show";
     }
-    
-    @RequestMapping(method = RequestMethod.GET)
-    public String PrefixController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        if (page != null || size != null) {
-            int sizeNo = size == null ? 10 : size.intValue();
-            uiModel.addAttribute("prefixes", Prefix.findPrefixEntries(page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
-            float nrOfPages = (float) Prefix.countPrefixes() / sizeNo;
-            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
-        } else {
-            uiModel.addAttribute("prefixes", Prefix.findAllPrefixes());
-        }
-        return "prefixes/list";
-    }
-    
+        
     @RequestMapping(method = RequestMethod.PUT)
     public String PrefixController.update(@Valid Prefix prefix, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {

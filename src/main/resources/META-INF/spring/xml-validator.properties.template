@@ -4,8 +4,13 @@ xml.schema.caching=true
 #schemaLocation in xml must start with this prefix
 xml.schema.location.prefix=http://schema.datacite.org/meta/
 
-#location of local copy of schemata; will replace the above prefix.
+# allow two additional schemas for each DOI
+xml.dif.schema.namespace=http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/
+xml.iso.schema.namespace=http://www.isotc211.org/2005/gmd
+
+#location of local copy of schemata; it will replace the "http://"-prefix of schema locations
 #leave empty if there is no local copy. 
 xml.schema.location.local=
+#xml.schema.location.local=http://doidb.wdc-terra.org/mds/schemas/
 
 xml.schema.xpath.doi=//*[local-name() = 'identifier' and @identifierType='DOI']

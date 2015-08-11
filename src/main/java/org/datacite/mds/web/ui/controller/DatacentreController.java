@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.datacite.mds.domain.Allocator;
 import org.datacite.mds.domain.Datacentre;
@@ -77,22 +80,29 @@ public class DatacentreController implements UiController {
     public String list(@RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "size", required = false) Integer size, Model model) {
         Allocator allocator = getCurrentAllocator();
-        if (page != null || size != null) {
-            int sizeNo = size == null ? 10 : size.intValue();
-            model.addAttribute("datacentres", Datacentre.findDatacentreEntriesByAllocator(allocator, page == null ? 0
-                    : (page.intValue() - 1) * sizeNo, sizeNo));
-            float nrOfPages = (float) Datacentre.countDatacentresByAllocator(allocator) / sizeNo;
-            model.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1
-                    : nrOfPages));
-        } else {
-            model.addAttribute("datacentres", Datacentre.findAllDatacentresByAllocator(allocator));
-        }
+        int sizeNo = size == null ? LIST_DEFAULT_SIZE : Math.min(size.intValue(), LIST_MAX_SIZE);
+        model.addAttribute("datacentres", Datacentre.findDatacentreEntriesByAllocator(allocator, page == null ? 0
+                : (page.intValue() - 1) * sizeNo, sizeNo));
+        float nrOfPages = (float) Datacentre.countDatacentresByAllocator(allocator) / sizeNo;
+        model.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1
+                : nrOfPages));
+        model.addAttribute("size", sizeNo);
         return "datacentres/list";
     }
 
     @ModelAttribute("prefixes")
     public Collection<Prefix> populatePrefixes() {
-        return getCurrentAllocator().getPrefixes();
+        Set<Prefix> allPrefixes = new TreeSet(getCurrentAllocator().getPrefixes());
+        List<Prefix> assignedPrefixes = new ArrayList<Prefix>(); 
+        List<Prefix> unassignedPrefixes = new ArrayList<Prefix>(); 
+        for (Prefix prefix : allPrefixes) {
+            boolean isAssigned = Datacentre.findDatacentresByPrefix(prefix).size() > 0;
+            if (isAssigned) 
+                assignedPrefixes.add(prefix);
+            else
+                unassignedPrefixes.add(prefix);
+        }
+        return ListUtils.union(unassignedPrefixes, assignedPrefixes);
     }
 
     @ModelAttribute("allocators")
@@ -108,8 +118,9 @@ public class DatacentreController implements UiController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String show(@PathVariable("id") Long id, Model model) {
+    public String show(@PathVariable("id") Long id, Model model) throws SecurityException {
         Datacentre datacentre = Datacentre.findDatacentre(id);
+        SecurityUtils.checkDatacentreOwnership(datacentre);
         model.addAttribute("datacentre", datacentre);
         model.addAttribute("itemId", id);
         model.addAttribute("magicAuthString", magicAuthStringService.getCurrentAuthString(datacentre));
@@ -117,7 +128,8 @@ public class DatacentreController implements UiController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String create(@Valid Datacentre datacentre, BindingResult result, @RequestParam(required=false) Boolean sendWelcomeMail, Model model, HttpSession session) {
+    public String create(@Valid Datacentre datacentre, BindingResult result, @RequestParam(required=false) Boolean sendWelcomeMail, Model model, HttpSession session) throws SecurityException {
+        SecurityUtils.checkDatacentreOwnership(datacentre);
         if (result.hasErrors()) {
             model.addAttribute("datacentre", datacentre);
             model.addAttribute("sendWelcomeMail", sendWelcomeMail);
@@ -136,8 +148,9 @@ public class DatacentreController implements UiController {
     }
 
     @RequestMapping(value = "/{id}", params = "form", method = RequestMethod.GET)
-    public String updateForm(@PathVariable("id") Long id, Model model) {
+    public String updateForm(@PathVariable("id") Long id, Model model) throws SecurityException {
         Datacentre datacentre = Datacentre.findDatacentre(id);
+        SecurityUtils.checkDatacentreOwnership(datacentre);
         model.addAttribute("datacentre", datacentre);
         model.addAttribute("sendWelcomeMail", "false");
         model.addAttribute("magicAuthString", magicAuthStringService.getCurrentAuthString(datacentre));
@@ -145,7 +158,8 @@ public class DatacentreController implements UiController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public String update(@Valid Datacentre datacentre, BindingResult result, @RequestParam(required=false) Boolean sendWelcomeMail, Model model, HttpSession session) {
+    public String update(@Valid Datacentre datacentre, BindingResult result, @RequestParam(required=false) Boolean sendWelcomeMail, Model model, HttpSession session) throws SecurityException {
+        SecurityUtils.checkDatacentreOwnership(datacentre);
         if (result.hasErrors()) {
             model.addAttribute("datacentre", datacentre);
             model.addAttribute("sendWelcomeMail", sendWelcomeMail);

@@ -12,7 +12,7 @@
 	    	<web-resource-name>Protected Context</web-resource-name>
         	<url-pattern>/*</url-pattern>
     	</web-resource-collection>
-    	<!-- auth-constraint goes here if you require authentication -->
+    	<!--&lt;!&ndash; auth-constraint goes here if you require authentication &ndash;&gt;-->
     	<user-data-constraint>
     		<transport-guarantee>CONFIDENTIAL</transport-guarantee>
     	</user-data-constraint>

@@ -186,8 +186,10 @@ href="https://github.com/datacite/mds/tree/master/client" target="_">Github</a>.
 
 <h2>Doi API</h2>
 
+
 <h3>GET</h3> 
 <p><i>URI: https://doidb.wdc-terra.org/mds/doi/{doi}</i> where <code>{doi}</code> is a specific DOI.</p> 
+
  
 <p>This request returns an URL associated with a given DOI.</p>
 <h4>Request headers</h4>
@@ -197,17 +199,34 @@ empty
 <h4>Response headers</h4>
 none
 <h4>Response body</h4> 
-<p>If response status is 200: URL representing a dataset, otherwise short explanation for non-200 status</p> 
+<p>If response status is 200: URL representing a dataset; empty for 204; otherwise short explanation for non-200 status</p>
 <h4>Response statuses</h4> 
 <p><code>200 OK</code> - operation successful</p>
-<p><code>204 No Content</code> - DOI is known to MDS, but is not resolvable (might be due to handle's latency)</p>
+<p><code>204 No Content</code> - DOI is known to MDS, but is not minted (or not resolvable e.g. due to handle's latency)</p>
 <p><code>401 Unauthorized</code> - no login</p>
-<p><code>403 login problem or dataset belongs to another party</code></p>
+<p><code>403</code> - login problem or dataset belongs to another party</p>
 <p><code>404 Not Found</code> - DOI does not exist in our database</p>
-<p><code>410 Gone</code> - the requested dataset was marked inactive (using DELETE method)</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
-</p> 
+</p>
+
+<h3>GET (list all DOIs)</h3>
+
+<p><i>URI: https://mds.datacite.org/doi</i></p> 
+ 
+<p>This request returns a list of all DOIs for the requesting datacentre. There is no guaranteed order.</p>
+<h4>Request headers</h4>
+none 
+<h4>Request body</h4> 
+empty
+<h4>Response headers</h4>
+none
+<h4>Response body</h4> 
+<p>If response status is 200: list of DOIs, one DOI per line; empty for 204</p>
+<h4>Response statuses</h4> 
+<p><code>200 OK</code> - operation successful</p>
+<p><code>204 No Content</code> - no DOIs founds</p>
+ 
 
 <h3>POST</h3>
 <p><i>URI: https://doidb.wdc-terra.org/mds/doi</i></p> 
@@ -223,7 +242,7 @@ url={url}</code></pre>
 <p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - request body must be exactly two lines: DOI and URL; , wrong domain, wrong prefix</p>
+<p><code>400 Bad Request</code> - request body must be exactly two lines: DOI and URL; wrong domain, wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>412 Precondition failed</code> - metadata must be uploaded first</p>
@@ -272,7 +291,7 @@ For DIF and ISO schema the <code>{doi}</code> in the URI is required and DataCit
 <p><code>Location</code> - URL of the newly stored metadata</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - invalid XML, wrong domain, wrong prefix</p>
+<p><code>400 Bad Request</code> - invalid XML, wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>500 Internal Server Error</code> - server internal error,
