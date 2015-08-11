@@ -73,7 +73,7 @@ public class MetadataIsoApiController implements ApiController {
         
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI is unknown to MDS");
+            throw new NotFoundException("IGSN is unknown to MDS");
 
         SecurityUtils.checkDatasetOwnership(dataset, user);
 
@@ -82,9 +82,9 @@ public class MetadataIsoApiController implements ApiController {
 
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)
-            throw new NotFoundException("no metadata for the DOI");
+            throw new NotFoundException("no metadata for the IGSN");
         if (metadata.getIso() == null)
-            throw new DeletedException("no ISO metadata for the DOI");
+            throw new DeletedException("no ISO metadata for the IGSN");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -131,7 +131,7 @@ public class MetadataIsoApiController implements ApiController {
         String method = httpRequest.getMethod();
         if (testMode == null)
             testMode = false;
-        String logPrefix = "*****" + method + " isometadata (doi=" + doi + ", testMode=" + testMode + ") ";
+        String logPrefix = "*****" + method + " isometadata (igsn=" + doi + ", testMode=" + testMode + ") ";
 
         log4j.debug(logPrefix);
         
@@ -139,17 +139,17 @@ public class MetadataIsoApiController implements ApiController {
             throw new ValidationException("request body must not be empty");
         
         if (doi==null || doi.length()==0)
-            throw new ValidationException("failed to retrieve DOI");
+            throw new ValidationException("failed to retrieve IGSN");
         
         Dataset oldDataset = Dataset.findDatasetByDoi(doi);
 
 		  if (oldDataset == null) 
-			throw new NotFoundException("DOI doesn't exist");
+			throw new NotFoundException("IGSN doesn't exist");
 
 		  Metadata oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
 
 		  if (oldmetadata == null) 
-			throw new NotFoundException("DOI doesn't exist");      
+			throw new NotFoundException("IGSN doesn't exist");      
  
 		  Metadata metadata=new Metadata();//copy old values
 		
@@ -207,7 +207,7 @@ public class MetadataIsoApiController implements ApiController {
 
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI doesn't exist");
+            throw new NotFoundException("IGSN doesn't exist");
         
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)

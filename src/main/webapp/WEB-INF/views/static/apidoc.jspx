@@ -23,14 +23,20 @@ This API is intended to be used in programs and you will need a valid login. The
 
 <p>The API is implemented in REST style. The end point you are going to use is:</p>
 
-<p class="indent"><code>https://doidb.wdc-terra.org/igsn/</code></p>
-<p>At the moment there are <em>two resources</em>:</p>
+<p class="indent"><code>https://doidb.wdc-terra.org/igsnaa/</code></p>
+<p>At the moment there are <em>five resources</em>:</p>
 <p class="indent"><code>/igsn</code></p>
 <p class="indent"><code>/metadata</code></p>
-<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/igsn</b></code> accepts requests with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/igsn/{igsn}</b></code>, where <code>{igsn}</code> is a actually IGSN, accepts requests with <code>GET</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/metadata</b></code> accepts requests with <code>POST</code> HTTP method.</p>
-<p>The URI <code>https://doidb.wdc-terra.org/igsn<b>/metadata/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 2 HTTP methods: <code>GET</code> and <code>DELETE</code></p>
+<p class="indent"><code>/media</code></p>
+<p class="indent"><code>/igsnmetadata</code></p>
+<p class="indent"><code>/isometadata</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/igsn</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/igsn/{igsn}</b></code>, where <code>{igsn}</code> is a actually IGSN, accepts requests with <code>GET</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/metadata</b></code> accepts requests with <code>POST</code> HTTP method.</p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/metadata/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/igsnmetadata/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://doidb.wdc-terra.org/igsnaa<b>/isometadata/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 3 HTTP methods: <code>POST</code>, <code>GET</code>, and <code>DELETE</code></p>
+<p>The URI <code>https://mds.datacite.org<b>/media/{igsn}</b></code>, where <code>{igsn}</code> is an actual IGSN, accepts requests with 2 HTTP methods: <code>GET</code> and <code>POST</code></p>
 
 <p>In addition <code>HEAD</code> is allowed, whenever <code>GET</code> is.</p> 
 
@@ -70,13 +76,20 @@ handle for a IGSN.
 
 <h3>Metadata</h3>
 
-
+The IGSNDB accepts three different metadata schemata - IGSN metadata, an extended IGSN metadata schema, and ISO19139. It is possible to generate DataCite metadata through stylesheet transformation by extracting the relevant information from the DIF or ISO schema. 
+Metadata are validated to conform to their specific schema. ISO-metadata is (preferably) INSPIRE conform and validates the <a href="http://inspire-geoportal.ec.europa.eu/">validator of the EU</a>. 
+To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/igsnaaoaip">OAI-PMH repository</a>
 
 <p>
 Metadata about your samples must conform to the standards published by IGSN e.V. at <a href="http://trac.gfz-potsdam.de/igsn/browser/IGSN/schema" target="_blank">Metadata Schema Repository</a>.
-You will find an example XML document <a href="http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xml">here</a>. <em>
+You will find an example XML document <a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/schema/1.0/igsn.xml">here</a>. <em>
 All your documents must specify a correct schema location in the root element. Currently <b>http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/0.3/igsn.xsd</b> and <b>http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xsd</b> are valid</em>. Also make sure IGSN specified in your document matches IGSN of the sample.
 </p>
+
+<p>
+We ask you to provide detailed metadata for discovery of your samples using the detailed schema metadata schema. It is a modified version of the metadata schema used at <a href="http://geosamples.org/">SESAR</a>
+</p>
+
 
 
 <h3>Testing</h3>
@@ -93,13 +106,13 @@ Periodically we purge all 10273/TEST datasets from the system.</p>
 <h3>Code examples python</h3>
 
 Download the files
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/delete_metadata.py">delete_metadata.py</a>,
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/get_igsn.py">get_igsn.py</a>,  
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/get_metadata.py">get_metadata.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/post_igsn.py">post_igsn.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/post_metadata.py">post_metadata.py</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/test.url">test.url</a>, 
-<a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/python/test.xml">test.xml</a>
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/delete_metadata.py">delete_metadata.py</a>,
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/get_igsn.py">get_igsn.py</a>,  
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/get_metadata.py">get_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/post_igsn.py">post_igsn.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/post_metadata.py">post_metadata.py</a>, 
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/test.url">test.url</a>, 
+<a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/python/test.xml">test.xml</a>
 in one directory and call them from the command line
 <ul>
 
@@ -113,12 +126,13 @@ in one directory and call them from the command line
 
 	<li>python delete_metadata.py USER PASSWORD IGSN-HANDLE </li>
 
+
 </ul>
 
 
 <h3>Code examples PHP</h3>
 
-Download the file <a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/examples/php/phpcurl.php">phpcurl.php</a>.
+Download the file <a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/examples/php/phpcurl.php">phpcurl.php</a>.
 
 
 
@@ -128,8 +142,9 @@ Download the file <a href="http://doidb.wdc-terra.org/igsn/examples/igsn.org/exa
 
 <h2>IGSN API</h2>
 
+
 <h3>GET</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/igsn/igsn/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/igsn/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
  
 <p>This request returns an URL associated with a given IGSN.</p>
 <h4>Request headers</h4>
@@ -139,20 +154,37 @@ empty
 <h4>Response headers</h4>
 none
 <h4>Response body</h4> 
-<p>If response status is 200: URL representing a dataset, otherwise short explanation for non-200 status</p> 
+<p>If response status is 200: URL representing a dataset; empty for 204; otherwise short explanation for non-200 status</p>
 <h4>Response statuses</h4> 
 <p><code>200 OK</code> - operation successful</p>
 <p><code>204 No Content</code> - IGSN is known to MDS, but is not resolvable (might be due to handle's latency)</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 login problem or dataset belongs to another party</code></p>
 <p><code>404 Not Found</code> - IGSN does not exist in our database</p>
-<p><code>410 Gone</code> - the requested dataset was marked inactive (using DELETE method)</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
-</p> 
+</p>
+
+<h3>GET (list all IGSNSs)</h3>
+
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/igsn</i></p> 
+ 
+<p>This request returns a list of all IGSNs for the requesting datacentre. There is no guaranteed order.</p>
+<h4>Request headers</h4>
+none 
+<h4>Request body</h4> 
+empty
+<h4>Response headers</h4>
+none
+<h4>Response body</h4> 
+<p>If response status is 200: list of IGSNs, one IGSN per line; empty for 204</p>
+<h4>Response statuses</h4> 
+<p><code>200 OK</code> - operation successful</p>
+<p><code>204 No Content</code> - no IGSNs founds</p>
+ 
 
 <h3>POST</h3>
-<p><i>URI: https://doidb.wdc-terra.org/igsn/igsn</i></p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/igsn</i></p> 
 <p>POST will mint new IGSN if specified IGSN doesn't exist. This method will attempt to update URL if you specify existing IGSN. 
 Standard domains and quota restrictions check will be performed. A Datacentre's QuotaUsed will be increased by 1. A new record in Datasets will be created.</p>
 <h4>Request headers</h4> 
@@ -165,7 +197,7 @@ url={url}</code></pre>
 <p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - request body must be exactly two lines: IGSN and URL; , wrong domain, wrong prefix</p>
+<p><code>400 Bad Request</code> - request body must be exactly two lines: IGSN and URL;  wrong domain or wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>412 Precondition failed</code> - metadata must be uploaded first</p>
@@ -175,7 +207,7 @@ try later and if problem persists please contact us</p>
 
 <h2>Metadata API</h2>
 <h3>GET</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
 <p>This request returns the most recent version of metadata associated with a given IGSN.</p>
 <h4>Request headers</h4> 
 <code>Accept:application/xml</code> 
@@ -196,9 +228,9 @@ try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{IGSN}</i></p> 
-<p>This request stores new version of metadata. The request body must contain valid XML. </p>
 
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/metadata/{IGSN}</i></p> 
+<p>This request stores new version of metadata. The request body must contain valid XML. </p>
 
 <h4>Request headers</h4> 
 <code>Content-Type:application/xml;charset=UTF-8</code> 
@@ -210,7 +242,7 @@ try later and if problem persists please contact us
 <p><code>Location</code> - URL of the newly stored metadata</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - invalid XML, wrong domain, wrong prefix</p>
+<p><code>400 Bad Request</code> - invalid XML, wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>500 Internal Server Error</code> - server internal error,
@@ -218,7 +250,7 @@ try later and if problem persists please contact us</p>
 
 
 <h3>DELETE</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsnaa}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
 <p>This request marks a dataset as 'inactive'. To activate it again, <code>POST</code> new metadata or set the <code>isActive</code>-flag in the user interface.</p>
 
 <h4>Response body</h4> 
@@ -232,49 +264,16 @@ try later and if problem persists please contact us</p>
 try later and if problem persists please contact us
 </p> 
 
-<!--
-<h2>Media API</h2>
-<h3>GET</h3> 
-<p><i>URI: https://mds.datacite.org/media/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
- 
-<p>This request returns list of pairs of media type and URLs associated with a given IGSN.</p>
-<h4>Request headers</h4>
-none 
-<h4>Request body</h4> 
-empty
-<h4>Response headers</h4>
-none
-<h4>Response body</h4> 
-<p>If response status is 200: key-value list of media types/urls, otherwise short explanation for non-200 status</p> 
-<h4>Response statuses</h4> 
-<p><code>200 OK</code> - operation successful</p>
-<p><code>401 Unauthorized</code> - no login</p>
-<p><code>403 login problem or dataset belongs to another party</code></p>
-<p><code>404 Not Found</code> - No media attached to the IGSN or IGSN does not exist in our database</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us
-</p> 
 
-<h3>POST</h3>
-<p><i>URI: https://mds.datacite.org/media/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
-<p>POST will add/update media type/urls pairs to a IGSN. Standard domain restrictions check will be performed.</p>
-<h4>Request headers</h4> 
-<p><code>Content-Type:text/plain;charset=UTF-8</code></p>
-<h4>Request body</h4>
-Multiple lines in the following format
-<pre><code>{mime-type}={url}</code></pre> 
-<p>where <code>{mime-type}</code> and <code>{url}</code> have to be replaced by your mime type and URL, UFT-8 encoded.</p>
-<h4>Response body</h4> 
-<p>short explanation of status code</p> 
-<h4>Response statuses</h4> 
-<p><code>200 OK</code> - operation successful</p>
-<p><code>400 Bad Request</code> - one or more of the specified mime-types or urls are invalid (e.g. non supported mime-type, not allowed url domain, etc.)</p>
-<p><code>401 Unauthorized</code> - no login</p>
-<p><code>403 Forbidden</code> - login problem</p>
-<p><code>500 Internal Server Error</code> - server internal error,
-try later and if problem persists please contact us</p> 
+<h2>IGSNMetadata API and ISOMetadata API</h2>
 
--->
+<p>Both APIs use the same commands, parameters, and returncodes as the Metadata API described above. The APIs differ from the Metadata API only in the accepted metadata schema. </p>
+
+<p><i>URI: https://doidb.wdc-terra.org/mds/isometadata/{igsn}</i> accepts ISO19139 metadata.</p> 
+
+<p><i>URI: https://doidb.wdc-terra.org/mds/igsnmetadata/{igsn}</i> accepts IGSN extended schema for allocation agents metadata.</p> 
+
+
   </util:panel>
 </div>
 

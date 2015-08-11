@@ -24,10 +24,6 @@ privileged aspect Datacentre_Roo_JavaBean {
         return this.name;
     }
     
-    public void Datacentre.setName(String name) {
-        this.name = name;
-    }
-    
     public String Datacentre.getContactName() {
         return this.contactName;
     }
@@ -38,10 +34,6 @@ privileged aspect Datacentre_Roo_JavaBean {
     
     public String Datacentre.getContactEmail() {
         return this.contactEmail;
-    }
-    
-    public void Datacentre.setContactEmail(String contactEmail) {
-        this.contactEmail = contactEmail;
     }
     
     public Integer Datacentre.getDoiQuotaAllowed() {

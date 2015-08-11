@@ -109,7 +109,7 @@ public class MetadataDifApiControllerTest {
 
     private MockHttpServletRequest makeServletRequestForDoi(String doi) {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServletPath("/difmetadata/" + doi);
+        request.setServletPath("/igsnmetadata/" + doi);
         return request;
     }
 

@@ -227,7 +227,7 @@ public class MetadataApiControllerTest {
         HttpStatus responseStatus = post(xml, false);
         assertEquals(HttpStatus.CREATED, responseStatus);
     }
-
+/*
     @Test
     public void testPostdif() throws Exception {
         HttpStatus responseStatus = postwithdoi(dif, false);
@@ -249,7 +249,7 @@ public class MetadataApiControllerTest {
     public void testPostIsoWithoutDoi() throws Exception {
         HttpStatus responseStatus = post(iso, false);
     }
-
+*/
     @Test
     public void testPostNonExistingDataset() throws Exception {
         metadata.remove();

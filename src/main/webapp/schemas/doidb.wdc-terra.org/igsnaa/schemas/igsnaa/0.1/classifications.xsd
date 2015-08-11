@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://doidb.wdc-terra.org/igsnaa"
+           xmlns="http://doidb.wdc-terra.org/igsnaa"           
+           elementFormDefault="qualified"
+           >
+
+  <xs:element name="classification">
+    <xs:complexType>
+                 <xs:sequence>
+	<xs:element name="level1"  minOccurs="0"  maxOccurs="1">
+		  <xs:simpleType>
+		    <xs:restriction base="xs:string"/>    
+		  </xs:simpleType>
+        </xs:element>
+        
+        <xs:element name="level2"  minOccurs="0" maxOccurs="1">
+		  <xs:simpleType>
+		    <xs:restriction base="xs:string"/>    
+		  </xs:simpleType>
+         </xs:element>
+                 </xs:sequence>       
+    </xs:complexType>
+  </xs:element>
+  
+</xs:schema>

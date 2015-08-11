@@ -1,10 +1,13 @@
 package org.datacite.mds.web.ui.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.datacite.mds.domain.Allocator;
 import org.datacite.mds.domain.Prefix;
@@ -45,6 +48,16 @@ public class AllocatorController implements UiController {
         Allocator allocator = Allocator.findAllocatorBySymbol(symbol);
         model.asMap().clear();
         return (allocator == null) ? "allocators/show" : "redirect:/allocators/" + allocator.getId();
+    }
+    
+    @RequestMapping(method = RequestMethod.GET)
+    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model model) {
+        int sizeNo = size == null ? LIST_DEFAULT_SIZE : Math.min(size.intValue(), LIST_MAX_SIZE);
+        model.addAttribute("allocators", Allocator.findAllocatorEntries(page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
+        float nrOfPages = (float) Allocator.countAllocators() / sizeNo;
+        model.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        model.addAttribute("size", sizeNo);
+        return "allocators/list";
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -114,7 +127,17 @@ public class AllocatorController implements UiController {
     
     @ModelAttribute("prefixes")
     public Collection<Prefix> populatePrefixes() {
-        return Prefix.findAllPrefixes();
+        List<Prefix> allPrefixes = Prefix.findAllPrefixes();
+        List<Prefix> assignedPrefixes = new ArrayList<Prefix>(); 
+        List<Prefix> unassignedPrefixes = new ArrayList<Prefix>(); 
+        for (Prefix prefix : allPrefixes) {
+            boolean isAssigned = Allocator.findAllocatorsByPrefix(prefix).size() > 0;
+            if (isAssigned) 
+                assignedPrefixes.add(prefix);
+            else
+                unassignedPrefixes.add(prefix);
+        }
+        return ListUtils.union(unassignedPrefixes, assignedPrefixes);
     }
     
     @ModelAttribute("experiments")

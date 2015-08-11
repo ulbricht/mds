@@ -3,6 +3,7 @@ package org.datacite.mds.web.ui.controller;
 import java.util.Arrays;
 import java.util.Collection;
 
+
 import org.apache.commons.lang.ArrayUtils;
 import org.datacite.mds.service.ProxyService;
 import org.datacite.mds.service.ProxyException;
@@ -10,8 +11,14 @@ import org.datacite.mds.web.ui.model.CreateMetadataModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+
 import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.domain.Metadata;
+import org.datacite.mds.service.SecurityException;
+import org.datacite.mds.util.SecurityUtils;
 import org.datacite.mds.util.Utils;
 import org.datacite.mds.web.ui.UiController;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.roo.addon.web.mvc.controller.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -67,14 +75,30 @@ public class MetadataController implements UiController {
     }
 
     @ModelAttribute("datasets")
-    public Collection<Dataset> populateDatasets(@RequestParam(value = "dataset", required = false) Long datasetId) {
+    public Collection<Dataset> populateDatasets(@RequestParam(value = "dataset", required = false) Long datasetId) throws SecurityException {
         Dataset dataset = Dataset.findDataset(datasetId);
+        if (dataset != null)
+            SecurityUtils.checkDatasetOwnership(dataset);
         return Arrays.asList(dataset);
     }
+    
+    @RequestMapping(method = RequestMethod.POST)
+    public String create(@Valid Metadata metadata, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws SecurityException {
+        SecurityUtils.checkDatasetOwnership(metadata.getDataset());
+        if (bindingResult.hasErrors()) {
+            uiModel.addAttribute("metadata", metadata);
+            return "metadatas/create";
+        }
+        uiModel.asMap().clear();
+        metadata.persist();
+        return "redirect:/metadatas/" + encodeUrlPathSegment(metadata.getId().toString(), httpServletRequest);
+    }
+
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String show(@PathVariable("id") Long id, Model model) {
+    public String show(@PathVariable("id") Long id, Model model) throws SecurityException {
         Metadata metadata = Metadata.findMetadata(id);
+        SecurityUtils.checkDatasetOwnership(metadata.getDataset());
         model.addAttribute("metadata", metadata);
         String prettyXml;
         try {
@@ -126,22 +150,22 @@ public class MetadataController implements UiController {
 
 		  try{
 
-			  if (!ArrayUtils.isEmpty(iso) && schemaService.isIsoSchema(iso))
+			  if (ArrayUtils.getLength(iso)>10 && schemaService.isIsoSchema(iso))
 					metadata.setIso(iso);
 
-			  if (!ArrayUtils.isEmpty(dif) && schemaService.isDifSchema(dif))
+			  if (ArrayUtils.getLength(dif)>10 && schemaService.isDifSchema(dif))
 			 		metadata.setDif(dif);
 
-			  if (!ArrayUtils.isEmpty(xml)){
+			  if (ArrayUtils.getLength(xml)>10){
 					metadata.setXml(xml);
 			  }else{
 
 					byte[] datacite=null;
-					if (!ArrayUtils.isEmpty(iso) && schemaService.isIsoSchema(iso)){
+					if (ArrayUtils.getLength(iso)>10 && schemaService.isIsoSchema(iso)){
 						errorfield="iso";
 						datacite=schemaService.convertDifToDatacite(iso, metadata.getDataset().getDoi());
 					}else
-					 if (!ArrayUtils.isEmpty(dif) && schemaService.isDifSchema(dif)){
+					 if (ArrayUtils.getLength(dif)>10 && schemaService.isDifSchema(dif)){
 						errorfield="dif";
 						datacite=schemaService.convertDifToDatacite(dif, metadata.getDataset().getDoi());
 					}
@@ -152,7 +176,7 @@ public class MetadataController implements UiController {
 				}
 			  }
 
-	        validationHelper.validateTo(bindingResult, metadata);
+			validationHelper.validateTo(bindingResult, metadata);
 
 		     if (bindingResult.hasErrors()) {
 		         uiModel.addAttribute("createMetadataModel", createMetadataModel);
@@ -193,9 +217,10 @@ public class MetadataController implements UiController {
 
 
     @RequestMapping(value = "/{id}", params = "raw", method = RequestMethod.GET)
-    public ResponseEntity<? extends Object> showRaw(@PathVariable("id") Long id) {
+    public ResponseEntity<? extends Object> showRaw(@PathVariable("id") Long id) throws SecurityException {
         HttpHeaders headers = new HttpHeaders();
         Metadata metadata = Metadata.findMetadata(id);
+        SecurityUtils.checkDatasetOwnership(metadata.getDataset());
         if (metadata == null) {
             return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
         }

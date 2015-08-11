@@ -5,7 +5,7 @@
 <util:crypt-mail-setup/>
 
 <c:set var="link_mds">
-  <a href="https://doidb.wdc-terra.org/igsn/"> 
+  <a href="https://doidb.wdc-terra.org/igsnaa/"> 
     <spring:message code="application_name"/>
   </a>
 </c:set>
@@ -30,8 +30,7 @@
 </c:set>
 
 <c:set var="mail_contact"> 
-<!--  <script>mail("info","geosamplesdatacite",1,"")</script>-->
-<a href="mailto:info@geosamples.org">info@igsn.org</a>
+<a href="mailto:kelger@gfz-potsdam.de">kelger@gfz-potsdam.de</a>
 </c:set>
 
 <c:set var="mail_tech">

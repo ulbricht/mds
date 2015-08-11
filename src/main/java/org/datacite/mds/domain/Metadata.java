@@ -15,6 +15,7 @@ import javax.persistence.TypedQuery;
 import javax.validation.GroupSequence;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.log4j.Logger;
 import org.datacite.mds.service.SchemaService;
@@ -37,6 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 @GroupSequence({ Metadata.class, Metadata.SecondLevelConstraint.class })
 public class Metadata {
 
+    public static final int XML_MAX_SIZE = 6 * 1024 * 1024; // 10 MByte
+
     private static Logger log4j = Logger.getLogger(Metadata.class);
     
     @Autowired
@@ -44,7 +47,8 @@ public class Metadata {
     SchemaService schemaService;
 
     @ValidXML
-    @Column(length=10000)
+    @Column(columnDefinition = "MEDIUMBLOB")
+    @Size(max = XML_MAX_SIZE)
     private byte[] xml;
 
     @ValidDIForNULL

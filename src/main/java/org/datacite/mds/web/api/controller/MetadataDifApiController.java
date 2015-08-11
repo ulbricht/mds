@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.apache.commons.lang.ArrayUtils;
 
-@RequestMapping("/difmetadata")
+@RequestMapping("/igsnmetadata")
 @Controller
 public class MetadataDifApiController implements ApiController {
 
@@ -73,7 +73,7 @@ public class MetadataDifApiController implements ApiController {
         
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI is unknown to MDS");
+            throw new NotFoundException("IGSN is unknown to MDS");
 
         SecurityUtils.checkDatasetOwnership(dataset, user);
 
@@ -82,9 +82,9 @@ public class MetadataDifApiController implements ApiController {
 
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)
-            throw new NotFoundException("no metadata for the DOI");
+            throw new NotFoundException("no metadata for the IGSN");
         if (metadata.getDif() == null)
-            throw new DeletedException("no DIF metadata for the DOI");
+            throw new DeletedException("no IGSN metadata for the IGSN");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -93,7 +93,7 @@ public class MetadataDifApiController implements ApiController {
     
     private String getDoiFromRequest(HttpServletRequest request) {
         String uri = request.getServletPath();
-        String doi = uri.replaceFirst("/difmetadata/", "");
+        String doi = uri.replaceFirst("/igsnmetadata/", "");
         return doi;
     }
 
@@ -131,7 +131,7 @@ public class MetadataDifApiController implements ApiController {
         String method = httpRequest.getMethod();
         if (testMode == null)
             testMode = false;
-        String logPrefix = "*****" + method + " difmetadata (doi=" + doi + ", testMode=" + testMode + ") ";
+        String logPrefix = "*****" + method + " igsnmetadata (igsn=" + doi + ", testMode=" + testMode + ") ";
 
         log4j.debug(logPrefix);
         
@@ -139,16 +139,16 @@ public class MetadataDifApiController implements ApiController {
             throw new ValidationException("request body must not be empty");
         
         if (doi==null || doi.length()==0)
-            throw new ValidationException("failed to retrieve DOI");
+            throw new ValidationException("failed to retrieve IGSN");
         
         Dataset oldDataset = Dataset.findDatasetByDoi(doi);
 		  if (oldDataset == null) 
-			throw new NotFoundException("DOI doesn't exist");
+			throw new NotFoundException("IGSN doesn't exist");
 
 		  Metadata oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
 
 		  if (oldmetadata == null) 
-			throw new NotFoundException("DOI doesn't exist");
+			throw new NotFoundException("IGSN doesn't exist");
        
 		  Metadata metadata=new Metadata();//copy old values
 		
@@ -163,7 +163,7 @@ public class MetadataDifApiController implements ApiController {
 		  metadata.setXml(oldmetadata.getXml());
 
 		  if (!schemaService.isDifSchema(xml))
-            throw new ValidationException("no DIF XML provided");
+            throw new ValidationException("no IGSN XML provided");
 
         metadata.setDif(xml);
         metadata.setDataset(oldDataset);
@@ -208,7 +208,7 @@ public class MetadataDifApiController implements ApiController {
 
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
-            throw new NotFoundException("DOI doesn't exist");
+            throw new NotFoundException("IGSN doesn't exist");
         
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)
