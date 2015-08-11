@@ -30,8 +30,10 @@
 </c:set>
 
 <c:set var="mail_contact"> 
+
 <!--  <script>mail("info","geosamplesdatacite",1,"")</script>-->
 <a href="mailto:info@geosamples.org">info@igsn.org</a>
+
 </c:set>
 
 <c:set var="mail_tech">

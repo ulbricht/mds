@@ -7,6 +7,9 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.Date;
 
 import javax.validation.ValidationException;
 
@@ -15,6 +18,7 @@ import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.domain.Metadata;
 import org.datacite.mds.service.DoiService;
 import org.datacite.mds.test.TestUtils;
+import org.datacite.mds.util.Utils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,27 +50,49 @@ public class DoiApiControllerTest {
         doiApiController.doiService = this.mockDoiService;
         doiApiController.metadataRequired = false;
     }
+    
+    @Test
+    public void testGetList() throws Exception {
+        String doi2 = "10.5072/test2";
+        Datacentre datacentre = TestUtils.createDefaultDatacentre("10.5072");
+        TestUtils.createDataset(doi, datacentre).persist();
+        TestUtils.createDataset(doi2, datacentre).persist();
+        TestUtils.login(datacentre);
+        
+        ResponseEntity response = doiApiController.getDoiList();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Utils.normalizeDoi(doi) + "\n" + Utils.normalizeDoi(doi2), response.getBody());
+    }
 
     @Test
-    public void testGetRoot() throws Exception {
-        ResponseEntity response = doiApiController.getRoot();
+    public void testGetListNoDatasets() throws Exception {
+        TestUtils.login(TestUtils.createDefaultDatacentre());
+        ResponseEntity response = doiApiController.getDoiList();
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
     }
-    
- 
-   @Test
+
+    @Test
     public void testGet() throws Exception {
-        expectDoiServiceResolve(url);
+        expectDoiServiceResolve(url, new Date());
         ResponseEntity<? extends Object> response = get(doi);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(url, response.getBody());
     }
-   
+
     @Test
-    public void testGetNullUrl() throws Exception {
-        expectDoiServiceResolve(null);
+    public void testGetNoMintedTimestamp() throws Exception {
+        expectDoiServiceResolve(url, null);
         ResponseEntity<? extends Object> response = get(doi);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    @Test
+    public void testGetNullUrl() throws Exception {
+        expectDoiServiceResolve(null, new Date());
+        ResponseEntity<? extends Object> response = get(doi);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
     }
  
     @Test
@@ -93,7 +119,7 @@ public class DoiApiControllerTest {
     public void testPostMissingUrl() throws Exception {
         post("url=" + url, false);
     }
-     
+
     @Test
     public void testPostMetadataRequired() throws Exception {
         doiApiController.metadataRequired = true;
@@ -102,14 +128,14 @@ public class DoiApiControllerTest {
         HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
-    
+
     private Dataset persistDataset() {
         Datacentre datacentre = TestUtils.createDefaultDatacentre("10.5072");
         Dataset dataset = TestUtils.createDataset(doi, datacentre);
         dataset.persist();
         return dataset;
     }
-    
+
     private Metadata persistMetadata() {
         Dataset dataset = persistDataset();
         byte[] xml = TestUtils.getTestMetadata();
@@ -126,7 +152,7 @@ public class DoiApiControllerTest {
         HttpStatus statusCode = post("igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
-       
+
     @Test
     public void testPostMetadataRequiredNoDataset() throws Exception {
         doiApiController.metadataRequired = true;
@@ -140,7 +166,7 @@ public class DoiApiControllerTest {
         HttpStatus statusCode = put(doi, "igsn=" + doi + "\nurl=" + url, false);
         assertEquals(HttpStatus.CREATED, statusCode);
     }
-    
+
     @Test
     public void testPutDifferentCase() throws Exception {
         expectDoiServiceCreateOrUpdate();
@@ -148,17 +174,16 @@ public class DoiApiControllerTest {
         assertEquals(HttpStatus.CREATED, statusCode);
     }
 
-
     @Test(expected = HttpRequestMethodNotSupportedException.class)
     public void testPutNoDoi() throws Exception {
         doiApiController.putRoot();
     }
-    
+
     @Test(expected = ValidationException.class)
     public void testPutMismatchingDoi() throws Exception {
         put(doi + "-wrong", "igsn=" + doi + "\nurl=" + url, false);
     }
-    
+
     @Test(expected = ValidationException.class)
     public void testPutMissingDoi() throws Exception {
         put(doi, "igsn=" + doi, false);
@@ -172,10 +197,11 @@ public class DoiApiControllerTest {
     private void expectDoiServiceCreateOrUpdate() throws Exception {
         expect(mockDoiService.createOrUpdate(eq(doi.toUpperCase()), eq(url), anyBoolean())).andStubReturn(null);
     }
-    
-    private void expectDoiServiceResolve(String url) throws Exception {
+
+    private void expectDoiServiceResolve(String url, Date minted) throws Exception {
         Dataset dataset = new Dataset();
         dataset.setUrl(url);
+        dataset.setMinted(minted);
         expect(mockDoiService.resolve(eq(doi.toUpperCase()))).andReturn(dataset);
     }
 
@@ -184,7 +210,7 @@ public class DoiApiControllerTest {
         request.setServletPath("/igsn/" + doi);
         return request;
     }
-    
+
     private ResponseEntity<? extends Object> get(String doi) throws Exception {
         MockHttpServletRequest httpRequest = makeServletRequestForDoi(doi);
         replay(mockDoiService);
@@ -192,7 +218,7 @@ public class DoiApiControllerTest {
         verify(mockDoiService);
         return response;
     }
-    
+
     private HttpStatus post(String body, Boolean testMode) throws Exception {
         MockHttpServletRequest httpRequest = makeServletRequestForDoi(null);
         httpRequest.setMethod("POST");

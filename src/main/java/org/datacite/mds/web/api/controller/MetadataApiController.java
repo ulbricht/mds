@@ -41,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.apache.commons.lang.ArrayUtils;
+
 @RequestMapping("/metadata")
 @Controller
 public class MetadataApiController implements ApiController {
@@ -138,9 +140,16 @@ public class MetadataApiController implements ApiController {
         if (doi==null || doi.length()==0)
             throw new ValidationException("failed to retrieve IGSN from xml");
         
-        Dataset oldDataset = new Dataset();
-        oldDataset.setDoi(doi);
+        Dataset oldDataset =  Dataset.findDatasetByDoi(doi);
 
+        Metadata oldmetadata=null;
+
+        if (oldDataset==null){
+           oldDataset=new Dataset();
+           oldDataset.setDoi(doi);
+        }else{
+   		  oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
+        }
         Metadata metadata = new Metadata();
         
         if (schemaService.isDifSchema(xml)){
@@ -162,20 +171,21 @@ public class MetadataApiController implements ApiController {
                 throw new ValidationException("Can not convert ISO to DataCite "+e.getMessage());
             }
         }else{
+
+		      if (oldmetadata != null){ 
+		           byte[] iso = oldmetadata.getIso();
+		           if (!ArrayUtils.isEmpty(iso))
+		           		metadata.setIso(iso);
+
+		           byte[] dif =oldmetadata.getDif();
+		           if (!ArrayUtils.isEmpty(dif))
+		           		metadata.setDif(dif);
+            }
+
             metadata.setXml(xml);
         }
         metadata.setDataset(oldDataset);
-/*	
-		  String testxml="";
-			if (metadata.getXml()!=null) testxml=new String(metadata.getXml());
-		  log4j.debug("DataCite:"+testxml);        
-		  String testiso="";
-			if (metadata.getIso()!=null) testiso=new String(metadata.getIso());
-		  log4j.debug("ISO:"+testiso);        
-		  String testdif="";
-			if (metadata.getDif()!=null) testdif=new String(metadata.getDif());
-		  log4j.debug("DIF:"+testdif);        
-*/
+
         validationHelper.validate(metadata);
         
 		  try{

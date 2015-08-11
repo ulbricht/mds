@@ -17,7 +17,18 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 privileged aspect MetadataController_Roo_Controller {
-
+  /*      
+    @RequestMapping(params = "form", method = RequestMethod.GET)
+    public String MetadataController.createForm(Model uiModel) {
+        uiModel.addAttribute("metadata", new Metadata());
+        List dependencies = new ArrayList();
+        if (Dataset.countDatasets() == 0) {
+            dependencies.add(new String[]{"dataset", "datasets"});
+        }
+        uiModel.addAttribute("dependencies", dependencies);
+        return "metadatas/create";
+    }
+*/
     
     String MetadataController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();

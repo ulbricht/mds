@@ -19,11 +19,17 @@ public interface AllocatorOrDatacentre {
 
     String getContactEmail();
     
+    void setContactEmail(String contactEmail);
+    
     String getPassword();
     
     Collection<String> getExperiments();
     
     void setPassword(String password);
+    
+    String getName();
+    
+    void setName(String name);
     
     /**
      * calculate String to be used for magic auth key
