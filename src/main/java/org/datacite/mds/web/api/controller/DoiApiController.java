@@ -75,10 +75,10 @@ public class DoiApiController implements ApiController {
         String doi = getDoiFromRequest(httpRequest);
         Dataset dataset = doiService.resolve(doi);
         String url = dataset.getUrl();
+
         if (url == null || dataset.getMinted() == null)
             return new ResponseEntity(HttpStatus.NO_CONTENT);
-
-        else
+	else
             return new ResponseEntity<String>(url, HttpStatus.OK);
     }
     

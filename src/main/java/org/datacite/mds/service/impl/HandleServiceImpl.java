@@ -23,6 +23,7 @@ import net.handle.hdllib.SecretKeyAuthenticationInfo;
 import net.handle.hdllib.SiteInfo;
 import net.handle.hdllib.Util;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.datacite.mds.service.ProxyService;
@@ -124,10 +125,12 @@ public class HandleServiceImpl implements HandleService {
             throw new HandleException("non succesful request to primary " + site);
     }
 
+
+
     @Override
     public String resolve(String doi) throws HandleException, NotFoundException {
 
-
+	    
 	if (proxyService.isProxyMode()){
 	    return proxyService.doiResolve(doi); //get from DB not from Handle-service      
 	}else{
@@ -170,6 +173,7 @@ public class HandleServiceImpl implements HandleService {
 //-------------------HANDLE-------------------    
 
     private String handleResolve(String doi) throws HandleException, NotFoundException {
+	    
         if (dummyMode)
             return "dummyMode";
 
@@ -219,7 +223,7 @@ public class HandleServiceImpl implements HandleService {
 
             AdminRecord admin = new AdminRecord(adminId.getBytes(DEFAULT_ENCODING), adminIndex, true, true, true, true,
                     true, true, true, true, true, true, true, true);
-
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "adminrecord");
             HandleValue[] val = {
                     new HandleValue(ADMIN_RECORD_INDEX, "HS_ADMIN".getBytes(DEFAULT_ENCODING),
                             Encoder.encodeAdminRecord(admin), HandleValue.TTL_TYPE_RELATIVE, 86400, timestamp, null,
@@ -228,21 +232,29 @@ public class HandleServiceImpl implements HandleService {
                     new HandleValue(URL_RECORD_INDEX, "URL".getBytes(DEFAULT_ENCODING), url.getBytes(DEFAULT_ENCODING),
                             HandleValue.TTL_TYPE_RELATIVE, 86400, timestamp, null, true, true, true, false) };
 
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "handlevalue");			    
+			    
 /*            AuthenticationInfo authInfo = new SecretKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
                     adminIndex, adminPassword.getBytes(DEFAULT_ENCODING));
 */
 				PrivateKey privKey=loadPrivateKeyFromFile();
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "loaded file");			    			    
 
 				AuthenticationInfo authInfo= new PublicKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
                     adminIndex,privKey);
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "created authentication");			    			    
 
             CreateHandleRequest req = new CreateHandleRequest(doi.getBytes(DEFAULT_ENCODING), val, authInfo);
 
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "sent request");			    			    
+			    
             if (!dummyMode) {
 
                 AbstractResponse response = resolver.processRequest(req);
 	//				AbstractResponse response=resolver.sendHdlTcpRequest(req,InetAddress.getByName(serverName),port);
 
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "received response");			    
+		    
                 String msg = AbstractMessage.getResponseCodeMessage(response.responseCode);
                 log4j.debug("response code from Handle request: " + msg);
 

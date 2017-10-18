@@ -22,6 +22,3 @@ handle.metadataRequired=false
 
 #the server to ping for status check; separate multiple server by space  
 handle.pingServer=0.SERV/10.TIB
-
-#is used to forward registration requests
-handle.proxyServer=http://doidb.wdc-terra.org/igsn

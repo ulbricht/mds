@@ -35,7 +35,7 @@ return $result;
 
 
 $baseurl="https://doidb.wdc-terra.org/igsn/";
-$igsn="10273/TEST/TEST";
+$igsn="20.500.11812/TEST";
 $username="USERNAME";
 $password="SECRET";
 

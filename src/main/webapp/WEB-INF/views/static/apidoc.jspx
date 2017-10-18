@@ -80,6 +80,10 @@ The IGSNDB accepts three different metadata schemata - IGSN metadata, an extende
 Metadata are validated to conform to their specific schema. ISO-metadata is (preferably) INSPIRE conform and validates the <a href="http://inspire-geoportal.ec.europa.eu/">validator of the EU</a>. 
 To get an idea how your metadata could look like, please browse the <a href="http://doidb.wdc-terra.org/igsnaaoaip">OAI-PMH repository</a>
 
+
+
+
+
 <p>
 Metadata about your samples must conform to the standards published by IGSN e.V. at <a href="http://trac.gfz-potsdam.de/igsn/browser/IGSN/schema" target="_blank">Metadata Schema Repository</a>.
 You will find an example XML document <a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/schema/1.0/igsn.xml">here</a>. <em>
@@ -98,10 +102,10 @@ We ask you to provide detailed metadata for discovery of your samples using the 
 If set to "true" or "1" the request will not change the database nor will the IGSN handle will be registered
  or updated, e.g. <code>POST igsn/igsn?testMode=true</code>.</p>
 
-<p>Also please note that there is <em>special test prefix 10273/TEST</em> available to all datacentres. Please use 
+<p>Also please note that there is <em>special test prefix 20.500.11812 </em> available to all datacentres. Please use 
 it for all your testing IGSNs. Your real prefix should not be used for test IGSNs. 
 Note that IGSNs with test prefix will behave like any other IGSN, e.g. they can be normally resolved. They will <em>not</em> be exposed by upcoming services like search and OAI, though. 
-Periodically we purge all 10273/TEST datasets from the system.</p> 
+Periodically we purge all 20.500.11812 samples from the system.</p> 
 
 <h3>Code examples python</h3>
 
@@ -126,7 +130,6 @@ in one directory and call them from the command line
 
 	<li>python delete_metadata.py USER PASSWORD IGSN-HANDLE </li>
 
-
 </ul>
 
 
@@ -145,7 +148,7 @@ Download the file <a href="http://doidb.wdc-terra.org/igsnaa/schemas/igsn.org/ex
 
 <h3>GET</h3> 
 <p><i>URI: https://doidb.wdc-terra.org/igsnaa/igsn/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
- 
+
 <p>This request returns an URL associated with a given IGSN.</p>
 <h4>Request headers</h4>
 none 
@@ -197,7 +200,7 @@ url={url}</code></pre>
 <p>short explanation of status code e.g. CREATED, HANDLE_ALREADY_EXISTS etc</p> 
 <h4>Response statuses</h4> 
 <p><code>201 Created</code> - operation successful</p>
-<p><code>400 Bad Request</code> - request body must be exactly two lines: IGSN and URL;  wrong domain or wrong prefix</p>
+<p><code>400 Bad Request</code> - request body must be exactly two lines: IGSN and URL; , wrong domain, wrong prefix</p>
 <p><code>401 Unauthorized</code> - no login</p>
 <p><code>403 Forbidden</code> - login problem, quota exceeded</p>
 <p><code>412 Precondition failed</code> - metadata must be uploaded first</p>
@@ -228,7 +231,6 @@ try later and if problem persists please contact us
 </p> 
 
 <h3>POST</h3>
-
 <p><i>URI: https://doidb.wdc-terra.org/igsnaa/metadata/{IGSN}</i></p> 
 <p>This request stores new version of metadata. The request body must contain valid XML. </p>
 
@@ -263,16 +265,6 @@ try later and if problem persists please contact us</p>
 <p><code>500 Internal Server Error</code> - server internal error,
 try later and if problem persists please contact us
 </p> 
-
-
-<h2>IGSNMetadata API and ISOMetadata API</h2>
-
-<p>Both APIs use the same commands, parameters, and returncodes as the Metadata API described above. The APIs differ from the Metadata API only in the accepted metadata schema. </p>
-
-<p><i>URI: https://doidb.wdc-terra.org/mds/isometadata/{igsn}</i> accepts ISO19139 metadata.</p> 
-
-<p><i>URI: https://doidb.wdc-terra.org/mds/igsnmetadata/{igsn}</i> accepts IGSN extended schema for allocation agents metadata.</p> 
-
 
   </util:panel>
 </div>

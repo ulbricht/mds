@@ -1,6 +1,6 @@
 <sample xmlns="http://igsn.org/schema/kernel-v.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://igsn.org/schema/kernel-v.1.0 http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xsd">
 
-	<sampleNumber identifierType="igsn">10273/TEST/TESTHANDLE</sampleNumber>
+	<sampleNumber identifierType="igsn">20.500.11812/TESTHANDLE</sampleNumber>
 
 	<registrant>
 		<registrantName>Damian Ulbricht</registrantName>

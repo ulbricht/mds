@@ -28,7 +28,6 @@ public class MatchDoiTest extends AbstractContraintsTest {
         metadata.setDataset(dataset);
     }
 
-
 /*    @Test
     public void testVersion20() throws Exception {
         metadata.setXml(TestUtils.getTestMetadata20());

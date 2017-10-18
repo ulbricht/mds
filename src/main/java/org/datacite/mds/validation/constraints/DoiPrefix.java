@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 @Documented
 @Constraint(validatedBy = {})
 @Size(max = 80)
-@Pattern(regexp = "10\\.?(\\d)+[\\w-_:/\\.\\+]*", message = "{org.datacite.mds.validation.constraints.DoiPrefix.message}")
+@Pattern(regexp = "\\d0\\.?(\\d)+\\.?(\\d)+[\\w-_:/\\.\\+]*", message = "{org.datacite.mds.validation.constraints.DoiPrefix.message}")
 @Target( { ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DoiPrefix {
