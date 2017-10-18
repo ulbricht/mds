@@ -81,7 +81,7 @@ public class MetadataController implements UiController {
             SecurityUtils.checkDatasetOwnership(dataset);
         return Arrays.asList(dataset);
     }
-    
+ /*   
     @RequestMapping(method = RequestMethod.POST)
     public String create(@Valid Metadata metadata, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws SecurityException {
         SecurityUtils.checkDatasetOwnership(metadata.getDataset());
@@ -93,7 +93,7 @@ public class MetadataController implements UiController {
         metadata.persist();
         return "redirect:/metadatas/" + encodeUrlPathSegment(metadata.getId().toString(), httpServletRequest);
     }
-
+*/
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String show(@PathVariable("id") Long id, Model model) throws SecurityException {

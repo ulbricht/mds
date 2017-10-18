@@ -86,7 +86,7 @@ public class Prefix implements Comparable<Prefix>{
 
     @SuppressWarnings("unchecked")
     public static List<Prefix> findPrefixEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("select o from Prefix o order by length(prefix),prefix").setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery("select o from Prefix o order by prefix").setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
     @Transactional

@@ -91,10 +91,10 @@ All your documents must specify a correct schema location in the root element. C
 If set to "true" or "1" the request will not change the database nor will the IGSN handle will be registered
  or updated, e.g. <code>POST igsn/igsn?testMode=true</code>.</p>
 
-<p>Also please note that there is <em>special test prefix 10273/TEST</em> available to all datacentres. Please use 
+<p>Also please note that there is <em>special test prefix 20.500.11812 </em> available to all datacentres. Please use 
 it for all your testing IGSNs. Your real prefix should not be used for test IGSNs. 
 Note that IGSNs with test prefix will behave like any other IGSN, e.g. they can be normally resolved. They will <em>not</em> be exposed by upcoming services like search and OAI, though. 
-Periodically we purge all 10273/TEST datasets from the system.</p> 
+Periodically we purge all 20.500.11812 samples from the system.</p> 
 
 <h3>Code examples python</h3>
 

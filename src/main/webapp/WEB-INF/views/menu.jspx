@@ -10,6 +10,9 @@
                 <menu:item id="fi_prefix_prefixlike" messageCode="global_menu_find" url="/prefixes?find=ByPrefixLike&amp;form" z="OJncnX3HQzOQ1yRop65exEyPmHk="/>
             </menu:category>
         </sec:authorize>
+            <menu:category id="c_prefix" z="UoY6ZmE5dw0GJWXxFuRnP4Ci2Pw=">
+                <menu:item id="i_prefix_list" messageCode="global_menu_list" url="/prefixeslists" z="user-managed"/>
+            </menu:category>
         <sec:authorize ifAnyGranted="ROLE_ADMIN,ROLE_DEV">
             <menu:category id="c_allocator" z="iLSmvxIkMXVJXHF0wFMGX9o0qP0=">
                 <menu:item id="i_allocator_new" messageCode="global_menu_new" url="/allocators?form" z="y/NPimJktFG6tgpMZhm/cttPZLc="/>
