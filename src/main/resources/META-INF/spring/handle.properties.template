@@ -1,9 +1,10 @@
 handle.index=300
-handle.id=<<SEE WIKI>>
-handle.password=<<SEE WIKI>>
+handle.id=<<Registration Account name at igsn.org>>
+handle.password=<<Registration account password>>
+handle.proxyServer=http://doidb.wdc-terra.org/igsn
 handle.traceMessages=false
-handle.dummyMode=true
-handle.testPrefix=10.5072
+handle.dummyMode=false
+handle.testPrefix=20.500.11812
 
 #number of days after which a test dataset marked for deletion
 #negative number disables automatic purging
@@ -15,7 +16,7 @@ handle.testPrefix.expiration.cron=0 0 0 * * ?
 
 #always allow these domains in URLs regardless of datacentres settings
 #same syntax as for datacentre domain list (csv, wildcard support, subdomains included)
-handle.alwaysAllowedDomains=datacite.org
+handle.alwaysAllowedDomains=igsn.org
 
 #Does metadata for a given DOIs have to exist before minting DOIs?
 handle.metadataRequired=false
