@@ -1,7 +1,7 @@
 handle.index=300
 handle.id=<<Registration Account name at igsn.org>>
 handle.password=<<Registration account password>>
-handle.proxyServer=http://doidb.wdc-terra.org/igsn
+handle.proxyServer=https://doidb.wdc-terra.org/igsn
 handle.traceMessages=false
 handle.dummyMode=false
 handle.testPrefix=20.500.11812
