@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<DIF xmlns="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/ http://gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">  
+<DIF xmlns="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/ https://gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.8.2.xsd">  
   <Entry_ID>10.1594/GFZ.SDDB.1266</Entry_ID>  
   <Entry_Title>XRD of Cuttings of the KTB Pilot Hole HB1</Entry_Title>  
   <Data_Set_Citation> 
