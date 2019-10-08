@@ -19,7 +19,7 @@
     </c:if>
 
     <li id="${fn:escapeXml(id)}">
-      <spring:url value="${url}" var="menu_item_url"/>
+      <spring:url value="${url}" var="menu_item_url" htmlEscape="false" />
       <a href="${menu_item_url}" title="${fn:escapeXml(label)}">
         <c:out value="${label}"/>
       </a>
