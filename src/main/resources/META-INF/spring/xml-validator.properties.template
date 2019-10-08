@@ -14,3 +14,5 @@ xml.schema.location.local=
 #xml.schema.location.local=http://doidb.wdc-terra.org/mds/schemas/
 
 xml.schema.xpath.doi=//*[local-name() = 'identifier' and @identifierType='DOI']
+
+xslt.dif.to.datacite=conversion/dif2datacite.xslt
