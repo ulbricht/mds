@@ -31,7 +31,7 @@ public class HandleServiceImplTest {
     private HandleServiceImpl service;
 
     
-    private static final String doi = "10.5072/FFFFF";
+    private static final String doi = "10.5438/k0fm-jt50";
     private static final String url = "http://pmd.gfz-potsdam.de";
     
 
