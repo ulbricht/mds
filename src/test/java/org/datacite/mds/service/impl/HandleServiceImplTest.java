@@ -30,10 +30,8 @@ public class HandleServiceImplTest {
     @Autowired
     private HandleServiceImpl service;
 
-    
-    private static final String doi = "10273/TEST.TEST";
+    private static final String doi = "10.5438/k0fm-jt50";
     private static final String url = "http://pmd.gfz-potsdam.de";
-    
 
 
     @Before

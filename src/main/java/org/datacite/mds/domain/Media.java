@@ -2,6 +2,7 @@ package org.datacite.mds.domain;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -39,6 +40,7 @@ public class Media implements Comparable {
     private String mediaType;
 
     @URL
+    @Column(columnDefinition = "VARCHAR(255)")
     @NotEmpty
     private String url;
 
