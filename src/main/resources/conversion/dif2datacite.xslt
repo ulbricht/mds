@@ -23,7 +23,17 @@
 		<xsl:variable name="event" >submitted</xsl:variable>
 
 		<sample xmlns="http://igsn.org/schema/kernel-v.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://igsn.org/schema/kernel-v.1.0 http://doidb.wdc-terra.org/igsn/schemas/igsn.org/schema/1.0/igsn.xsd">
-		<sampleNumber identifierType="igsn">10273/<xsl:value-of select="$igsn"/></sampleNumber>
+
+		<xsl:choose>
+			<xsl:when test="starts-with($igsn,'20.500.11812')">
+					<sampleNumber identifierType="igsn"><xsl:value-of select="$igsn"/></sampleNumber>
+			</xsl:when>
+			<xsl:otherwise>
+					<sampleNumber identifierType="igsn">10273/<xsl:value-of select="$igsn"/></sampleNumber>
+			</xsl:otherwise>
+
+		</xsl:choose>
+
 		<registrant><registrantName><xsl:value-of select="$registrant"/></registrantName></registrant>
 		
 		<xsl:if test="normalize-space(//description:parentIdentifier) != '' ">
