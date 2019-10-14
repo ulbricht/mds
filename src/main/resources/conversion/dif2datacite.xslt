@@ -26,13 +26,11 @@
 		<sampleNumber identifierType="igsn">10273/<xsl:value-of select="$igsn"/></sampleNumber>
 		<registrant><registrantName><xsl:value-of select="$registrant"/></registrantName></registrant>
 		
-		<xsl:if test="normalize-space(//description:identifier) != '' ">
+		<xsl:if test="normalize-space(//description:parentIdentifier) != '' ">
 		
 		<relatedResourceIdentifiers>
 
-			<xsl:if test="normalize-space(//description:parentIdentifier) != '' ">
 			<relatedIdentifier relatedIdentifierType="handle" relationType="IsPartOf" >10273/<xsl:value-of select="//description:parentIdentifier"/></relatedIdentifier> 
-			</xsl:if>
 
 		</relatedResourceIdentifiers>		
 		</xsl:if>
