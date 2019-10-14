@@ -28,7 +28,7 @@
 
   <xs:element name="resource">
     <xs:annotation>
-      <xs:appinfo>IGSN "birth certificate" for a physical sample or associated feature</xs:appinfo>
+      <xs:appinfo>IGSN "birth certificate" for a physical sample, associated feature, or collection</xs:appinfo>
     </xs:annotation>
     <xs:complexType>
 
@@ -36,7 +36,7 @@
 
         <xs:element name="identifier" minOccurs="1" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(1.) identifier</xs:documentation>
+            <xs:documentation>(1.) identifier - currently only type=IGSN is supported</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:simpleContent>
@@ -49,13 +49,13 @@
 
         <xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string">
           <xs:annotation>
-            <xs:documentation>(2.) name</xs:documentation>
+            <xs:documentation>(2.) name - the collector or contributor's local/field name; not globally unique but typically unique within a submitted set</xs:documentation>
           </xs:annotation>
         </xs:element> <!-- name -->
 
         <xs:element name="alternateIdentifiers" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(3.) alternateIdentifiers</xs:documentation>
+            <xs:documentation>(3.) alternateIdentifiers - other formal identifiers for this resource, in addition to the IGSN</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -74,7 +74,7 @@
 
         <xs:element name="parentIdentifier" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(4.) parentIdentifier</xs:documentation>
+            <xs:documentation>(4.) parentIdentifier - IGSN of a resource from which this resource derives; note that a sample may have multiple parents</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:simpleContent>
@@ -87,7 +87,7 @@
 
         <xs:element name="collectionIdentifier" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(5.) collectionIdentifier</xs:documentation>
+            <xs:documentation>(5.) collectionIdentifier - IGSN of a set of related resources to which this resource belongs</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:simpleContent>
@@ -100,7 +100,7 @@
 
         <xs:element name="relatedIdentifiers" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(6.) relatedIdentifiers</xs:documentation>
+            <xs:documentation>(6.) relatedIdentifiers - formal identifiers of resources related to this resource, including the scheme and relationtype for each; here we link to a field expedition, journal article, etc.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -120,13 +120,13 @@
 
         <xs:element name="description" minOccurs="0" maxOccurs="1" type="xs:string">
           <xs:annotation>
-            <xs:documentation>(7.) description</xs:documentation>
+            <xs:documentation>(7.) description - free-text description of this resource</xs:documentation>
           </xs:annotation>
         </xs:element> <!-- description -->
 
         <xs:element name="registrant" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(8.) registrant (cf. datacite:publisher)</xs:documentation>
+            <xs:documentation>(8.) registrant (cf. datacite:publisher) - agent (person or organization) that registered the IGSN for this resource</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -166,7 +166,7 @@
 
         <xs:element name="collector" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(9.) collector (cf. datacite:creator)</xs:documentation>
+            <xs:documentation>(9.) collector (cf. datacite:creator) - agent (person or organization) that created or extracted this physical specimen; typically only used for samples</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -206,7 +206,7 @@
 
         <xs:element name="contributors" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(10.) contributors</xs:documentation>
+            <xs:documentation>(10.) contributors - agents (persons or organizations) that contributed to this resource; investigator, funder, technician, etc.</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -237,7 +237,7 @@
 
         <xs:element name="geoLocations" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(11.) geoLocations (geometry cf. odm2:samplingfeaturegeotype|toponym)</xs:documentation>
+            <xs:documentation>(11.) geoLocations (geometry cf. odm2:samplingfeaturegeotype|toponym) - location of the resource, expressed as 2-D geometry and/or place name(s)</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -280,7 +280,7 @@
 
         <xs:element name="resourceTypes" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(12.) resourceTypes (cf. odm2:specimentype and odm2:samplingfeaturetype})</xs:documentation>
+            <xs:documentation>(12.) resourceTypes - broad classification of this resource; must provide 1 term from ODM2 vocabulary (specimentype or samplingfeaturetype) plus 0-N additional terms from any vocabulary</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -306,7 +306,7 @@
 
         <xs:element name="materials" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(13.) materials (cf. odm2:medium +optional others)</xs:documentation>
+            <xs:documentation>(13.) materials - physical medium of this resource; must provide 1 term from ODM2 vocabulary (medium) plus 0-N additional terms from any vocabulary; typically only used for samples</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -329,7 +329,7 @@
 
         <xs:element name="collectionMethods" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(14.) collectionMethods (cf. sesar:collectionMethod +optional others)</xs:documentation>
+            <xs:documentation>(14.) collectionMethods - broad classification of instrument/technique used to create or extract this resource - must provide 1 term from SESAR (collectionMethod) vocabulary plus 0-N additional terms from any vocabulary; typically only used for samples</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
@@ -351,19 +351,19 @@
 
         <xs:element name="collectionTime" minOccurs="0" maxOccurs="1" type="xs:dateTime">
           <xs:annotation>
-            <xs:documentation>(15.) collectionTime</xs:documentation>
+            <xs:documentation>(15.) collectionTime - time at which this resource was created or extracted; typically only used for samples</xs:documentation>
           </xs:annotation>
         </xs:element> <!-- collectionTime -->
 
         <xs:element name="sampleAccess" minOccurs="1" maxOccurs="1" type="accessType">
           <xs:annotation>
-            <xs:documentation>(16.) sampleAccess</xs:documentation>
+            <xs:documentation>(16.) sampleAccess - indicates whether this resource is available for reuse beyond the original contributor; typically only used for samples</xs:documentation>
           </xs:annotation>
         </xs:element> <!-- sampleAccess -->
 
         <xs:element name="supplementalMetadata" minOccurs="0" maxOccurs="1">
           <xs:annotation>
-            <xs:documentation>(17.) supplementalMetadata</xs:documentation>
+            <xs:documentation>(17.) supplementalMetadata - link to any additional documentation, as structured metadata or free text</xs:documentation>
           </xs:annotation>
           <xs:complexType>
             <xs:sequence>
