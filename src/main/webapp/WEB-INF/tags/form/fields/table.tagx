@@ -107,7 +107,7 @@
           <c:if test="${switchTo}">
             <td>
               <spring:url value="/resources/j_spring_security_switch_user" var="switch_to_url">
-                <spring:param name="j_username" value="${item[switchToUserField]}"/>
+                <spring:param name="username" value="${item[switchToUserField]}"/>
               </spring:url>
               <spring:url value="/resources/images/page_go.png" var="switch_to_image_url" />
               <spring:message arguments="${label}" code="entity_switch_to" var="switch_to_label" htmlEscape="false"/>

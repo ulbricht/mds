@@ -25,7 +25,7 @@ privileged aspect Media_Roo_Entity {
     transient EntityManager Media.entityManager;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long Media.id;
     

@@ -31,14 +31,18 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+
 @RooJavaBean
 @RooToString
 @RooEntity
 @MatchDoi(groups = Metadata.SecondLevelConstraint.class)
 @GroupSequence({ Metadata.class, Metadata.SecondLevelConstraint.class })
+@Table(name="metadata")
 public class Metadata {
 
-    public static final int XML_MAX_SIZE = (2 * 1024 * 1024)-256; // 2 MByte
+
+    public static final int XML_MAX_SIZE = 2000000; // MySQL MediumBlob
 
     private static Logger log4j = Logger.getLogger(Metadata.class);
     
@@ -62,6 +66,7 @@ public class Metadata {
     private String namespace;
 
     @Min(0L)
+    @Column(name = "metadata_version")
     private Integer metadataVersion;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -70,9 +75,10 @@ public class Metadata {
 
     @NotNull
     @ManyToOne(targetEntity = Dataset.class)
-    @JoinColumn
+    @JoinColumn(name="dataset")
     private Dataset dataset;
     
+    @Column(name = "is_converted_by_mds")
     private Boolean isConvertedByMds = false;
     
     @Transient
@@ -83,7 +89,7 @@ public class Metadata {
             throw new IllegalArgumentException("The dataset argument is required");
         
         EntityManager em = entityManager();
-        Query q = em.createQuery("SELECT MAX(metadataVersion) FROM Metadata WHERE dataset = :dataset");
+        Query q = em.createQuery("SELECT MAX(metadataVersion) FROM Metadata AS m WHERE m.dataset = :dataset");
         q.setParameter("dataset", dataset);
         Integer max = (Integer) q.getSingleResult();
         return max == null ? -1 : max;
@@ -91,11 +97,12 @@ public class Metadata {
 
     @Transactional
     public void persist() {
+
         if (this.entityManager == null)
             this.entityManager = entityManager();
         if (maxMetaVerQuery == null)
             maxMetaVerQuery = entityManager.
-              createQuery("SELECT MAX(metadataVersion) FROM Metadata WHERE dataset = :dataset");
+              createQuery("SELECT MAX(metadataVersion) FROM Metadata AS m WHERE m.dataset = :dataset");
         
         maxMetaVerQuery.setParameter("dataset", getDataset());
         Integer max = (Integer) maxMetaVerQuery.getSingleResult();
@@ -103,7 +110,6 @@ public class Metadata {
         setMetadataVersion(maxVersion + 1);
         setCreated(new Date());
         entityManager.persist(this);
-        
         log4j.info(getDataset().getDatacentre().getSymbol() + " successfuly stored metadata for " + getDataset().getDoi());
     }
 
@@ -112,7 +118,7 @@ public class Metadata {
             throw new IllegalArgumentException("The dataset argument is required");
         EntityManager em = Metadata.entityManager();
         TypedQuery<Metadata> q = em.createQuery(
-                "SELECT Metadata FROM Metadata AS metadata WHERE metadata.dataset = :dataset ORDER BY metadataVersion DESC", Metadata.class);
+                "SELECT m FROM Metadata AS m WHERE m.dataset = :dataset ORDER BY m.metadataVersion DESC", Metadata.class);
         q.setParameter("dataset", dataset);
         return q;
     }
@@ -125,8 +131,8 @@ public class Metadata {
         
         EntityManager em = Metadata.entityManager();
         TypedQuery<Metadata> q = em.createQuery(
-                "SELECT Metadata FROM Metadata AS metadata WHERE metadata.dataset = :dataset "
-                + "AND metadata.metadataVersion = :metadataVersion", 
+                "SELECT m FROM Metadata AS m WHERE m.dataset = :dataset "
+                + "AND m.metadataVersion = :metadataVersion", 
                 Metadata.class);
         q.setParameter("dataset", dataset);
         q.setParameter("metadataVersion", maxVersion);

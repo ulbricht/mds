@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Lob;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -32,10 +33,15 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+
 @RooJavaBean
 @RooToString
 @RooEntity(finders = { "findAllocatorsBySymbolEquals", "findAllocatorsByNameLike" })
 @Unique(field = "symbol")
+@Table(name="allocator")
 public class Allocator implements AllocatorOrDatacentre {
 
     private static Logger log4j = Logger.getLogger(Allocator.class);
@@ -53,26 +59,37 @@ public class Allocator implements AllocatorOrDatacentre {
 
     @NotNull
     @Size(min = 2, max = 80)
+    @Column(name = "contact_name")
     private String contactName;
 
     @NotNull
     @Email
+    @Column(name = "contact_email")
     private String contactEmail;
 
     @NotNull
+    @Column(name = "doi_quota_allowed")
     private Integer doiQuotaAllowed = -1;
 
     @NotNull
     @Min(0L)
     @Max(999999999L)
+    @Column(name = "doi_quota_used")
     private Integer doiQuotaUsed = 0;
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+        name = "allocator_prefixes", 
+        joinColumns = { @JoinColumn(name = "allocator") }, 
+        inverseJoinColumns = { @JoinColumn(name = "prefixes") }
+    )
     @OrderBy("prefix")
     private Set<org.datacite.mds.domain.Prefix> prefixes = new java.util.HashSet<org.datacite.mds.domain.Prefix>();
 
+    @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "role_name")
     private String roleName = "ROLE_ALLOCATOR";
     
     @Size(max = 4000)

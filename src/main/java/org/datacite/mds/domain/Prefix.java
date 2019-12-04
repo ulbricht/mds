@@ -26,16 +26,20 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import javax.validation.constraints.Size;
+
 @RooJavaBean
 @RooToString
 @RooEntity(finders = { "findPrefixesByPrefixLike" })
 @Unique(field = "prefix")
 @Entity
 @XmlRootElement
+@Table(name="prefix")
 public class Prefix implements Comparable<Prefix>{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     
@@ -63,6 +67,7 @@ public class Prefix implements Comparable<Prefix>{
 
     @NotNull
     @DoiPrefix
+    @Size(max = 255)
     @Column(unique = true)
     private String prefix;
 

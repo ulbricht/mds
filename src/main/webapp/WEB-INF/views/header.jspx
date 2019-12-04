@@ -15,11 +15,11 @@
   </div>
 
   <div id="topmenu">
-    <sec:authorize ifAnyGranted="ROLE_DEV,ROLE_ADMIN,ROLE_ALLOCATOR">
-      <spring:url value="/resources/j_spring_security_switch_user" var="switch_url"/>
+     <sec:authorize url="/resources/j_spring_security_switch_user">
+     <spring:url value="/resources/j_spring_security_switch_user" var="switch_url"/>
       <form id="form_switch_user" action="${switch_url}">
         <label><spring:message code="security_switch_user"/></label>
-        <select id="form_switch_user_select" name="j_username">
+        <select id="form_switch_user_select" name="username">
            <c:forEach items="${symbols}" var="symbol">
               <option value="${symbol}">
                 <spring:eval expression="symbol" />
@@ -31,7 +31,7 @@
              widgetAttrs : { onChange:
                function(state) {
                  form = document.forms["form_switch_user"];
-                 if (form.j_username.value != "") {
+                 if (form.username.value != "") {
                    form.submit();
                  }
                },
@@ -41,8 +41,8 @@
         </script>
       </form>
       <c:out value=" | "/>
-    </sec:authorize>
-    
+   </sec:authorize> 
+   
   <sec:authentication property="principal" var="user"/>
   <c:if test="${! empty user}">
     <c:forEach items="${login_pathway}" var="symbol">

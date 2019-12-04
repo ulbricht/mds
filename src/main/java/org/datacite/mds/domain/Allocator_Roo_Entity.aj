@@ -24,7 +24,7 @@ privileged aspect Allocator_Roo_Entity {
     transient EntityManager Allocator.entityManager;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long Allocator.id;
     

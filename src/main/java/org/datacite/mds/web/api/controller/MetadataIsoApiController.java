@@ -104,9 +104,13 @@ public class MetadataIsoApiController implements ApiController {
         String doi;
 
 			if (schemaService.isDifSchema(xml) || schemaService.isIsoSchema(xml)){
+log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL");
 				doi = getDoiFromRequest(httpRequest);
+log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL"+doi);
 			}else{
+log4j.debug("MetadataIsoApiController.post() - read DOI from XML");
 				doi = schemaService.getDoi(xml);
+log4j.debug("MetadataIsoApiController.post() - read DOI from XML"+doi);
 			}
 
         return storeMetadata(doi, xml, testMode, httpRequest);
@@ -140,37 +144,38 @@ public class MetadataIsoApiController implements ApiController {
         
         if (doi==null || doi.length()==0)
             throw new ValidationException("failed to retrieve DOI");
-        
+
         Dataset oldDataset = Dataset.findDatasetByDoi(doi);
 
-		  if (oldDataset == null) 
-			throw new NotFoundException("DOI doesn't exist");
+	if (oldDataset == null) 
+		throw new NotFoundException("DOI doesn't exist");
 
-		  Metadata oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
 
-		  if (oldmetadata == null) 
-			throw new NotFoundException("DOI doesn't exist");      
- 
-		  Metadata metadata=new Metadata();//copy old values
-		
-		  byte[] iso = oldmetadata.getIso();
-		  if (!ArrayUtils.isEmpty(iso))
-		  		metadata.setIso(iso);
+	Metadata oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
 
-		  byte[] dif =oldmetadata.getDif();
-		  if (!ArrayUtils.isEmpty(dif))
-		  		metadata.setDif(dif);
+	if (oldmetadata == null) 
+		throw new NotFoundException("DOI doesn't exist");      
 
-		  metadata.setXml(oldmetadata.getXml());
+	Metadata   metadata=new Metadata();//copy old values
 
-		  if (!schemaService.isIsoSchema(xml))
-            throw new ValidationException("no ISO XML provided");
+
+	byte[] iso = oldmetadata.getIso();
+	if (!ArrayUtils.isEmpty(iso))
+		metadata.setIso(iso);
+
+	byte[] dif =oldmetadata.getDif();
+	if (!ArrayUtils.isEmpty(dif))
+		metadata.setDif(dif);
+
+	metadata.setXml(oldmetadata.getXml());
+
+	if (!schemaService.isIsoSchema(xml))
+   		throw new ValidationException("no ISO XML provided");
 
         metadata.setIso(xml);
         metadata.setDataset(oldDataset);
-        
+
         validationHelper.validate(metadata);
-        
        
         //increases the DOI-quota and validates the dataset
         Dataset dataset = doiService.createOrUpdate(doi, null, testMode);

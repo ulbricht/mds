@@ -16,10 +16,10 @@ privileged aspect DatacentreController_Roo_Controller {
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
-        try {
+ //       try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        }
-        catch (UnsupportedEncodingException uee) {}
+ //       }
+ //       catch (UnsupportedEncodingException uee) {}
         return pathSegment;
     }
     

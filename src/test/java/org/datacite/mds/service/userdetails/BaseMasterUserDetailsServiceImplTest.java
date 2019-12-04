@@ -9,7 +9,7 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,9 +25,9 @@ public class BaseMasterUserDetailsServiceImplTest {
     @Before
     public void init() {
         Collection<GrantedAuthority> authoritiesMasterUser = new ArrayList<GrantedAuthority>();
-        authoritiesMasterUser.add(new GrantedAuthorityImpl("ROLE_ALLOCATOR"));
+        authoritiesMasterUser.add(new SimpleGrantedAuthority("ROLE_ALLOCATOR"));
         Collection<GrantedAuthority> authoritiesUser = new ArrayList<GrantedAuthority>();
-        authoritiesUser.add(new GrantedAuthorityImpl("ROLE_DATACENTRE"));
+        authoritiesUser.add(new SimpleGrantedAuthority("ROLE_DATACENTRE"));
 
         user = new User("USER", "pw_USER", true, true, true, true, authoritiesUser);
         masterUser = new User("MASTER", "pw_MASTER", true, true, true, true, authoritiesMasterUser);

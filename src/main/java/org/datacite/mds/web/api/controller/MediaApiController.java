@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.persistence.NoResultException;
+
 @Controller
 @RequestMapping("/media")
 public class MediaApiController implements ApiController {
@@ -94,12 +96,9 @@ public class MediaApiController implements ApiController {
                 if (!testMode)
                     media.merge();
             } catch (EmptyResultDataAccessException ex) {
-                Media media = new Media();
-                media.setDataset(dataset);
-                media.setMediaType(mediaType);
-                media.setUrl(url);
-                if (!testMode)
-                    media.persist();
+		mediaPersist (dataset, mediaType, url, testMode);
+            } catch (NoResultException ex) {
+		mediaPersist (dataset, mediaType, url, testMode);
             }
         }
 
@@ -108,5 +107,14 @@ public class MediaApiController implements ApiController {
         String message = ApiUtils.makeResponseMessage("OK", testMode);
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
+
+   private void mediaPersist(Dataset dataset, String mediaType,String url,Boolean testMode){
+        Media media = new Media();
+        media.setDataset(dataset);
+        media.setMediaType(mediaType);
+        media.setUrl(url);
+        if (!testMode)
+            media.persist();
+   }
 
 }
