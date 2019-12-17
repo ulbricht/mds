@@ -10,7 +10,7 @@
             (${resolvedUrl})
             <a href="${proxy_url}/${dataset.doi}?noredirect=on">[handle record]</a>
         </field:display>
-   <!--       <util:comment messageCode="handle_latency_info"/> -->
+          <util:comment messageCode="handle_latency_info"/> 
         <field:display date="true"  field="created" id="s_org_datacite_mds_domain_Dataset_created" object="${dataset}" render="false" z="user-managed"/>
         <field:display date="true"  field="minted" id="s_org_datacite_mds_domain_Dataset_minted" object="${dataset}" defaultMessageCode="dataset_not_minted" render="true" z="user-managed"/>
         <field:display date="true"  field="updated" id="s_org_datacite_mds_domain_Dataset_updated" object="${dataset}" z="0xOiEJrTlBixi8pKrahDtV0iGhs="/>
