@@ -23,7 +23,7 @@ import org.datacite.mds.util.DomainUtils;
 import org.datacite.mds.util.Utils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -65,11 +65,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add(new GrantedAuthorityImpl(role));
+        authorities.add(new SimpleGrantedAuthority(role));
         
         for (String experiment : user.getExperiments()) {
             String experiment_role = ROLE_EXPERIMENT_PREFIX + experiment.toUpperCase();
-            authorities.add(new GrantedAuthorityImpl(experiment_role));
+            authorities.add(new SimpleGrantedAuthority(experiment_role));
         }
         
 

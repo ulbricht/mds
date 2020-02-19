@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" version="2.0">
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:spring="http://www.springframework.org/tags" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" xmlns:sec="http://www.springframework.org/security/tags" version="2.0">
     <jsp:output omit-xml-declaration="yes"/>
     <page:show delete="false" id="ps_org_datacite_mds_domain_Dataset" object="${dataset}" path="/datasets" z="GTOIDp28o0CtA9jRRKQT81aO7fc=">
-        <util:hide roles="ROLE_DATACENTRE">
+        <sec:authorize url="/resources/j_spring_security_switch_user">
             <field:display field="datacentre" id="s_org_datacite_mds_domain_Dataset_datacentre" showPath="/datacentres" object="${dataset}" render="true" z="user-managed"/>
-        </util:hide>
+        </sec:authorize> 
         <c:set value="${properties['link.handleProxy']}" var="proxy_url"/>
         <field:display field="doi" id="s_org_datacite_mds_domain_Dataset_doi" link="${proxy_url}/${dataset.doi}" object="${dataset}" z="user-managed">
             (${resolvedUrl})
             <a href="${proxy_url}/${dataset.doi}?noredirect=on">[handle record]</a>
         </field:display>
-        <util:comment messageCode="handle_latency_info"/>
-        <field:display date="true" dateTimePattern="${dataset_created_date_format}" field="created" id="s_org_datacite_mds_domain_Dataset_created" object="${dataset}" render="false" z="user-managed"/>
-        <field:display date="true" dateTimePattern="${dataset_minted_date_format}" field="minted" id="s_org_datacite_mds_domain_Dataset_minted" object="${dataset}" defaultMessageCode="dataset_not_minted" render="true" z="user-managed"/>
-        <field:display date="true" dateTimePattern="${dataset_updated_date_format}" field="updated" id="s_org_datacite_mds_domain_Dataset_updated" object="${dataset}" z="0xOiEJrTlBixi8pKrahDtV0iGhs="/>
+          <util:comment messageCode="handle_latency_info"/> 
+        <field:display date="true"  field="created" id="s_org_datacite_mds_domain_Dataset_created" object="${dataset}" render="false" z="user-managed"/>
+        <field:display date="true"  field="minted" id="s_org_datacite_mds_domain_Dataset_minted" object="${dataset}" defaultMessageCode="dataset_not_minted" render="true" z="user-managed"/>
+        <field:display date="true"  field="updated" id="s_org_datacite_mds_domain_Dataset_updated" object="${dataset}" z="0xOiEJrTlBixi8pKrahDtV0iGhs="/>
         <field:display field="isActive" id="s_org_datacite_mds_domain_Dataset_isActive" object="${dataset}" z="+iKflUoWmGCa+/BloB8nbPxnrbI="/>
         <field:display field="isRefQuality" id="s_org_datacite_mds_domain_Dataset_isRefQuality" object="${dataset}" z="Pa2TcTvIA3/kRn3GSb4afhSP7vE="/>
-        <util:hide>
+        <div style="display:none">
             <field:display field="lastLandingPageStatus" id="s_org_datacite_mds_domain_Dataset_lastLandingPageStatus" object="${dataset}" z="7qyzkqnseKzwOGknAcd9LKcUfgQ="/>
-            <field:display date="true" dateTimePattern="${dataset_lastlandingpagestatuscheck_date_format}" field="lastLandingPageStatusCheck" id="s_org_datacite_mds_domain_Dataset_lastLandingPageStatusCheck" object="${dataset}" z="RjT/GCkZDucN6TyaWGcAEzIq6jM="/>
+            <field:display date="true"  field="lastLandingPageStatusCheck" id="s_org_datacite_mds_domain_Dataset_lastLandingPageStatusCheck" object="${dataset}" z="RjT/GCkZDucN6TyaWGcAEzIq6jM="/>
             <field:display field="lastMetadataStatus" id="s_org_datacite_mds_domain_Dataset_lastMetadataStatus" object="${dataset}" z="ZLgwrEyz/qKcANxy5YdscojoaNc="/>
-        </util:hide>
+        </div>
         <field:display field="url" id="s_org_datacite_mds_domain_Dataset_url" object="${dataset}" render="false" z="user-managed"/>
     </page:show>
     <c:if test="${not empty metadata}">

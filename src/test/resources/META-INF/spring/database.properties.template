@@ -1,4 +1,4 @@
 database.password=
 database.username=
-database.url=jdbc:mysql://localhost/datacite_test?useUnicode=true&characterEncoding=UTF8
-database.driverClassName=com.mysql.jdbc.Driver
+database.url=jdbc:mysql://localhost/datacite_test?useUnicode=true&characterEncoding=UTF8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+database.driverClassName=com.mysql.cj.jdbc.Driver

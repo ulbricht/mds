@@ -26,43 +26,48 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import javax.validation.constraints.Size;
+
 @RooJavaBean
 @RooToString
 @RooEntity(finders = { "findPrefixesByPrefixLike" })
 @Unique(field = "prefix")
 @Entity
 @XmlRootElement
-public class Prefix implements Comparable<Prefix>{
+@Table(name = "prefix")
+public class Prefix implements Comparable<Prefix> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    
+
     @Version
     @Column(name = "version")
     private Integer version;
-    
+
     @XmlTransient
     public Long getId() {
         return this.id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     @XmlTransient
     public Integer getVersion() {
         return this.version;
     }
-    
+
     public void setVersion(Integer version) {
         this.version = version;
-    }    
+    }
 
     @NotNull
     @DoiPrefix
+    @Size(max = 255)
     @Column(unique = true)
     private String prefix;
 
@@ -70,7 +75,7 @@ public class Prefix implements Comparable<Prefix>{
     public Date getCreated() {
         return this.created;
     }
-    
+
     public void setCreated(Date created) {
         this.created = created;
     }
@@ -86,13 +91,15 @@ public class Prefix implements Comparable<Prefix>{
 
     @SuppressWarnings("unchecked")
     public static List<Prefix> findPrefixEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("select o from Prefix o order by prefix").setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+        return entityManager().createQuery("select o from Prefix o order by length(prefix),prefix")
+                .setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
     @Transactional
     public void persist() {
         setCreated(new Date());
-        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager == null)
+            this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
 
@@ -125,7 +132,7 @@ public class Prefix implements Comparable<Prefix>{
     public List<Allocator> getAllocators() {
         return Allocator.findAllocatorsByPrefix(this);
     }
-    
+
     @Transient
     public String getLabelWithAllocators() {
         List<Allocator> allocators = getAllocators();
@@ -145,7 +152,7 @@ public class Prefix implements Comparable<Prefix>{
         else
             return prefix + " " + symbols.toString();
     }
-    
+
     @Override
     public String toString() {
         return getPrefix() + " (id=" + getId() + ")";

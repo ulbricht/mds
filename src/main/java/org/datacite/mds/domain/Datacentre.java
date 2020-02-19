@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
+import javax.persistence.Lob;
 import javax.validation.GroupSequence;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -46,6 +47,10 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+
 @RooJavaBean
 @RooToString(excludeFields = { "quotaExceeded" })
 @RooEntity(finders = { "findDatacentresBySymbolEquals", "findDatacentresByNameLike" })
@@ -55,12 +60,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @XmlRootElement
 @GroupSequence({ Datacentre.class, Datacentre.SecondLevelConstraint.class })
+@Table(name="datacentre")
 public class Datacentre implements AllocatorOrDatacentre {
 
     private static Logger log4j = Logger.getLogger(Datacentre.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
     
@@ -108,22 +114,28 @@ public class Datacentre implements AllocatorOrDatacentre {
 
     @NotNull
     @Size(min = 2, max = 80)
+    @Column(name = "contact_name")
     private String contactName;
 
     @NotNull
     @Email
+    @Column(name = "contact_email")
     private String contactEmail;
 
     @NotNull
+    @Column(name = "doi_quota_allowed")
     private Integer doiQuotaAllowed = -1;
 
     @NotNull
     @Min(0L)
     @Max(999999999L)
+    @Column(name = "doi_quota_used")
     private Integer doiQuotaUsed = 0;
 
+    @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "role_name")
     private String roleName = "ROLE_DATACENTRE";
 
     @XmlTransient
@@ -144,7 +156,7 @@ public class Datacentre implements AllocatorOrDatacentre {
 
     @NotNull
     @ManyToOne(targetEntity = Allocator.class)
-    @JoinColumn
+    @JoinColumn(name="allocator")
     private Allocator allocator;
 
     @XmlTransient 
@@ -158,6 +170,11 @@ public class Datacentre implements AllocatorOrDatacentre {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @OrderBy("prefix")
+    @JoinTable(
+        name = "datacentre_prefixes", 
+        joinColumns = { @JoinColumn(name = "datacentre") }, 
+        inverseJoinColumns = { @JoinColumn(name = "prefixes") }
+    )
     private Set<org.datacite.mds.domain.Prefix> prefixes = new java.util.HashSet<org.datacite.mds.domain.Prefix>();
 
     @Temporal(TemporalType.TIMESTAMP)

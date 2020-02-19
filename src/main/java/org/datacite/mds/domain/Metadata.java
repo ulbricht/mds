@@ -31,38 +31,42 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+
 @RooJavaBean
 @RooToString
 @RooEntity
 @MatchDoi(groups = Metadata.SecondLevelConstraint.class)
 @GroupSequence({ Metadata.class, Metadata.SecondLevelConstraint.class })
+@Table(name = "metadata")
 public class Metadata {
 
     public static final int XML_MAX_SIZE = 63 * 1024; // 10 MByte
 
     private static Logger log4j = Logger.getLogger(Metadata.class);
-    
+
     @Autowired
     @Transient
     SchemaService schemaService;
 
     @ValidXML
-//    @Column(columnDefinition = "MEDIUMBLOB")
+    // @Column(columnDefinition = "MEDIUMBLOB")
     @Column(columnDefinition = "BLOB")
     @Size(max = XML_MAX_SIZE)
     private byte[] xml;
 
     @ValidDIForNULL
-    @Column(length=10000)
+    @Column(columnDefinition = "BLOB")
     private byte[] dif;
 
-	 @ValidISOorNULL
-    @Column(length=10000)
+    @ValidISOorNULL
+    @Column(columnDefinition = "BLOB")
     private byte[] iso;
 
     private String namespace;
 
     @Min(0L)
+    @Column(name = "metadata_version")
     private Integer metadataVersion;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,20 +75,21 @@ public class Metadata {
 
     @NotNull
     @ManyToOne(targetEntity = Dataset.class)
-    @JoinColumn
+    @JoinColumn(name = "dataset")
     private Dataset dataset;
-    
+
+    @Column(name = "is_converted_by_mds")
     private Boolean isConvertedByMds = false;
-    
+
     @Transient
     private Query maxMetaVerQuery;
 
     public static Integer findMaxMetadataVersionByDataset(Dataset dataset) {
         if (dataset == null)
             throw new IllegalArgumentException("The dataset argument is required");
-        
+
         EntityManager em = entityManager();
-        Query q = em.createQuery("SELECT MAX(metadataVersion) FROM Metadata WHERE dataset = :dataset");
+        Query q = em.createQuery("SELECT MAX(metadataVersion) FROM Metadata AS m WHERE m.dataset = :dataset");
         q.setParameter("dataset", dataset);
         Integer max = (Integer) q.getSingleResult();
         return max == null ? -1 : max;
@@ -92,20 +97,21 @@ public class Metadata {
 
     @Transactional
     public void persist() {
+
         if (this.entityManager == null)
             this.entityManager = entityManager();
         if (maxMetaVerQuery == null)
-            maxMetaVerQuery = entityManager.
-              createQuery("SELECT MAX(metadataVersion) FROM Metadata WHERE dataset = :dataset");
-        
+            maxMetaVerQuery = entityManager
+                    .createQuery("SELECT MAX(metadataVersion) FROM Metadata AS m WHERE m.dataset = :dataset");
+
         maxMetaVerQuery.setParameter("dataset", getDataset());
         Integer max = (Integer) maxMetaVerQuery.getSingleResult();
         Integer maxVersion = max == null ? -1 : max;
         setMetadataVersion(maxVersion + 1);
         setCreated(new Date());
         entityManager.persist(this);
-        
-        log4j.info(getDataset().getDatacentre().getSymbol() + " successfuly stored metadata for " + getDataset().getDoi());
+        log4j.info(
+                getDataset().getDatacentre().getSymbol() + " successfuly stored metadata for " + getDataset().getDoi());
     }
 
     public static TypedQuery<Metadata> findMetadatasByDataset(Dataset dataset) {
@@ -113,7 +119,8 @@ public class Metadata {
             throw new IllegalArgumentException("The dataset argument is required");
         EntityManager em = Metadata.entityManager();
         TypedQuery<Metadata> q = em.createQuery(
-                "SELECT Metadata FROM Metadata AS metadata WHERE metadata.dataset = :dataset ORDER BY metadataVersion DESC", Metadata.class);
+                "SELECT m FROM Metadata AS m WHERE m.dataset = :dataset ORDER BY m.metadataVersion DESC",
+                Metadata.class);
         q.setParameter("dataset", dataset);
         return q;
     }
@@ -123,15 +130,14 @@ public class Metadata {
             throw new IllegalArgumentException("The dataset argument is required");
 
         Integer maxVersion = findMaxMetadataVersionByDataset(dataset);
-        
+
         EntityManager em = Metadata.entityManager();
         TypedQuery<Metadata> q = em.createQuery(
-                "SELECT Metadata FROM Metadata AS metadata WHERE metadata.dataset = :dataset "
-                + "AND metadata.metadataVersion = :metadataVersion", 
+                "SELECT m FROM Metadata AS m WHERE m.dataset = :dataset " + "AND m.metadataVersion = :metadataVersion",
                 Metadata.class);
         q.setParameter("dataset", dataset);
         q.setParameter("metadataVersion", maxVersion);
-        
+
         Metadata result;
         try {
             result = q.getSingleResult();
@@ -141,29 +147,29 @@ public class Metadata {
 
         return result;
     }
-    
-    private static String hqlFindLatestMetadatas = "select m from Metadata m WHERE m.metadataVersion = (select max(metadataVersion) from Metadata AS mm WHERE mm.dataset = m.dataset)"; 
-    
+
+    private static String hqlFindLatestMetadatas = "select m from Metadata m WHERE m.metadataVersion = (select max(metadataVersion) from Metadata AS mm WHERE mm.dataset = m.dataset)";
+
     public static List<Metadata> findLatestMetadatas() {
         return entityManager().createQuery(hqlFindLatestMetadatas, Metadata.class).getResultList();
     }
-    
+
     public static List<Metadata> findLatestMetadatasByNamespace(String namespace) {
         String hql;
-        if (namespace == null) 
+        if (namespace == null)
             hql = hqlFindLatestMetadatas + " AND m.namespace is null";
         else
             hql = hqlFindLatestMetadatas + " AND m.namespace = :namespace";
-        
+
         TypedQuery<Metadata> q = entityManager().createQuery(hql, Metadata.class);
-        
+
         if (namespace != null)
             q.setParameter("namespace", namespace);
         return q.getResultList();
     }
-    
+
     public void setXml(byte[] xml) {
-        if (schemaService == null) 
+        if (schemaService == null)
             throw new IllegalStateException("schemaService has not been injected");
         String namespace = schemaService.getNamespace(xml);
         setNamespace(namespace);
@@ -185,7 +191,7 @@ public class Metadata {
     public void setIsConvertedByMds(Boolean isConvertedByMds) {
         this.isConvertedByMds = isConvertedByMds;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getDataset().getDatacentre().getSymbol()).append(":");
@@ -206,6 +212,7 @@ public class Metadata {
         return sb.toString();
     }
 
-    public interface SecondLevelConstraint {};
-    
+    public interface SecondLevelConstraint {
+    };
+
 }

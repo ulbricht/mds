@@ -2,6 +2,7 @@ package org.datacite.mds.domain;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -23,22 +24,29 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+import javax.persistence.JoinColumn;
+
 @RooJavaBean
 @RooToString
 @RooEntity(finders = { "findMediasByDataset" })
 @Unique(field = { "dataset", "mediaType" })
 @MatchDomain(groups = Media.SecondLevelConstraint.class)
 @GroupSequence( { Media.class, Media.SecondLevelConstraint.class })
+@Table(name="media")
 public class Media implements Comparable {
 
-    @ManyToOne
+    @ManyToOne(targetEntity = Dataset.class)
     @NotNull
+    @JoinColumn(name="dataset")
     private Dataset dataset;
 
     @MediaType
+    @Column(name="media_type")
     private String mediaType;
 
     @URL
+    @Column(columnDefinition = "VARCHAR(255)")
     @NotEmpty
     private String url;
 
@@ -82,7 +90,7 @@ public class Media implements Comparable {
     public static TypedQuery<Media> findMediasByDataset(Dataset dataset) {
         if (dataset == null) throw new IllegalArgumentException("The dataset argument is required");
         EntityManager em = Media.entityManager();
-        TypedQuery<Media> q = em.createQuery("SELECT o FROM Media AS o WHERE o.dataset = :dataset ORDER BY o.mediaType ASC", Media.class);
+        TypedQuery<Media> q = em.createQuery("SELECT media FROM Media AS media WHERE media.dataset = :dataset ORDER BY media.mediaType ASC", Media.class);
         q.setParameter("dataset", dataset);
         return q;
     }
@@ -90,7 +98,7 @@ public class Media implements Comparable {
     public static Media findMediaByDatasetAndMediaType(Dataset dataset, String mediaType) {
         if (dataset == null) throw new IllegalArgumentException("The dataset argument is required");
         EntityManager em = Media.entityManager();
-        TypedQuery<Media> q = em.createQuery("SELECT o FROM Media AS o WHERE o.dataset = :dataset AND o.mediaType = :mediaType", Media.class);
+        TypedQuery<Media> q = em.createQuery("SELECT media FROM Media AS media WHERE media.dataset = :dataset AND media.mediaType = :mediaType", Media.class);
         q.setParameter("dataset", dataset);
         q.setParameter("mediaType", mediaType);
         return q.getSingleResult();

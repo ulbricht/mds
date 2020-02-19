@@ -11,7 +11,7 @@ xml.schema.location.local=http://doidb.wdc-terra.org/igsn/schemas/
 
 xml.schema.xpath.doi=//*[local-name() = 'sampleNumber' and @identifierType='igsn']
 
-
 #additional metadata - IGSN registry will not accept these, since the schemas for validation are removed
 xml.dif.schema.namespace=http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/
 xml.iso.schema.namespace=http://www.isotc211.org/2005/gmd
+

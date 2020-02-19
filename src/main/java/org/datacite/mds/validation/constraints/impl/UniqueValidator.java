@@ -68,12 +68,12 @@ public class UniqueValidator implements ConstraintValidator<Unique, Object> {
     private List<Serializable> findIds(Object entity, Object[] values) {
         String queryString = "SELECT " + idField + " FROM " + entity.getClass().getName();
         for (int i = 0; i < uniqueFields.length; i++) {
-            queryString +=  (i==0 ? " WHERE " : " AND ") + uniqueFields[i]  + " = ?";
+            queryString +=  (i==0 ? " WHERE " : " AND ") + uniqueFields[i]  + " = :param"+Integer.toString(i);
         }
         TypedQuery<Serializable> query = entityManager.createQuery(queryString, Serializable.class);
         for (int i = 0; i < uniqueFields.length; i++) {
             int parameterPosition = i + 1; //ordinal parameters are 1-based! 
-            query.setParameter(parameterPosition, values[i]);
+            query.setParameter("param"+Integer.toString(i), values[i]);
         }
         List<Serializable> foundIds = query.getResultList();
         log.trace("found IDs " + foundIds);

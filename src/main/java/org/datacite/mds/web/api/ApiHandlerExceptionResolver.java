@@ -104,7 +104,7 @@ public class ApiHandlerExceptionResolver extends DefaultHandlerExceptionResolver
     
     @Override
     protected ModelAndView handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
-            HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+            HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         return new ModelAndView();
     }

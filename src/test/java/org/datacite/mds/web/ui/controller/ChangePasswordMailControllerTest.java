@@ -72,7 +72,7 @@ public class ChangePasswordMailControllerTest {
     
     @Test
     public void mail() {
-        Capture<MailMessage> capturedMail = new Capture<MailMessage>();
+        Capture<MailMessage> capturedMail = Capture.newInstance();
         mockMailService.send(and(capture(capturedMail),anyObject(MailMessage.class)));
         replay(mockMailService);
         String view = controller.mail(changePasswordMailModel, result, model);

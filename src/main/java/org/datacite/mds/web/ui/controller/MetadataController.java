@@ -3,7 +3,6 @@ package org.datacite.mds.web.ui.controller;
 import java.util.Arrays;
 import java.util.Collection;
 
-
 import org.apache.commons.lang.ArrayUtils;
 import org.datacite.mds.service.ProxyService;
 import org.datacite.mds.service.ProxyException;
@@ -13,7 +12,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 
 import org.datacite.mds.domain.Dataset;
 import org.datacite.mds.domain.Metadata;
@@ -57,15 +55,15 @@ import org.apache.log4j.Logger;
 @RequestMapping("/metadatas")
 @Controller
 public class MetadataController implements UiController {
-    
+
     private static Logger log = Logger.getLogger(MetadataController.class);
 
     @Autowired
-    SchemaService schemaService; 
-    
+    SchemaService schemaService;
+
     @Autowired
-    ProxyService proxyService; 
-    
+    ProxyService proxyService;
+
     @Autowired
     ValidationHelper validationHelper;
 
@@ -75,25 +73,23 @@ public class MetadataController implements UiController {
     }
 
     @ModelAttribute("datasets")
-    public Collection<Dataset> populateDatasets(@RequestParam(value = "dataset", required = false) Long datasetId) throws SecurityException {
+    public Collection<Dataset> populateDatasets(@RequestParam(value = "dataset", required = false) Long datasetId)
+            throws SecurityException {
         Dataset dataset = Dataset.findDataset(datasetId);
         if (dataset != null)
             SecurityUtils.checkDatasetOwnership(dataset);
         return Arrays.asList(dataset);
     }
- /*   
-    @RequestMapping(method = RequestMethod.POST)
-    public String create(@Valid Metadata metadata, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) throws SecurityException {
-        SecurityUtils.checkDatasetOwnership(metadata.getDataset());
-        if (bindingResult.hasErrors()) {
-            uiModel.addAttribute("metadata", metadata);
-            return "metadatas/create";
-        }
-        uiModel.asMap().clear();
-        metadata.persist();
-        return "redirect:/metadatas/" + encodeUrlPathSegment(metadata.getId().toString(), httpServletRequest);
-    }
-*/
+    /*
+     * @RequestMapping(method = RequestMethod.POST) public String create(@Valid
+     * Metadata metadata, BindingResult bindingResult, Model uiModel,
+     * HttpServletRequest httpServletRequest) throws SecurityException {
+     * SecurityUtils.checkDatasetOwnership(metadata.getDataset()); if
+     * (bindingResult.hasErrors()) { uiModel.addAttribute("metadata", metadata);
+     * return "metadatas/create"; } uiModel.asMap().clear(); metadata.persist();
+     * return "redirect:/metadatas/" +
+     * encodeUrlPathSegment(metadata.getId().toString(), httpServletRequest); }
+     */
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String show(@PathVariable("id") Long id, Model model) throws SecurityException {
@@ -108,28 +104,28 @@ public class MetadataController implements UiController {
             prettyXml = "error formatting xml: " + e.getMessage();
         }
 
-		 String prettyDif;
+        String prettyDif;
         try {
-	    byte[] dif= metadata.getDif();
+            byte[] dif = metadata.getDif();
             prettyDif = Utils.formatXML(dif);
         } catch (Exception e) {
             prettyDif = "error formatting dif: " + e.getMessage();
         }
 
-		 String prettyIso;
+        String prettyIso;
         try {
-	    byte[] iso= metadata.getIso();
+            byte[] iso = metadata.getIso();
             prettyIso = Utils.formatXML(iso);
         } catch (Exception e) {
             prettyIso = "error formatting iso: " + e.getMessage();
         }
         model.addAttribute("prettyxml", prettyXml);
         model.addAttribute("prettydif", prettyDif);
-		  model.addAttribute("prettyiso", prettyIso);
+        model.addAttribute("prettyiso", prettyIso);
         model.addAttribute("itemId", id);
         return "metadatas/show";
     }
-    
+
     @RequestMapping(method = RequestMethod.POST)
     public String create(@Valid CreateMetadataModel createMetadataModel, BindingResult bindingResult, Model uiModel) {
 
@@ -138,83 +134,81 @@ public class MetadataController implements UiController {
             return "metadatas/create";
         }
 
-		   String errorfield="xml";
+        String errorfield = "xml";
 
-			byte[] xml=createMetadataModel.getXml();
-			byte[] dif=createMetadataModel.getDif();
-			byte[] iso=createMetadataModel.getIso();
-			Dataset dataset=createMetadataModel.getDataset();
+        byte[] xml = createMetadataModel.getXml();
+        byte[] dif = createMetadataModel.getDif();
+        byte[] iso = createMetadataModel.getIso();
+        Dataset dataset = createMetadataModel.getDataset();
 
-			Metadata metadata=new Metadata();
-			metadata.setDataset(dataset);
+        Metadata metadata = new Metadata();
+        metadata.setDataset(dataset);
 
-		  try{
+        try {
 
-			  if (ArrayUtils.getLength(iso)>10 && schemaService.isIsoSchema(iso))
-					metadata.setIso(iso);
+            if (ArrayUtils.getLength(iso) > 10 && schemaService.isIsoSchema(iso))
+                metadata.setIso(iso);
 
-			  if (ArrayUtils.getLength(dif)>10 && schemaService.isDifSchema(dif))
-			 		metadata.setDif(dif);
+            if (ArrayUtils.getLength(dif) > 10 && schemaService.isDifSchema(dif))
+                metadata.setDif(dif);
 
-			  if (ArrayUtils.getLength(xml)>10){
-					metadata.setXml(xml);
-			  }else{
+            if (ArrayUtils.getLength(xml) > 10) {
+                metadata.setXml(xml);
+            } else {
 
-					byte[] datacite=null;
-					if (ArrayUtils.getLength(iso)>10 && schemaService.isIsoSchema(iso)){
-						errorfield="iso";
-						datacite=schemaService.convertDifToDatacite(iso, metadata.getDataset().getDoi());
-					}else
-					 if (ArrayUtils.getLength(dif)>10 && schemaService.isDifSchema(dif)){
-						errorfield="dif";
-						datacite=schemaService.convertDifToDatacite(dif, metadata.getDataset().getDoi());
-					}
- 			   
-				if (datacite!=null){
-					metadata.setXml(datacite);					
-					metadata.setIsConvertedByMds(true);
-				}
-			  }
+                byte[] datacite = null;
+                if (ArrayUtils.getLength(iso) > 10 && schemaService.isIsoSchema(iso)) {
+                    errorfield = "iso";
+                    datacite = schemaService.convertDifToDatacite(iso, metadata.getDataset().getDoi());
+                } else if (ArrayUtils.getLength(dif) > 10 && schemaService.isDifSchema(dif)) {
+                    errorfield = "dif";
+                    datacite = schemaService.convertDifToDatacite(dif, metadata.getDataset().getDoi());
+                }
 
-			validationHelper.validateTo(bindingResult, metadata);
+                if (datacite != null) {
+                    metadata.setXml(datacite);
+                    metadata.setIsConvertedByMds(true);
+                }
+            }
 
-		     if (bindingResult.hasErrors()) {
-		         uiModel.addAttribute("createMetadataModel", createMetadataModel);
-		         return "metadatas/create";
-		     }
+            validationHelper.validateTo(bindingResult, metadata);
 
-  		  	  proxyService.metaUpdate(metadata.getXml());
+            if (bindingResult.hasErrors()) {
+                uiModel.addAttribute("createMetadataModel", createMetadataModel);
+                return "metadatas/create";
+            }
 
-		     uiModel.asMap().clear();       
-		     metadata.persist();
-		     return "redirect:/metadatas/" + metadata.getId().toString();  
-			
-		   }catch (ProxyException e){
+            proxyService.metaUpdate(metadata.getXml());
+
+            uiModel.asMap().clear();
+            metadata.persist();
+            return "redirect:/metadatas/" + metadata.getId().toString();
+
+        } catch (ProxyException e) {
             bindingResult.addError(new FieldError("", "xml", e.toString()));
-		   }catch(ValidationException e){
-				String error="Unable to parse XML "+e.getMessage();
-				bindingResult.addError(new FieldError("", errorfield, error));
-			}catch (SchemaConvertException e){
-				String error="Can not convert Schema to DataCite "+e.getMessage();
-				bindingResult.addError(new FieldError("", errorfield, error));
-		 	}
+        } catch (ValidationException e) {
+            String error = "Unable to parse XML " + e.getMessage();
+            bindingResult.addError(new FieldError("", errorfield, error));
+        } catch (SchemaConvertException e) {
+            String error = "Can not convert Schema to DataCite " + e.getMessage();
+            bindingResult.addError(new FieldError("", errorfield, error));
+        }
 
-         uiModel.addAttribute("createMetadataModel", createMetadataModel);
-         return "metadatas/create";
-            
+        uiModel.addAttribute("createMetadataModel", createMetadataModel);
+        return "metadatas/create";
+
     }
-        
+
     @RequestMapping(params = "form", method = RequestMethod.GET)
     public String createForm(Model uiModel) {
         uiModel.addAttribute("createMetadataModel", new CreateMetadataModel());
         List dependencies = new ArrayList();
         if (Dataset.countDatasets() == 0) {
-            dependencies.add(new String[]{"dataset", "datasets"});
+            dependencies.add(new String[] { "dataset", "datasets" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "metadatas/create";
     }
-
 
     @RequestMapping(value = "/{id}", params = "raw", method = RequestMethod.GET)
     public ResponseEntity<? extends Object> showRaw(@PathVariable("id") Long id) throws SecurityException {
@@ -250,7 +244,6 @@ public class MetadataController implements UiController {
         return new ResponseEntity<Object>(metadata.getIso(), headers, HttpStatus.OK);
     }
 
-    
     @RequestMapping(method = RequestMethod.GET)
     public String list() {
         return "index";
