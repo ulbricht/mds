@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.datacite.mds.service.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.context.ContextConfiguration;
@@ -36,7 +36,7 @@ public class ChangePasswordControllerTest {
     String symbol = "AL";
     String oldPassword = "old password";
     String newPassword = "new password";
-    
+
     AllocatorOrDatacentre user;
 
     ChangePasswordController controller;
@@ -46,7 +46,7 @@ public class ChangePasswordControllerTest {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-    
+
     String auth;
     ChangePasswordModel changePasswordModel;
     Model model;
@@ -97,7 +97,7 @@ public class ChangePasswordControllerTest {
         String view = controller.createForm(symbol, auth, model);
         Assert.assertEquals("password/change/expired", view);
     }
-    
+
     @Test
     public void changePasswordModelWithErrors() {
         result.addError(new ObjectError("foo", "bar"));
@@ -147,11 +147,11 @@ public class ChangePasswordControllerTest {
         Assert.assertEquals("password/change/expired", view);
         checkPasswordNotChanged();
     }
-    
+
     void checkPasswordNotChanged() {
         Assert.assertEquals(oldPassword, user.getPassword());
     }
-    
+
     void checkLoggedInAs(String symbol) {
         Assert.assertEquals(symbol, TestUtils.getCurrentUsername());
     }

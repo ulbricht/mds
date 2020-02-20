@@ -3,12 +3,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:security="http://www.springframework.org/schema/security"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
 
     <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
-		<security:filter-chain-map path-type="regex">
+		<security:filter-chain-map request-matcher="regex">
 
 
 			<security:filter-chain pattern="/(datacentre|igsn|metadata|media|isometadata|igsnmetadata|oaisource)(/.*)?" filters="
@@ -38,7 +38,7 @@
 
 		<property name="securityMetadataSource">
 
-			<security:filter-security-metadata-source>
+			<security:filter-security-metadata-source use-expressions="false">
                 <!-- API -->
                 <security:intercept-url pattern="/datacentre/**" access="ROLE_ALLOCATOR" />
                 <security:intercept-url pattern="/igsn/**" access="ROLE_DATACENTRE" />
@@ -58,8 +58,7 @@
                 <security:intercept-url pattern="/prefixeslists/**" />
                 <security:intercept-url pattern="/oaisourceses/**" access="ROLE_ADMIN,ROLE_DEV" />
                 <security:intercept-url pattern="/userinfo/**" access="ROLE_ALLOCATOR,ROLE_DATACENTRE,ROLE_ADMIN,ROLE_DEV" />
-                                                                        
-        
+				
                 <!-- static content -->
                 <security:intercept-url pattern="/resources/j_spring_security_switch_user" access="ROLE_DEV,ROLE_ADMIN,ROLE_ALLOCATOR" />
                 <security:intercept-url pattern="/resources/**" />
@@ -112,18 +111,18 @@
 	<!-- Don't seem to be able to create one without session?? -->
 	<bean id="securityContextPersistenceFilterWithASCFalse"
 		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
-        <property name="securityContextRepository">
+        <constructor-arg>
             <bean class="org.datacite.mds.web.api.NullSecurityContextRepository"/>
-        </property>
+        </constructor-arg>
 	</bean>
 
 	<bean id="securityContextPersistenceFilterWithASCTrue"
 		class="org.springframework.security.web.context.SecurityContextPersistenceFilter">
-        <property name="securityContextRepository">
+        <constructor-arg>
             <bean class="org.springframework.security.web.context.HttpSessionSecurityContextRepository">
                 <property name="disableUrlRewriting" value="true"/>
             </bean>
-        </property>
+        </constructor-arg>
 	</bean>
   
 
@@ -159,13 +158,13 @@
 
 	<bean id="formAuthenticationEntryPoint"
 		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-		<property name="loginFormUrl" value="/login"/>
+		<constructor-arg value="/login"/>
 		<property name="forceHttps" value="true"/>
 	</bean>		
 
 	<bean id="formExceptionTranslationFilter"
 		class="org.springframework.security.web.access.ExceptionTranslationFilter">
-		<property name="authenticationEntryPoint" ref="formAuthenticationEntryPoint"/>
+		<constructor-arg ref="formAuthenticationEntryPoint"/>
 		<property name="accessDeniedHandler" ref="formAccessDeniedHandler"/>
 	</bean>				
 
@@ -176,8 +175,8 @@
 
 	<bean id="basicAuthenticationFilter" 
 		class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-		<property name="authenticationManager" ref="authenticationManager"/>
-		<property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint"/>
+		<constructor-arg ref="authenticationManager"/>
+		<constructor-arg ref="basicAuthenticationEntryPoint"/>
 	</bean>	
 
 	<bean id="basicAuthenticationEntryPoint"
@@ -187,7 +186,7 @@
 
 	<bean id="basicExceptionTranslationFilter"
 		class="org.springframework.security.web.access.ExceptionTranslationFilter">
-		<property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint"/>
+		<constructor-arg ref="basicAuthenticationEntryPoint"/>
 		<property name="accessDeniedHandler" ref="basicAccessDeniedHandler"/>
 	</bean>				
 
@@ -197,26 +196,26 @@
 
 	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<property name="allowIfAllAbstainDecisions" value="false"/>
-		<property name="decisionVoters">
+		<constructor-arg>
 			<list>
 				<bean class="org.springframework.security.access.vote.RoleVoter" />
 			</list>
-		</property>
+		</constructor-arg>
 	</bean>
     
     <bean id="rememberMeFilter" class="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter">
-		<property name="authenticationManager" ref="authenticationManager"/>
-		<property name="rememberMeServices" ref="rememberMeServices"/>
+		<constructor-arg ref="authenticationManager"/>
+		<constructor-arg ref="rememberMeServices"/>
     </bean>
 
 	<bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
-		<property name="key" value="${salt.rememberMe}"/>
+		<constructor-arg value="${salt.rememberMe}"/>
+		<constructor-arg ref="myUserDetailsService"/>
 		<property name="tokenValiditySeconds" value="2592000"/> <!-- 30 days -->
-		<property name="userDetailsService" ref="myUserDetailsService"/>
 	</bean>
 	
 	<bean id="rememberMeAuthenticationProvider" class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
-		<property name="key" value="${salt.rememberMe}"/>
+		<constructor-arg value="${salt.rememberMe}"/>
 	</bean>
 	
 	<bean id="securityContextHolder" class="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter"/>

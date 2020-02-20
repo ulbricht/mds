@@ -115,7 +115,7 @@ public class SecurityUtils {
      * @return
      */
     public static Authentication getOriginalUser(Authentication auth) {
-        Collection<GrantedAuthority> authorities = auth.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         for (GrantedAuthority authority : authorities) {
             if (authority instanceof SwitchUserGrantedAuthority) {
                 SwitchUserGrantedAuthority switchAuth = (SwitchUserGrantedAuthority) authority;

@@ -1,7 +1,5 @@
 package org.datacite.mds.web.ui.controller;
 
-
-
 import org.datacite.mds.service.ProxyService;
 import org.datacite.mds.service.ProxyException;
 import org.datacite.mds.service.SchemaService;
@@ -64,14 +62,13 @@ public class DatasetController implements UiController {
     HandleService handleService;
 
     @Autowired
-    ProxyService proxyService; 
+    ProxyService proxyService;
 
     @Autowired
     ValidationHelper validationHelper;
 
     @Autowired
-    SchemaService schemaService; 
-
+    SchemaService schemaService;
 
     @InitBinder
     void initBinder(WebDataBinder binder) {
@@ -92,8 +89,8 @@ public class DatasetController implements UiController {
             model.addAttribute("metadata", metadata);
             byte[] xml = metadata.getXml();
             model.addAttribute("prettyxml", Utils.formatXML(xml));
-	    byte[] dif= metadata.getDif();
-            model.addAttribute("prettydif",Utils.formatXML(dif));
+            byte[] dif = metadata.getDif();
+            model.addAttribute("prettydif", Utils.formatXML(dif));
         } catch (Exception e) {
         }
         model.addAttribute("resolvedUrl", resolveDoi(dataset));
@@ -128,13 +125,11 @@ public class DatasetController implements UiController {
             @RequestParam(value = "size", required = false) Integer size, Model model) throws SecurityException {
         AllocatorOrDatacentre user = SecurityUtils.getCurrentAllocatorOrDatacentre();
         int sizeNo = size == null ? LIST_DEFAULT_SIZE : Math.min(size.intValue(), LIST_MAX_SIZE);
-        model.addAttribute(
-                "datasets",
-                Dataset.findDatasetEntriesByAllocatorOrDatacentre(user, page == null ? 0 : (page.intValue() - 1)
-                        * sizeNo, sizeNo));
+        model.addAttribute("datasets", Dataset.findDatasetEntriesByAllocatorOrDatacentre(user,
+                page == null ? 0 : (page.intValue() - 1) * sizeNo, sizeNo));
         float nrOfPages = (float) Dataset.countDatasetsByAllocatorOrDatacentre(user) / sizeNo;
-        model.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1
-                : nrOfPages));
+        model.addAttribute("maxPages",
+                (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         model.addAttribute("size", sizeNo);
         return "datasets/list";
     }
@@ -146,19 +141,20 @@ public class DatasetController implements UiController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public String create(@Valid CreateDatasetModel createDatasetModel, BindingResult result, Model model) throws SecurityException {
+    public String create(@Valid CreateDatasetModel createDatasetModel, BindingResult result, Model model)
+            throws SecurityException {
         Dataset dataset = modelToDataset(createDatasetModel, result);
         SecurityUtils.checkDatasetOwnership(dataset);
         Metadata metadata = modelToMetadata(createDatasetModel, dataset, result);
 
         checkQuota(dataset, result);
 
-			try{
-				if (!ArrayUtils.isEmpty(metadata.getXml()))
-					proxyService.metaUpdate(metadata.getXml());
-		   }catch (ProxyException e){
-		             result.addError(new FieldError("", "doi", e.toString()));
-			}
+        try {
+            if (!ArrayUtils.isEmpty(metadata.getXml()))
+                proxyService.metaUpdate(metadata.getXml());
+        } catch (ProxyException e) {
+            result.addError(new FieldError("", "doi", e.toString()));
+        }
 
         if (!result.hasErrors()) {
             try {
@@ -192,7 +188,7 @@ public class DatasetController implements UiController {
         model.asMap().clear();
         return "redirect:/datasets/" + dataset.getId().toString();
     }
-    
+
     private Dataset modelToDataset(CreateDatasetModel createDatasetModel, BindingResult result) {
         Dataset dataset = new Dataset();
         dataset.setDoi(createDatasetModel.getDoi());
@@ -201,61 +197,59 @@ public class DatasetController implements UiController {
         validationHelper.validateTo(result, dataset);
         return dataset;
     }
-    
+
     private Metadata modelToMetadata(CreateDatasetModel createDatasetModel, Dataset dataset, BindingResult result) {
         Metadata metadata = new Metadata();
         metadata.setDataset(dataset);
 
         handleUploadedXml(createDatasetModel);
-        
+
         try {
 
-                byte[] xml = createDatasetModel.getXml();
-                byte[] dif = createDatasetModel.getDif();
-                byte[] iso = createDatasetModel.getIso();
+            byte[] xml = createDatasetModel.getXml();
+            byte[] dif = createDatasetModel.getDif();
+            byte[] iso = createDatasetModel.getIso();
 
-            boolean hasMetadata = !ArrayUtils.isEmpty(xml) || !ArrayUtils.isEmpty(dif) || !ArrayUtils.isEmpty(iso) ;
-            if (hasMetadata) {				
+            boolean hasMetadata = !ArrayUtils.isEmpty(xml) || !ArrayUtils.isEmpty(dif) || !ArrayUtils.isEmpty(iso);
+            if (hasMetadata) {
 
-					metadata.setDif(dif);
-					metadata.setIso(iso);
+                metadata.setDif(dif);
+                metadata.setIso(iso);
 
-					if (ArrayUtils.isEmpty(xml)){
-						if (!ArrayUtils.isEmpty(iso) && schemaService.isIsoSchema(iso)){
-							byte[] datacite=schemaService.convertDifToDatacite(iso, dataset.getDoi());
-									metadata.setXml(datacite);
-									metadata.setIsConvertedByMds(true);
-						}else if (!ArrayUtils.isEmpty(dif) && schemaService.isDifSchema(dif)){
-								  byte[] datacite=schemaService.convertDifToDatacite(dif, dataset.getDoi());
-	 							   metadata.setXml(datacite);
-									metadata.setIsConvertedByMds(true);
-						}
-					}else{
-						metadata.setXml(xml);
-					}
-		
+                if (ArrayUtils.isEmpty(xml)) {
+                    if (!ArrayUtils.isEmpty(iso) && schemaService.isIsoSchema(iso)) {
+                        byte[] datacite = schemaService.convertDifToDatacite(iso, dataset.getDoi());
+                        metadata.setXml(datacite);
+                        metadata.setIsConvertedByMds(true);
+                    } else if (!ArrayUtils.isEmpty(dif) && schemaService.isDifSchema(dif)) {
+                        byte[] datacite = schemaService.convertDifToDatacite(dif, dataset.getDoi());
+                        metadata.setXml(datacite);
+                        metadata.setIsConvertedByMds(true);
+                    }
+                } else {
+                    metadata.setXml(xml);
+                }
 
-				   validationHelper.validateTo(result, metadata);
+                validationHelper.validateTo(result, metadata);
             } else if (metadataRequired)
                 result.rejectValue("xml", "org.datacite.mds.ui.model.CreateDatasetModel.xml.required");
         } catch (ValidationException e) {
             result.rejectValue("xml", null, e.getMessage());
-        }
-        catch (SchemaConvertException e){
-             String error="Can not convert Schema to DataCite "+e.getMessage();
-             result.addError(new FieldError("", "xml", error));
+        } catch (SchemaConvertException e) {
+            String error = "Can not convert Schema to DataCite " + e.getMessage();
+            result.addError(new FieldError("", "xml", error));
         }
         return metadata;
     }
-    
+
     private void handleUploadedXml(CreateDatasetModel createDatasetModel) {
         byte[] xmlUpload = createDatasetModel.getXmlUpload();
         boolean isFileUploaded = !ArrayUtils.isEmpty(xmlUpload);
         if (isFileUploaded)
             createDatasetModel.setXml(xmlUpload);
     }
-    
-    private void checkQuota(Dataset dataset, BindingResult result) { 
+
+    private void checkQuota(Dataset dataset, BindingResult result) {
         try {
             SecurityUtils.checkQuota(dataset.getDatacentre());
         } catch (SecurityException e) {
@@ -270,8 +264,8 @@ public class DatasetController implements UiController {
         if (!dataset.getUrl().isEmpty() && !result.hasErrors()) {
             try {
                 handleService.update(dataset.getDoi(), dataset.getUrl());
-                if (dataset.getMinted() == null) //update via proxy - create() and update() are the same functions
-							dataset.setMinted(new Date());
+                if (dataset.getMinted() == null) // update via proxy - create() and update() are the same functions
+                    dataset.setMinted(new Date());
                 log.info(dataset.getDatacentre().getSymbol() + " successfuly updated (via UI) " + dataset.getDoi());
             } catch (HandleException e) {
                 log.debug("updating DOI failed; try to mint it");
@@ -288,25 +282,25 @@ public class DatasetController implements UiController {
         }
 
         if (!result.hasErrors()) {
-		try{
+            try {
 
-			//if dataset exists (!=null) and the dataset gets activated - do it.
+                // if dataset exists (!=null) and the dataset gets activated - do it.
 
-			Dataset olddataset=Dataset.findDatasetByDoi(dataset.getDoi()); 
-			if (olddataset!=null && !olddataset.getIsActive().equals(Boolean.TRUE) && dataset.getIsActive().equals(Boolean.FALSE)){
+                Dataset olddataset = Dataset.findDatasetByDoi(dataset.getDoi());
+                if (olddataset != null && !olddataset.getIsActive().equals(Boolean.TRUE)
+                        && dataset.getIsActive().equals(Boolean.FALSE)) {
 
-				dataset.setIsActive(true);
-				dataset.merge();				//Update of URL succeeded - save the current state
-				dataset.setIsActive(false);
-				proxyService.metaDelete(dataset.getDoi());
-			}
-		}catch (ProxyException e){
-		    result.addError(new FieldError("", "url", e.toString()));
-		}catch (NotFoundException e){
-		    result.addError(new FieldError("", "url", e.toString()));
-		}
-	}
-
+                    dataset.setIsActive(true);
+                    dataset.merge(); // Update of URL succeeded - save the current state
+                    dataset.setIsActive(false);
+                    proxyService.metaDelete(dataset.getDoi());
+                }
+            } catch (ProxyException e) {
+                result.addError(new FieldError("", "url", e.toString()));
+            } catch (NotFoundException e) {
+                result.addError(new FieldError("", "url", e.toString()));
+            }
+        }
 
         if (result.hasErrors()) {
             model.addAttribute("dataset", dataset);
@@ -316,7 +310,7 @@ public class DatasetController implements UiController {
         model.asMap().clear();
         return "redirect:/datasets/" + dataset.getId().toString();
     }
-    
+
     private void checkBeforeMerge(Dataset dataset) throws SecurityException {
         Dataset origDataset = Dataset.findDataset(dataset.getId());
         if (!StringUtils.equals(origDataset.getDoi(), dataset.getDoi()))

@@ -252,7 +252,7 @@ try later and if problem persists please contact us</p>
 
 
 <h3>DELETE</h3> 
-<p><i>URI: https://doidb.wdc-terra.org/igsn/metadata/{igsnaa}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
+<p><i>URI: https://doidb.wdc-terra.org/igsnaa/metadata/{igsn}</i> where <code>{igsn}</code> is a specific IGSN.</p> 
 <p>This request marks a dataset as 'inactive'. To activate it again, <code>POST</code> new metadata or set the <code>isActive</code>-flag in the user interface.</p>
 
 <h4>Response body</h4> 

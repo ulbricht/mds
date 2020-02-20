@@ -15,3 +15,4 @@ xslt.dif.to.datacite=conversion/dif2datacite.xslt
 
 xml.iso.schema.namespace=http://www.isotc211.org/2005/gmd
 xml.dif.schema.namespace=http://pmd.gfz-potsdam.de/igsn/schemas/description/1.3
+

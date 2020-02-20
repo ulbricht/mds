@@ -1,5 +1,8 @@
 package org.datacite.mds.web.ui.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import junit.framework.Assert;
@@ -22,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration("/META-INF/spring/applicationContext.xml")
 @Transactional
 public class LogoutOrExitControllerTest {
-    
+
     LogoutOrExitController controller = new LogoutOrExitController();
-    
+
     @Test
     public void testNonSwitchedUser() {
         TestUtils.setUsernamePassword("foo", "bar");
@@ -32,7 +35,7 @@ public class LogoutOrExitControllerTest {
         String view = controller.logoutOrReturn(request);
         Assert.assertEquals("redirect:/resources/j_spring_security_logout", view);
     }
-    
+
     private HttpServletRequest makeHttpServletRequest(boolean sessionIsNew) {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpSession session = (MockHttpSession) request.getSession();
@@ -43,16 +46,17 @@ public class LogoutOrExitControllerTest {
     @Test
     public void testSwitchedUser() {
         Authentication origAuthentication = new TestingAuthenticationToken("foo", "bar");
-        GrantedAuthority[] swichUserAuthority = { new SwitchUserGrantedAuthority("foobar", origAuthentication) };
-        
+        List<GrantedAuthority> swichUserAuthority = new ArrayList<GrantedAuthority>();
+        swichUserAuthority.add(new SwitchUserGrantedAuthority("foobar", origAuthentication));
+
         Authentication switchedAuthentication = new TestingAuthenticationToken("foo", "bar", swichUserAuthority);
         SecurityContextHolder.getContext().setAuthentication(switchedAuthentication);
-        
+
         HttpServletRequest request = makeHttpServletRequest(false);
         String view = controller.logoutOrReturn(request);
         Assert.assertEquals("redirect:/resources/j_spring_security_exit_user", view);
     }
-    
+
     @Test
     public void testNotLoggedIn() {
         TestUtils.logout();
@@ -60,7 +64,7 @@ public class LogoutOrExitControllerTest {
         String view = controller.logoutOrReturn(request);
         Assert.assertEquals("redirect:/", view);
     }
-    
+
     @Test
     public void testWithNewSession() {
         TestUtils.setUsernamePassword("foo", "bar");
@@ -68,5 +72,5 @@ public class LogoutOrExitControllerTest {
         String view = controller.logoutOrReturn(request);
         Assert.assertEquals("redirect:/", view);
     }
-    
+
 }

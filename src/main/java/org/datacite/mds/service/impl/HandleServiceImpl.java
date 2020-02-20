@@ -23,7 +23,6 @@ import net.handle.hdllib.SecretKeyAuthenticationInfo;
 import net.handle.hdllib.SiteInfo;
 import net.handle.hdllib.Util;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.datacite.mds.service.ProxyService;
@@ -45,29 +44,36 @@ import net.handle.hdllib.Util;
 import org.springframework.core.io.ClassPathResource;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import net.handle.hdllib.FilesystemConfiguration;
 //import java.net.InetAddress;
 //import java.net.UnknownHostException;
 
-
 @Service
 public class HandleServiceImpl implements HandleService {
-    
-    
+
     @Autowired
-    ProxyService proxyService; 
-    
-    @Value("${handle.index}") private int adminIndex;
+    ProxyService proxyService;
 
-    @Value("${handle.id}") private String adminId;
+    @Value("${handle.index}")
+    private int adminIndex;
 
-    @Value("${handle.password}") private String adminPassword;
+    @Value("${handle.id}")
+    private String adminId;
 
-    @Value("${handle.traceMessages}") private boolean traceMessages;
+    @Value("${handle.password}")
+    private String adminPassword;
 
-    @Value("${handle.dummyMode}") boolean dummyMode;    
-    
-    @Value("${handle.pingServer}") String pingServer;    
-    
+    @Value("${handle.traceMessages}")
+    private boolean traceMessages;
+
+    @Value("${handle.dummyMode}")
+    boolean dummyMode;
+
+    @Value("${handle.pingServer}")
+    String pingServer;
+
     private static final int URL_RECORD_INDEX = 1;
 
     private static final int ADMIN_RECORD_INDEX = 100;
@@ -77,11 +83,20 @@ public class HandleServiceImpl implements HandleService {
     static final Logger log4j = Logger.getLogger(HandleServiceImpl.class);
 
     HandleResolver resolver = new HandleResolver();
-    
+
     HandleResolver resolverLowTimeout = new HandleResolver();
+
+    String handleconfdir = "somepath";
+    String privkeyfile = "somefile";
 
     @PostConstruct
     private void init() {
+
+        File resolveconf = new File(handleconfdir);
+        FilesystemConfiguration fsc = new FilesystemConfiguration(resolveconf);
+        resolver.setConfiguration(fsc);
+        resolverLowTimeout.setConfiguration(fsc);
+
         resolver.traceMessages = traceMessages;
         resolverLowTimeout.traceMessages = traceMessages;
         resolverLowTimeout.setTcpTimeout(2000); // 2 seconds
@@ -91,9 +106,9 @@ public class HandleServiceImpl implements HandleService {
     public void ping() throws HandleException {
         if (dummyMode || StringUtils.isEmpty(pingServer))
             return;
-        
+
         List<String> servers = Utils.csvToList(Utils.normalizeCsvStandard(pingServer));
-        for (String server: servers) {
+        for (String server : servers) {
             try {
                 checkPrimary(server);
             } catch (net.handle.hdllib.HandleException e) {
@@ -101,7 +116,7 @@ public class HandleServiceImpl implements HandleService {
             }
         }
     }
-    
+
     private void checkPrimary(String serviceHandle) throws net.handle.hdllib.HandleException, HandleException {
         HandleValue[] values = resolver.resolveHandle(serviceHandle, new String[] { "HS_SITE" }, new int[0]);
         SiteInfo[] sites = Util.getSitesFromValues(values);
@@ -113,67 +128,63 @@ public class HandleServiceImpl implements HandleService {
                 checkSite(site);
             }
         }
-        
+
         if (!hasPrimary)
             throw new HandleException("no primary handle server found for " + serviceHandle);
     }
-    
+
     private void checkSite(SiteInfo site) throws HandleException, net.handle.hdllib.HandleException {
-        AbstractRequest req = new GenericRequest(Util.encodeString("0.SITE/status"), AbstractMessage.OC_GET_SITE_INFO, null);
-        AbstractResponse response = resolverLowTimeout.sendRequestToSite(req, site); 
-        if (response == null || response.responseCode != AbstractMessage.RC_SUCCESS) 
+        AbstractRequest req = new GenericRequest(Util.encodeString("0.SITE/status"), AbstractMessage.OC_GET_SITE_INFO,
+                null);
+        AbstractResponse response = resolverLowTimeout.sendRequestToSite(req, site);
+
+        if (response == null || response.responseCode != AbstractMessage.RC_SUCCESS)
             throw new HandleException("non succesful request to primary " + site);
     }
-
-
 
     @Override
     public String resolve(String doi) throws HandleException, NotFoundException {
 
-	    
-	if (proxyService.isProxyMode()){
-	    return proxyService.doiResolve(doi); //get from DB not from Handle-service      
-	}else{
-	    return handleResolve(doi);      
-	}
+        if (proxyService.isProxyMode()) {
+            return proxyService.doiResolve(doi); // get from DB not from Handle-service
+        } else {
+            return handleResolve(doi);
+        }
 
     }
 
     @Override
     public void create(String doi, String url) throws HandleException {
-	try{
+        try {
 
-		if (proxyService.isProxyMode()){
-		    proxyService.doiUpdate( doi, url);      
-		}else{
-		    handleCreate( doi, url);         
-		}
-        }catch (ProxyException e){
-		throw new HandleException(e.getMessage());
-	}
+            if (proxyService.isProxyMode()) {
+                proxyService.doiUpdate(doi, url);
+            } else {
+                handleCreate(doi, url);
+            }
+        } catch (ProxyException e) {
+            throw new HandleException(e.getMessage());
+        }
     }
 
     @Override
     public void update(String doi, String newUrl) throws HandleException {
-	try{
+        try {
 
-		if (proxyService.isProxyMode()){
-		    proxyService.doiUpdate( doi, newUrl);       
-		}else{
-		    handleUpdate( doi, newUrl);
-		}
-        }catch (ProxyException e){
-		throw new HandleException(e.getMessage());
-	}
+            if (proxyService.isProxyMode()) {
+                proxyService.doiUpdate(doi, newUrl);
+            } else {
+                handleUpdate(doi, newUrl);
+            }
+        } catch (ProxyException e) {
+            throw new HandleException(e.getMessage());
+        }
     }
-    
-    
 
-    
-//-------------------HANDLE-------------------    
+    // -------------------HANDLE-------------------
 
     private String handleResolve(String doi) throws HandleException, NotFoundException {
-	    
+
         if (dummyMode)
             return "dummyMode";
 
@@ -181,13 +192,13 @@ public class HandleServiceImpl implements HandleService {
         byte[][] types = { Util.encodeString("URL") };
         int[] indexes = new int[0];
         ResolutionRequest resReq = new ResolutionRequest(handle, types, indexes, null);
-        resReq.authoritative = true; //always ask a primary server
-        
+        resReq.authoritative = true; // always ask a primary server
+
         try {
             AbstractResponse response = resolver.processRequest(resReq);
             String msg = AbstractMessage.getResponseCodeMessage(response.responseCode);
             log4j.debug("response code from Handle request: " + msg);
-            
+
             if (response.responseCode == AbstractMessage.RC_HANDLE_NOT_FOUND) {
                 throw new NotFoundException("handle " + doi + " does not exist");
             }
@@ -200,7 +211,7 @@ public class HandleServiceImpl implements HandleService {
                 throw new HandleException(msg);
             }
 
-            HandleValue[] values = ((ResolutionResponse)response).getHandleValues();
+            HandleValue[] values = ((ResolutionResponse) response).getHandleValues();
             return values[0].getDataAsString();
         } catch (net.handle.hdllib.HandleException e) {
             if (e.getCode() == net.handle.hdllib.HandleException.SERVICE_NOT_FOUND) {
@@ -232,29 +243,34 @@ public class HandleServiceImpl implements HandleService {
                     new HandleValue(URL_RECORD_INDEX, "URL".getBytes(DEFAULT_ENCODING), url.getBytes(DEFAULT_ENCODING),
                             HandleValue.TTL_TYPE_RELATIVE, 86400, timestamp, null, true, true, true, false) };
 
-            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "handlevalue");			    
-			    
-/*            AuthenticationInfo authInfo = new SecretKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
-                    adminIndex, adminPassword.getBytes(DEFAULT_ENCODING));
-*/
-				PrivateKey privKey=loadPrivateKeyFromFile();
-            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "loaded file");			    			    
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "handlevalue");
 
-				AuthenticationInfo authInfo= new PublicKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
-                    adminIndex,privKey);
-            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "created authentication");			    			    
+            /*
+             * AuthenticationInfo authInfo = new
+             * SecretKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING), adminIndex,
+             * adminPassword.getBytes(DEFAULT_ENCODING));
+             */
+            PrivateKey privKey = loadPrivateKeyFromFile();
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "loaded file");
+
+            AuthenticationInfo authInfo = new PublicKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
+                    adminIndex, privKey);
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "created authentication");
 
             CreateHandleRequest req = new CreateHandleRequest(doi.getBytes(DEFAULT_ENCODING), val, authInfo);
 
-            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "sent request");			    			    
-			    
+            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "sent request");
+
             if (!dummyMode) {
 
                 AbstractResponse response = resolver.processRequest(req);
-	//				AbstractResponse response=resolver.sendHdlTcpRequest(req,InetAddress.getByName(serverName),port);
+                // AbstractResponse
+                // response=resolver.sendHdlTcpRequest(req,InetAddress.getByName(serverName),port);
 
-            log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "received response");			    
-		    
+                log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "received response");
+
+                log4j.debug("creating Handle: IGSN: " + doi + " URL: " + url + "received response");
+
                 String msg = AbstractMessage.getResponseCodeMessage(response.responseCode);
                 log4j.debug("response code from Handle request: " + msg);
 
@@ -268,7 +284,7 @@ public class HandleServiceImpl implements HandleService {
             String message = "tried to register handle " + doi + " but failed: [" + e.getCode() + "] " + e.getMessage();
             log4j.error(message);
             throw new HandleException(message, e);
-        }//catch (UnknownHostException e){}
+        } // catch (UnknownHostException e){}
     }
 
     private void handleUpdate(String doi, String newUrl) throws HandleException {
@@ -278,26 +294,28 @@ public class HandleServiceImpl implements HandleService {
         log4j.debug("update Handle: IGSN: " + doi + " URL: " + newUrl);
 
         int timestamp = (int) (System.currentTimeMillis() / 1000);
-        
+
         try {
-            HandleValue[] val = {
-                    new HandleValue(URL_RECORD_INDEX, "URL".getBytes(DEFAULT_ENCODING), 
-                            newUrl.getBytes(DEFAULT_ENCODING),
-                            HandleValue.TTL_TYPE_RELATIVE, 86400, timestamp, null, true, true, true, false) };
+            HandleValue[] val = { new HandleValue(URL_RECORD_INDEX, "URL".getBytes(DEFAULT_ENCODING),
+                    newUrl.getBytes(DEFAULT_ENCODING), HandleValue.TTL_TYPE_RELATIVE, 86400, timestamp, null, true,
+                    true, true, false) };
 
-/*            AuthenticationInfo authInfo = new SecretKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
-                    adminIndex, adminPassword.getBytes(DEFAULT_ENCODING));
-*/
-				PrivateKey privKey=loadPrivateKeyFromFile();
+            /*
+             * AuthenticationInfo authInfo = new
+             * SecretKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING), adminIndex,
+             * adminPassword.getBytes(DEFAULT_ENCODING));
+             */
+            PrivateKey privKey = loadPrivateKeyFromFile();
 
-				AuthenticationInfo authInfo= new PublicKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
-                    adminIndex,privKey);
+            AuthenticationInfo authInfo = new PublicKeyAuthenticationInfo(adminId.getBytes(DEFAULT_ENCODING),
+                    adminIndex, privKey);
 
             ModifyValueRequest req = new ModifyValueRequest(doi.getBytes(DEFAULT_ENCODING), val, authInfo);
 
             if (!dummyMode) {
                 AbstractResponse response = resolver.processRequest(req);
-					//AbstractResponse response=resolver.sendHdlTcpRequest(req,InetAddress.getByName(serverName),port);
+                // AbstractResponse
+                // response=resolver.sendHdlTcpRequest(req,InetAddress.getByName(serverName),port);
                 String msg = AbstractMessage.getResponseCodeMessage(response.responseCode);
 
                 log4j.debug("response code from Handle request: " + msg);
@@ -311,36 +329,43 @@ public class HandleServiceImpl implements HandleService {
         } catch (net.handle.hdllib.HandleException e) {
             String message = "tried to update handle " + doi + " but failed: [" + e.getCode() + "] " + e.getMessage();
             throw new HandleException(message, e);
-        }//catch (UnknownHostException e){}
+        } // catch (UnknownHostException e){}
     }
 
+    private PrivateKey loadPrivateKeyFromFile() {
+        InputStream fin = null;
+        try {
 
-	private PrivateKey loadPrivateKeyFromFile() {
-	    
-     try {
+            File keyfile = new File(privkeyfile);
+            fin = new FileInputStream(keyfile);
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
-		ClassPathResource keyfile=new ClassPathResource("privkey/admpriv.bin");
-	
-	 	 InputStream fin = keyfile.getInputStream();  
-       ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            byte buf[] = new byte[256];
+            int r = 0;
+            while ((r = fin.read(buf)) >= 0) {
+                bout.write(buf, 0, r);
+            }
+            buf = bout.toByteArray();
 
-       byte buf[] = new byte[256];
-       int r = 0;
-       while((r=fin.read(buf))>=0){
-         bout.write(buf, 0, r);
-       }
-       buf = bout.toByteArray();
-       
-       byte passphrase[] = null;
-       
-       buf = Util.decrypt(buf, passphrase);
-       
-       return Util.getPrivateKeyFromBytes(buf, 0);
-     } catch (Exception e) {
-       e.printStackTrace(System.err);
-     }
- 
-   return null;
- }
-    
+            byte passphrase[] = null;
+
+            buf = Util.decrypt(buf, passphrase);
+
+            return Util.getPrivateKeyFromBytes(buf, 0);
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            if (fin != null) {
+
+                try {
+                    fin.close();
+                } catch (Exception e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
+
+        return null;
+    }
+
 }

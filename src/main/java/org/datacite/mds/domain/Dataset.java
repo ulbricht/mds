@@ -32,6 +32,8 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.Table;
+
 @RooJavaBean
 @RooToString
 @RooEntity(finders = { "findDatasetsByDoiEquals" })
@@ -40,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 @MatchDomain(groups = Dataset.SecondLevelConstraint.class)
 @Unique(field = "doi")
 @GroupSequence({ Dataset.class, Dataset.SecondLevelConstraint.class })
+@Table(name="dataset")
 public class Dataset {
     
     private static Logger log4j = Logger.getLogger(Dataset.class);
@@ -50,23 +53,28 @@ public class Dataset {
     private String doi;
 
     @NotNull
+    @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "is_ref_quality")
     private Boolean isRefQuality = false;
 
     @Min(100L)
     @Max(510L)
+    @Column(name = "last_landing_page_status")
     private Integer lastLandingPageStatus;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(iso = ISO.DATE_TIME)
+    @Column(name = "last_landing_page_status_check")
     private Date lastLandingPageStatusCheck;
 
+    @Column(name = "last_metadata_status")
     private String lastMetadataStatus;
 
     @NotNull
     @ManyToOne(targetEntity = Datacentre.class)
-    @JoinColumn
+    @JoinColumn(name="datacentre")
     private Datacentre datacentre;
 
 //    @Transient
@@ -94,9 +102,9 @@ public class Dataset {
         EntityManager em = entityManager();
         String hql;
         if (user instanceof Datacentre) {
-            hql = "SELECT Dataset FROM Dataset AS dataset WHERE dataset.datacentre = :user ORDER BY dataset.updated DESC";
+            hql = "SELECT dataset FROM Dataset AS dataset WHERE dataset.datacentre = :user ORDER BY dataset.updated DESC";
         } else {
-            hql = "SELECT Dataset FROM Dataset AS dataset WHERE dataset.datacentre.allocator = :user ORDER BY dataset.updated DESC";
+            hql = "SELECT dataset FROM Dataset AS dataset WHERE dataset.datacentre.allocator = :user ORDER BY dataset.updated DESC";
         }
         TypedQuery<Dataset> q = em.createQuery(hql, Dataset.class);
         q.setParameter("user", user);
@@ -186,7 +194,7 @@ public class Dataset {
     
     public static List<Dataset> findDatasetsByPrefix(String prefix) {
         EntityManager em = entityManager();
-        String hql = "select o from Dataset o where o.doi like :prefix";
+        String hql = "select dataset from Dataset AS dataset WHERE dataset.doi like :prefix";
         TypedQuery<Dataset> query = em.createQuery(hql, Dataset.class);
         query.setParameter("prefix", prefix + "%");
         return query.getResultList();

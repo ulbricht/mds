@@ -6,7 +6,7 @@
             <table:column id="c_org_datacite_mds_domain_Dataset_doi" property="doi" z="AWmYwQPquwEgSn0Tk4TlzCniXDo="/>
             <table:column id="c_org_datacite_mds_domain_Dataset_isActive" property="isActive" z="AjHg1GNtxiHeG0woZu85Bed21sc="/>
             <table:column id="c_org_datacite_mds_domain_Dataset_isRefQuality" property="isRefQuality" z="WyuCSPG2748Crn7gq/EichOzXhs="/>
-            <sec:authorize ifNotGranted="ROLE_DATACENTRE">
+            <sec:authorize url="/adminallocator/">
                 <table:column id="c_org_datacite_mds_domain_Dataset_datacentre" property="datacentre" z="WyuCSPG2748Crn7gq/EichOzXhs="/>
             </sec:authorize>
             <table:column id="c_org_datacite_mds_domain_Dataset_updated" property="updated" date="true" z="WyuCSPG2748Crn7gq/EichOzXhs="/>

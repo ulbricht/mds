@@ -5,7 +5,7 @@
         <field:input field="symbol" id="c_org_datacite_mds_domain_Allocator_symbol" required="true" z="KtF++KB5FDWRKiYmxPMREG9cCkk="/>
         <field:simple field="password" id="c_org_datacite_mds_domain_Allocator_password">
             <util:change-password auth="${magicAuthString}" symbol="${allocator.symbol}"/>
-        </field:simple>
+        </field:simple>       
         <field:textarea field="name" id="c_org_datacite_mds_domain_Allocator_name" required="true" z="q3lecVWHFw6wDWux7cvKm1kaWV0="/>
         <field:textarea field="contactName" id="c_org_datacite_mds_domain_Allocator_contactName" required="true" z="y1zOZH57Meld4p62RwgldAeNu40="/>
         <field:input field="contactEmail" id="c_org_datacite_mds_domain_Allocator_contactEmail" required="true" z="JBlmrLGQu/6+nUPzjpsfz9Pg+SE="/>
@@ -14,12 +14,12 @@
         <field:select field="prefixes" id="c_org_datacite_mds_domain_Allocator_prefixes" itemLabel="labelWithAllocators" itemValue="id" items="${prefixes}" multiple="true" path="/prefixes" required="false" z="user-managed"/>
         <field:select field="experiments" id="c_org_datacite_mds_domain_Allocator_experiments" items="${experiments}" multiple="true" path="" z="user-managed"/>
         <field:checkbox field="isActive" id="c_org_datacite_mds_domain_Allocator_isActive" z="6POWfZXasELSKoxz5mDZYIPVjkc="/>
-        <util:hide>
+        <div style="display:none">
             <field:input field="roleName" id="c_org_datacite_mds_domain_Allocator_roleName" z="26Re+lbjoL5yhQzeHWO4YLIQkoo="/>
             <field:input field="password" id="c_org_datacite_mds_domain_Allocator_password" z="ULSM8btsFMG1/apDOfmcxzS6s2A="/>
             <field:input field="created" id="c_org_datacite_mds_domain_Allocator_created" z="user-managed"/>
             <field:input field="updated" id="c_org_datacite_mds_domain_Allocator_updated" z="user-managed"/>
-        </util:hide>
+        </div>
         <field:textarea field="comments" id="c_org_datacite_mds_domain_Allocator_comments" z="5wIEKz765bUF+M9I9MTPaK77vIA="/>
         <field:checkbox checked="${sendWelcomeMail}" disableFormBinding="true" field="sendWelcomeMail" id="c_org_datacite_mds_domain_Allocator_sendwelcomemail" z="user-managed"/>
     </form:update>

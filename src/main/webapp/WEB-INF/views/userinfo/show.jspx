@@ -5,12 +5,12 @@
     <c:set value="${empty datacentre}" var="scopeAllocator"/>
      
     <form:create id="fc_org_datacite_mds_userinfo_change_password" messageCode="global_generic" modelAttribute="mail" openPane="false" path="/resources/change_password_mail" submitMessageCode="label_org_datacite_mds_web_ui_model_changepasswordmailmodel">
-      <util:hide>
+        <div style="display:none">
         <field:input id="c_org_datacite_mds_web_ui_model_ChangePasswordMailModel_symbol" field="symbol" required="true" />
-      </util:hide>
+      </div>
     </form:create>
     
-    <sec:authorize ifNotGranted="ROLE_ADMIN">
+    <sec:authorize url="/datasets/">
       <page:show create="false" delete="false" id="ps_org_datacite_mds_userinfo_Stats" list="false" object="${allocator}" path="/datacentres" update="false" z="user-managed">
         <field:simple id="s_org_datacite_mds_userinfo_Stats_datasets" field="count" text="${countDatasets}" render="true" z="user-managed"/>
         <util:indent>
@@ -28,7 +28,7 @@
       </page:show>
     </sec:authorize> 
 
-    <sec:authorize ifNotGranted="ROLE_ADMIN">
+    <sec:authorize url="/datasets/">
       <page:show create="false" delete="false" id="ps_org_datacite_mds_userinfo_Permission" list="false" object="${allocator}" path="/datacentres" update="false" z="user-managed">
         <field:display field="domains" id="s_org_datacite_mds_domain_Datacentre_domains" object="${datacentre}" render="${scopeDatacentre}" z="user-managed"/>
         <field:simple field="prefixes" id="s_org_datacite_mds_domain_Allocator_prefixes" z="user-managed">

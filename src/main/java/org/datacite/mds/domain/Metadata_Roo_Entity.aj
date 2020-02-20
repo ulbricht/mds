@@ -25,7 +25,7 @@ privileged aspect Metadata_Roo_Entity {
     transient EntityManager Metadata.entityManager;
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long Metadata.id;
     

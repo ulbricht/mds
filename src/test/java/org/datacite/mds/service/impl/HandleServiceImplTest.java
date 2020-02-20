@@ -33,7 +33,6 @@ public class HandleServiceImplTest {
     private static final String doi = "10.5438/k0fm-jt50";
     private static final String url = "http://pmd.gfz-potsdam.de";
 
-
     @Before
     public void setup() {
         service.dummyMode = false;
@@ -51,7 +50,7 @@ public class HandleServiceImplTest {
         mockResolveExistingHandle();
         replay(service.resolver);
         assertEquals(url, service.resolve(doi));
-   }
+    }
 
     @Test(expected = NotFoundException.class)
     public void testResolveNonExistingUrlValue() throws Exception {
@@ -81,10 +80,10 @@ public class HandleServiceImplTest {
         service.resolve(doi);
     }
 
-    private IExpectationSetters<HandleValue[]> expectResolveHandle() throws net.handle.hdllib.HandleException  {
+    private IExpectationSetters<HandleValue[]> expectResolveHandle() throws net.handle.hdllib.HandleException {
         return expect(service.resolver.resolveHandle(eq(doi), anyObject(String[].class), anyObject(int[].class)));
     }
-    
+
     @Test(expected = HandleException.class)
     public void testResolveUnhandledErrorCode() throws Exception {
         mockResponseCode(AbstractMessage.RC_PROTOCOL_ERROR);
@@ -92,28 +91,20 @@ public class HandleServiceImplTest {
         service.resolve(doi);
 
     }
-/*
-    @Test
-    public void testCreate() throws Exception {
-        mockResponseCode(AbstractMessage.RC_SUCCESS);
-        replay(service.resolver);
-        service.create(doi, url);
-    }
 
-    @Test(expected = HandleException.class)
-    public void testCreateError() throws Exception {
-        mockResponseCode(AbstractMessage.RC_ERROR);
-        replay(service.resolver);
-        service.create(doi, url);
-    }
-
-    @Test(expected = HandleException.class)
-    public void testCreateException() throws Exception {
-        mockResponseException();
-        replay(service.resolver);
-        service.create(doi, url);
-    }
-*/
+    /*
+     * @Test public void testCreate() throws Exception {
+     * mockResponseCode(AbstractMessage.RC_SUCCESS); replay(service.resolver);
+     * service.create(doi, url); }
+     * 
+     * @Test(expected = HandleException.class) public void testCreateError() throws
+     * Exception { mockResponseCode(AbstractMessage.RC_ERROR);
+     * replay(service.resolver); service.create(doi, url); }
+     * 
+     * @Test(expected = HandleException.class) public void testCreateException()
+     * throws Exception { mockResponseException(); replay(service.resolver);
+     * service.create(doi, url); }
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testCreateEmptyDoi() throws HandleException {
         replay(service.resolver);
@@ -137,28 +128,20 @@ public class HandleServiceImplTest {
         replay(service.resolver);
         service.create(doi, null);
     }
-/*
-    @Test
-    public void testUpdate() throws Exception {
-        mockResponseCode(AbstractMessage.RC_SUCCESS);
-        replay(service.resolver);
-        service.update(doi, url);
-    }
 
-    @Test(expected = HandleException.class)
-    public void testUpdateError() throws Exception {
-        mockResponseCode(AbstractMessage.RC_ERROR);
-        replay(service.resolver);
-        service.update(doi, url);
-    }
-
-    @Test(expected = HandleException.class)
-    public void testUpdateException() throws Exception {
-        mockResponseException();
-        replay(service.resolver);
-        service.update(doi, url);
-    }
-*/
+    /*
+     * @Test public void testUpdate() throws Exception {
+     * mockResponseCode(AbstractMessage.RC_SUCCESS); replay(service.resolver);
+     * service.update(doi, url); }
+     * 
+     * @Test(expected = HandleException.class) public void testUpdateError() throws
+     * Exception { mockResponseCode(AbstractMessage.RC_ERROR);
+     * replay(service.resolver); service.update(doi, url); }
+     * 
+     * @Test(expected = HandleException.class) public void testUpdateException()
+     * throws Exception { mockResponseException(); replay(service.resolver);
+     * service.update(doi, url); }
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testUpdateEmptyDoi() throws HandleException {
         replay(service.resolver);
