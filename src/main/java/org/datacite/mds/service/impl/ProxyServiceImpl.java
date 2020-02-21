@@ -67,9 +67,15 @@ public class ProxyServiceImpl implements ProxyService {
 			url=new URL (serviceurl);
 			con =(HttpsURLConnection) url.openConnection();	
 			con.setRequestMethod(method);
-		}catch (MalformedURLException e){throw new ProxyException(e.getMessage());}
-	 	 catch (ProtocolException e){throw new ProxyException(e.getMessage());}
-		 catch (IOException e){throw new ProxyException(e.getMessage());}
+		}catch (MalformedURLException e){
+			throw new ProxyException(e.getMessage());
+		}
+	 	catch (ProtocolException e){
+			throw new ProxyException(e.getMessage());
+		}
+		catch (IOException e){
+			throw new ProxyException(e.getMessage());
+		}
 
 		prepareTransmission(con, body); 
 
@@ -77,6 +83,7 @@ public class ProxyServiceImpl implements ProxyService {
 			con.connect();
 		}catch (IOException e){
 			geterrorstream=true;
+			log.error("IOException while connecting to proxy service "+serviceurl,e);	
 		}
 
 		try{
@@ -84,8 +91,9 @@ public class ProxyServiceImpl implements ProxyService {
 				if (!geterrorstream && responsecode>=200 && responsecode<300){
 					convertInputStream(con.getInputStream(),retbody);
 				}else{
-					if (con.getErrorStream()!=null)
-						convertInputStream(con.getErrorStream(),retbody);					
+					if (con.getErrorStream()!=null){
+						convertInputStream(con.getErrorStream(),retbody);
+					}				
 				}
 				return responsecode;
 		}catch (IOException e){
@@ -111,7 +119,9 @@ public class ProxyServiceImpl implements ProxyService {
 				out.write(body);
 				out.close();
 			}
-		}catch (IOException e){throw new ProxyException(e.getMessage());}
+		}catch (IOException e){
+			throw new ProxyException(e.getMessage());
+		}
 
 	}
 
@@ -128,16 +138,18 @@ public class ProxyServiceImpl implements ProxyService {
 			for (String line=reader.readLine(); line !=null ; line=reader.readLine())
 				sb.append(line);
 			reader.close();
-		}catch (IOException e) {throw new ProxyException(e.getMessage());}
+		}catch (IOException e) {
+			throw new ProxyException(e.getMessage());
+		}
 	}
 
 //----------------------------------------------------
 
 
 
-	 public boolean isProxyMode(){
+	public boolean isProxyMode(){
 		return StringUtils.isNotBlank(dataciteservice);
-	 }
+	}
 
 
     @Override
@@ -180,13 +192,11 @@ public class ProxyServiceImpl implements ProxyService {
 					  break;
 				  default:
 					  throw new ProxyException(dataciteservice+": "+retbody.toString());
-//					  throw new HandleException(retbody.toString());
 			  }
 			  return;
 		  }
 		  catch (ProxyException e){
 					  throw new ProxyException(e.getMessage());
-//		     throw new HandleException(e.getMessage());
 		  }
     }
 
