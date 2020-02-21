@@ -2,9 +2,14 @@
 <div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" xmlns:util="urn:jsptagdir:/WEB-INF/tags/util" xmlns:sec="http://www.springframework.org/security/tags" version="2.0">
     <jsp:output omit-xml-declaration="yes"/>
     <form:update id="fu_org_datacite_mds_domain_Dataset" modelAttribute="dataset" path="/datasets" z="user-managed">
-     <sec:authorize url="/resources/j_spring_security_switch_user">
+    <sec:authorize url="/resources/j_spring_security_switch_user">
             <field:select field="datacentre" id="c_org_datacite_mds_domain_Dataset_datacentre" itemValue="id" items="${datacentres}" path="/datacentres" required="true" z="user-managed"/>
-     </sec:authorize>         
+    </sec:authorize>
+    <sec:authorize url="/doi/">
+        <div style="display:none">
+            <field:select field="datacentre" id="c_org_datacite_mds_domain_Dataset_datacentre" itemValue="id" items="${datacentres}" path="/datacentres" required="true" z="user-managed"/>
+        </div>
+    </sec:authorize>   
         <util:comment messageCode="handle_latency_info"/>
         <field:input field="doi" id="c_org_datacite_mds_domain_Dataset_doi" readonly="true" required="true" z="user-managed">
            (${resolvedUrl})

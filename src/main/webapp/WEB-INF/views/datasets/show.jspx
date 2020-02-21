@@ -5,6 +5,11 @@
         <sec:authorize url="/resources/j_spring_security_switch_user">
             <field:display field="datacentre" id="s_org_datacite_mds_domain_Dataset_datacentre" showPath="/datacentres" object="${dataset}" render="true" z="user-managed"/>
         </sec:authorize> 
+        <sec:authorize url="/doi/">
+            <div style="display:none">
+                <field:display field="datacentre" id="s_org_datacite_mds_domain_Dataset_datacentre" showPath="/datacentres" object="${dataset}" render="true" z="user-managed"/>
+            </div>
+        </sec:authorize>  
         <c:set value="${properties['link.handleProxy']}" var="proxy_url"/>
         <field:display field="doi" id="s_org_datacite_mds_domain_Dataset_doi" link="${proxy_url}/${dataset.doi}" object="${dataset}" z="user-managed">
             (${resolvedUrl})
