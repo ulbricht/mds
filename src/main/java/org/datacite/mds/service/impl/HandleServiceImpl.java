@@ -118,41 +118,49 @@ public class HandleServiceImpl implements HandleService {
     @Override
     public String resolve(String doi) throws HandleException, NotFoundException {
 
-
-	if (proxyService.isProxyMode()){
-	    return proxyService.doiResolve(doi);       
-	}else{
-	    return handleResolve(doi);      
-	}
+        if (proxyService.isProxyMode()){
+            if (dummyMode)
+                return "dummyMode";
+            else
+                return proxyService.doiResolve(doi);       
+        }else{
+            return handleResolve(doi);      
+        }
 
     }
 
     @Override
     public void create(String doi, String url) throws HandleException {
-	try{
+        try{
 
-		if (proxyService.isProxyMode()){
-		    proxyService.doiUpdate( doi, url);      
-		}else{
-		    handleCreate( doi, url);         
-		}
-        }catch (ProxyException e){
-		throw new HandleException(e.getMessage());
-	}
+            if (proxyService.isProxyMode()){
+                if (dummyMode)
+                    return;
+                else 
+                    proxyService.doiUpdate( doi, url);      
+            }else{
+                handleCreate( doi, url);         
+            }
+            }catch (ProxyException e){
+            throw new HandleException(e.getMessage());
+        }
     }
 
     @Override
     public void update(String doi, String newUrl) throws HandleException {
-	try{
+        try{
 
-		if (proxyService.isProxyMode()){
-		    proxyService.doiUpdate( doi, newUrl);       
-		}else{
-		    handleUpdate( doi, newUrl);
-		}
-        }catch (ProxyException e){
-		throw new HandleException(e.getMessage());
-	}
+            if (proxyService.isProxyMode()){
+                if (dummyMode)
+                    return;
+                else 
+                    proxyService.doiUpdate( doi, newUrl);       
+            }else{
+                handleUpdate( doi, newUrl);
+            }
+            }catch (ProxyException e){
+            throw new HandleException(e.getMessage());
+        }
     }
     
     
