@@ -32,18 +32,18 @@ import javax.persistence.NoResultException;
 
 @Controller
 @RequestMapping("/media")
-public class MediaApiController implements ApiController {
+public class MediaApiController extends ApiController {
 
     private static Logger log4j = Logger.getLogger(MediaApiController.class);
-    
+
     @RequestMapping(value = "")
     public ResponseEntity<String> rootHandler() throws NotFoundException {
         throw new NotFoundException("doi missing");
     }
 
     @RequestMapping(value = "**", method = { RequestMethod.GET, RequestMethod.HEAD })
-    public ResponseEntity<String> get(HttpServletRequest httpRequest) throws IOException, SecurityException,
-            NotFoundException {
+    public ResponseEntity<String> get(HttpServletRequest httpRequest)
+            throws IOException, SecurityException, NotFoundException {
         String doi = getDoiFromRequest(httpRequest);
         AllocatorOrDatacentre user = SecurityUtils.getCurrentAllocatorOrDatacentre();
 
@@ -81,24 +81,24 @@ public class MediaApiController implements ApiController {
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
             throw new NotFoundException("DOI is unknown to MDS");
-        
+
         SecurityUtils.checkDatasetOwnership(dataset, datacentre);
-        
+
         Properties props = new Properties();
         props.load(new StringReader(body));
-        
+
         for (String mediaType : props.stringPropertyNames()) {
             String url = props.getProperty(mediaType);
-            
+
             try {
                 Media media = Media.findMediaByDatasetAndMediaType(dataset, mediaType);
                 media.setUrl(url);
                 if (!testMode)
                     media.merge();
             } catch (EmptyResultDataAccessException ex) {
-		mediaPersist (dataset, mediaType, url, testMode);
+                mediaPersist(dataset, mediaType, url, testMode);
             } catch (NoResultException ex) {
-		mediaPersist (dataset, mediaType, url, testMode);
+                mediaPersist(dataset, mediaType, url, testMode);
             }
         }
 
@@ -108,13 +108,13 @@ public class MediaApiController implements ApiController {
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
-   private void mediaPersist(Dataset dataset, String mediaType,String url,Boolean testMode){
+    private void mediaPersist(Dataset dataset, String mediaType, String url, Boolean testMode) {
         Media media = new Media();
         media.setDataset(dataset);
         media.setMediaType(mediaType);
         media.setUrl(url);
         if (!testMode)
             media.persist();
-   }
+    }
 
 }

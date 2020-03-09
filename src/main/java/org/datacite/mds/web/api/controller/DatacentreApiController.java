@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequestMapping("/*")
 @Controller
-public class DatacentreApiController implements ApiController {
+public class DatacentreApiController extends ApiController {
 
     Logger log4j = Logger.getLogger(DatacentreApiController.class);
 
@@ -38,8 +38,8 @@ public class DatacentreApiController implements ApiController {
     ValidationHelper validationHelper;
 
     @RequestMapping(value = "datacentre", method = RequestMethod.GET)
-    public ResponseEntity<? extends Object> get(@RequestParam String symbol) throws SecurityException,
-            NotFoundException {
+    public ResponseEntity<? extends Object> get(@RequestParam String symbol)
+            throws SecurityException, NotFoundException {
 
         Datacentre datacentre = Datacentre.findDatacentreBySymbol(symbol);
         if (datacentre == null)
@@ -99,7 +99,8 @@ public class DatacentreApiController implements ApiController {
         return makeResponse(persistentDatacentre, HttpStatus.OK);
     }
 
-    private ResponseEntity<Datacentre> createDatacentre(Datacentre requestDatacentre, Boolean testMode) throws ValidationException {
+    private ResponseEntity<Datacentre> createDatacentre(Datacentre requestDatacentre, Boolean testMode)
+            throws ValidationException {
         log4j.debug("*****PUT datacentre: new datacentre");
 
         requestDatacentre.setRoleName("ROLE_DATACENTRE");
@@ -111,7 +112,7 @@ public class DatacentreApiController implements ApiController {
 
         return makeResponse(requestDatacentre, HttpStatus.CREATED);
     }
-    
+
     private ResponseEntity<Datacentre> makeResponse(Datacentre datacentre, HttpStatus responseCode) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
