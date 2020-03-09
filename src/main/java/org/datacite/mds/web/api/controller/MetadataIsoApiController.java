@@ -1,6 +1,5 @@
 package org.datacite.mds.web.api.controller;
 
-
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,34 +42,34 @@ import org.apache.commons.lang.ArrayUtils;
 
 @RequestMapping("/isometadata")
 @Controller
-public class MetadataIsoApiController implements ApiController {
+public class MetadataIsoApiController extends ApiController {
 
     private static Logger log4j = Logger.getLogger(MetadataIsoApiController.class);
-    
+
     @Autowired
     DoiService doiService;
 
     @Autowired
     ValidationHelper validationHelper;
-    
+
     @Autowired
     SchemaService schemaService;
 
     @Autowired
-    ProxyService proxyService; 
-          
-    
+    ProxyService proxyService;
+
     @RequestMapping(value = "", method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity getRoot() {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "**", method = { RequestMethod.GET, RequestMethod.HEAD })
-    public ResponseEntity<? extends Object> get(HttpServletRequest request) throws SecurityException, NotFoundException, DeletedException {
+    public ResponseEntity<? extends Object> get(HttpServletRequest request)
+            throws SecurityException, NotFoundException, DeletedException {
         String doi = getDoiFromRequest(request);
         log4j.debug(doi);
         AllocatorOrDatacentre user = SecurityUtils.getCurrentAllocatorOrDatacentre();
-        
+
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
             throw new NotFoundException("DOI is unknown to MDS");
@@ -90,7 +89,7 @@ public class MetadataIsoApiController implements ApiController {
         headers.setContentType(MediaType.APPLICATION_XML);
         return new ResponseEntity<Object>(metadata.getIso(), headers, HttpStatus.OK);
     }
-    
+
     private String getDoiFromRequest(HttpServletRequest request) {
         String uri = request.getServletPath();
         String doi = uri.replaceFirst("/isometadata/", "");
@@ -98,88 +97,86 @@ public class MetadataIsoApiController implements ApiController {
     }
 
     @RequestMapping(value = "**", method = RequestMethod.POST)
-    public ResponseEntity<String> post(@RequestBody byte[] xml,
-                                             @RequestParam(required = false) Boolean testMode,
-                                             HttpServletRequest httpRequest) throws NotFoundException,ValidationException, HandleException, SecurityException, UnsupportedEncodingException {
+    public ResponseEntity<String> post(@RequestBody byte[] xml, @RequestParam(required = false) Boolean testMode,
+            HttpServletRequest httpRequest) throws NotFoundException, ValidationException, HandleException,
+            SecurityException, UnsupportedEncodingException {
         String doi;
 
-			if (schemaService.isDifSchema(xml) || schemaService.isIsoSchema(xml)){
-log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL");
-				doi = getDoiFromRequest(httpRequest);
-log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL"+doi);
-			}else{
-log4j.debug("MetadataIsoApiController.post() - read DOI from XML");
-				doi = schemaService.getDoi(xml);
-log4j.debug("MetadataIsoApiController.post() - read DOI from XML"+doi);
-			}
+        if (schemaService.isDifSchema(xml) || schemaService.isIsoSchema(xml)) {
+            log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL");
+            doi = getDoiFromRequest(httpRequest);
+            log4j.debug("MetadataIsoApiController.post() - read DOI from RequestURL" + doi);
+        } else {
+            log4j.debug("MetadataIsoApiController.post() - read DOI from XML");
+            doi = schemaService.getDoi(xml);
+            log4j.debug("MetadataIsoApiController.post() - read DOI from XML" + doi);
+        }
 
         return storeMetadata(doi, xml, testMode, httpRequest);
     }
 
-       
     @RequestMapping(value = "", method = RequestMethod.PUT)
     public ResponseEntity putRoot() throws HttpRequestMethodNotSupportedException {
         throw new HttpRequestMethodNotSupportedException("PUT");
     }
 
     @RequestMapping(value = "**", method = RequestMethod.PUT)
-    public ResponseEntity<String> put(@RequestBody byte[] xml,
-                                             @RequestParam(required = false) Boolean testMode,
-                                             HttpServletRequest httpRequest) throws NotFoundException,ValidationException, HandleException, SecurityException, UnsupportedEncodingException {
+    public ResponseEntity<String> put(@RequestBody byte[] xml, @RequestParam(required = false) Boolean testMode,
+            HttpServletRequest httpRequest) throws NotFoundException, ValidationException, HandleException,
+            SecurityException, UnsupportedEncodingException {
         String doi = getDoiFromRequest(httpRequest);
         return storeMetadata(doi, xml, testMode, httpRequest);
     }
 
-
-    private ResponseEntity<String> storeMetadata(String doi, byte[] xml, Boolean testMode, HttpServletRequest httpRequest) throws NotFoundException, ValidationException, HandleException, SecurityException, UnsupportedEncodingException {
+    private ResponseEntity<String> storeMetadata(String doi, byte[] xml, Boolean testMode,
+            HttpServletRequest httpRequest) throws NotFoundException, ValidationException, HandleException,
+            SecurityException, UnsupportedEncodingException {
         String method = httpRequest.getMethod();
         if (testMode == null)
             testMode = false;
         String logPrefix = "*****" + method + " isometadata (doi=" + doi + ", testMode=" + testMode + ") ";
 
         log4j.debug(logPrefix);
-        
+
         if (xml.length == 0)
             throw new ValidationException("request body must not be empty");
-        
-        if (doi==null || doi.length()==0)
+
+        if (doi == null || doi.length() == 0)
             throw new ValidationException("failed to retrieve DOI");
 
         Dataset oldDataset = Dataset.findDatasetByDoi(doi);
 
-	if (oldDataset == null) 
-		throw new NotFoundException("DOI doesn't exist");
+        if (oldDataset == null)
+            throw new NotFoundException("DOI doesn't exist");
 
+        Metadata oldmetadata = Metadata.findLatestMetadatasByDataset(oldDataset);
 
-	Metadata oldmetadata=Metadata.findLatestMetadatasByDataset(oldDataset);
+        if (oldmetadata == null)
+            throw new NotFoundException("DOI doesn't exist");
 
-	if (oldmetadata == null) 
-		throw new NotFoundException("DOI doesn't exist");      
+        Metadata metadata = new Metadata();// copy old values
 
-	Metadata   metadata=new Metadata();//copy old values
+        byte[] iso = oldmetadata.getIso();
+        if (!ArrayUtils.isEmpty(iso))
+            metadata.setIso(iso);
 
+        byte[] dif = oldmetadata.getDif();
+        if (!ArrayUtils.isEmpty(dif))
+            metadata.setDif(dif);
 
-	byte[] iso = oldmetadata.getIso();
-	if (!ArrayUtils.isEmpty(iso))
-		metadata.setIso(iso);
+        metadata.setXml(oldmetadata.getXml());
 
-	byte[] dif =oldmetadata.getDif();
-	if (!ArrayUtils.isEmpty(dif))
-		metadata.setDif(dif);
-
-	metadata.setXml(oldmetadata.getXml());
-
-	if (!schemaService.isIsoSchema(xml))
-   		throw new ValidationException("no ISO XML provided");
+        if (!schemaService.isIsoSchema(xml))
+            throw new ValidationException("no ISO XML provided");
 
         metadata.setIso(xml);
         metadata.setDataset(oldDataset);
 
         validationHelper.validate(metadata);
-       
-        //increases the DOI-quota and validates the dataset
+
+        // increases the DOI-quota and validates the dataset
         Dataset dataset = doiService.createOrUpdate(doi, null, testMode);
-        
+
         log4j.debug(logPrefix + "dataset id = " + dataset.getId());
         metadata.setDataset(dataset);
         if (!testMode) {
@@ -190,7 +187,7 @@ log4j.debug("MetadataIsoApiController.post() - read DOI from XML"+doi);
                 dataset.merge();
             }
         }
- 
+
         HttpHeaders headers = new HttpHeaders();
         if (method.equals("POST")) {
             StringBuffer location = httpRequest.getRequestURL().append("/" + doi);
@@ -201,28 +198,28 @@ log4j.debug("MetadataIsoApiController.post() - read DOI from XML"+doi);
     }
 
     @RequestMapping(value = "**", method = RequestMethod.DELETE)
-    public ResponseEntity<String> delete(HttpServletRequest request,
-            @RequestParam(required = false) Boolean testMode) throws SecurityException, NotFoundException, HandleException {
+    public ResponseEntity<String> delete(HttpServletRequest request, @RequestParam(required = false) Boolean testMode)
+            throws SecurityException, NotFoundException, HandleException {
         String doi = getDoiFromRequest(request);
         if (testMode == null)
             testMode = false;
         log4j.debug("*****DELETE metadata (testMode=" + testMode + ") " + doi);
-        
+
         Datacentre datacentre = SecurityUtils.getCurrentDatacentre();
 
         Dataset dataset = Dataset.findDatasetByDoi(doi);
         if (dataset == null)
             throw new NotFoundException("DOI doesn't exist");
-        
+
         Metadata metadata = Metadata.findLatestMetadatasByDataset(dataset);
         if (metadata == null)
             throw new NotFoundException("Metadata doesn't exist");
 
         SecurityUtils.checkDatasetOwnership(dataset, datacentre);
-                      
+
         if (!testMode) {
-				metadata.setIso(null);
-				metadata.persist();
+            metadata.setIso(null);
+            metadata.persist();
             log4j.info(datacentre.getSymbol() + " successfuly deactivated " + doi);
         }
 
