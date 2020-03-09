@@ -42,7 +42,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 @RequestMapping("/isometadata")
 @Controller
-public class MetadataIsoApiController implements ApiController {
+public class MetadataIsoApiController extends ApiController {
 
     private static Logger log4j = Logger.getLogger(MetadataIsoApiController.class);
 
