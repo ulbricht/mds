@@ -34,7 +34,6 @@ public class ApiController {
             NotFoundException.class, HandleException.class, DeletedException.class,
             JpaOptimisticLockingFailureException.class, Exception.class })
     public ResponseEntity handleExceptions(Throwable ex, HttpServletResponse response) throws IOException {
-        // logger.debug("handling exception: ", ex);
 
         String errormessage = "OK";
         HttpStatus errorcode = HttpStatus.OK;
@@ -44,14 +43,19 @@ public class ApiController {
             errormessage = ValidationUtils.collateViolationMessages(violations);
             errorcode = HttpStatus.BAD_REQUEST;
         } else if (ex instanceof ValidationException) {
-            handleCause(ex, response, HttpServletResponse.SC_BAD_REQUEST);
+            Throwable cause = ex.getCause();
+            if (cause == null) {
+                errorcode = HttpStatus.BAD_REQUEST;
+                errormessage = ex.getMessage();
+            } else {
+                handleExceptions(cause, response);
+            }
         } else if (ex instanceof SecurityException) {
             errormessage = ex.getMessage();
             errorcode = HttpStatus.FORBIDDEN;
         } else if (ex instanceof NotFoundException) {
             errormessage = ex.getMessage();
             errorcode = HttpStatus.NOT_FOUND;
-            // logger.debug("Exception::::::" + ex.getMessage());
         } else if (ex instanceof HandleException) {
             errormessage = ex.getMessage();
             errorcode = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -72,14 +76,6 @@ public class ApiController {
 
         return new ResponseEntity<String>(errormessage, errorcode);
 
-    }
-
-    private void handleCause(Throwable ex, HttpServletResponse response, int defaultResponseCode) throws IOException {
-        Throwable cause = ex.getCause();
-        if (cause == null)
-            response.sendError(defaultResponseCode, ex.getMessage());
-        else
-            handleExceptions(cause, response);
     }
 
 }
