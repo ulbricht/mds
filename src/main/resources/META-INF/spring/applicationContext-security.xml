@@ -10,8 +10,7 @@
     <bean id="springSecurityFilterChain" class="org.springframework.security.web.FilterChainProxy">
 		<security:filter-chain-map request-matcher="regex">
 
-
-			<security:filter-chain pattern="/(datacentre|igsn|metadata|media|isometadata|difmetadata|oaisource)(/.*)?" filters="
+			<security:filter-chain pattern="/(datacentre|igsn|metadata|media|isometadata|difmetadata|oaisource)(/.*)?(\?.*)?" filters="
 			   securityContextPersistenceFilterWithASCFalse,
 			   basicAuthenticationFilter,
 			   basicExceptionTranslationFilter,
