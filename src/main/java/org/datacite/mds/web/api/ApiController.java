@@ -35,46 +35,37 @@ public class ApiController {
             JpaOptimisticLockingFailureException.class, Exception.class })
     public ResponseEntity handleExceptions(Throwable ex, HttpServletResponse response) throws IOException {
 
-        String errormessage = "OK";
-        HttpStatus errorcode = HttpStatus.OK;
         if (ex instanceof ConstraintViolationException) {
             ConstraintViolationException constraintException = (ConstraintViolationException) ex;
             Set<ConstraintViolation<?>> violations = constraintException.getConstraintViolations();
-            errormessage = ValidationUtils.collateViolationMessages(violations);
-            errorcode = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<String>(ValidationUtils.collateViolationMessages(violations),
+                    HttpStatus.BAD_REQUEST);
+
         } else if (ex instanceof ValidationException) {
             Throwable cause = ex.getCause();
             if (cause == null) {
-                errorcode = HttpStatus.BAD_REQUEST;
-                errormessage = ex.getMessage();
+                return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
             } else {
-                handleExceptions(cause, response);
+                return handleExceptions(cause, response);
             }
         } else if (ex instanceof SecurityException) {
-            errormessage = ex.getMessage();
-            errorcode = HttpStatus.FORBIDDEN;
+            return new ResponseEntity<String>(ex.getMessage(), HttpStatus.FORBIDDEN);
         } else if (ex instanceof NotFoundException) {
-            errormessage = ex.getMessage();
-            errorcode = HttpStatus.NOT_FOUND;
+            return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } else if (ex instanceof HandleException) {
-            errormessage = ex.getMessage();
-            errorcode = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<String>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } else if (ex instanceof DeletedException) {
-            errormessage = ex.getMessage();
-            errorcode = HttpStatus.GONE;
+            return new ResponseEntity<String>(ex.getMessage(), HttpStatus.GONE);
         } else if (ExceptionUtils.indexOfType(ex, JDBCConnectionException.class) != -1) {
-            errormessage = "database connection problem";
-            errorcode = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<String>("database connection problem", HttpStatus.INTERNAL_SERVER_ERROR);
         } else if (ex instanceof JpaOptimisticLockingFailureException) {
-            errormessage = "Another user has changed this record. Please try again";
-            errorcode = HttpStatus.INTERNAL_SERVER_ERROR;
-        } else {
-            logger.error("uncaught exception", ex);
-            errormessage = "uncaught exception (" + ex.getMessage() + ")";
-            errorcode = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<String>("Another user has changed this record. Please try again",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<String>(errormessage, errorcode);
+        logger.error("uncaught exception", ex);
+        return new ResponseEntity<String>("uncaught exception (" + ex.getMessage() + ")",
+                HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
