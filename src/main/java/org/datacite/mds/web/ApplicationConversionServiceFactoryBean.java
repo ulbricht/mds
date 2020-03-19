@@ -35,7 +35,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<byte[], String> getByteArrayConverter() {
         return new Converter<byte[], String>() {
             public String convert(byte[] bytes) {
-                log.debug("Byteconverter");
                 return new String(bytes);
             }
         };
@@ -44,7 +43,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<Dataset, String> getSimpleDatasetConverter() {
         return new Converter<Dataset, String>() {
             public String convert(Dataset dataset) {
-                log.debug("Datasetconverter");
                 return dataset.getDoi();
             }
         };
@@ -53,7 +51,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<Datacentre, String> getSimpleDatacentreConverter() {
         return new Converter<Datacentre, String>() {
             public String convert(Datacentre datacentre) {
-                log.debug("Datacentreconverter");
                 return datacentre.getSymbol();
             }
         };
@@ -62,7 +59,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<Allocator, String> getSimpleAllocatorConverter() {
         return new Converter<Allocator, String>() {
             public String convert(Allocator allocator) {
-                log.debug("Allocatorconverter");
                 return allocator.getSymbol();
             }
         };
@@ -71,7 +67,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<Prefix, String> getSimplePrefixConverter() {
         return new Converter<Prefix, String>() {
             public String convert(Prefix prefix) {
-                log.debug("Prefixconverter");
                 return prefix.getPrefix();
             }
         };
@@ -80,7 +75,6 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     public static Converter<Metadata, String> getSimpleMetadataConverter() {
         return new Converter<Metadata, String>() {
             public String convert(Metadata metadata) {
-                log.debug("Metadataconverter");
                 return metadata.getMetadataVersion() + " (" + metadata.getCreated() + ")";
             }
         };
